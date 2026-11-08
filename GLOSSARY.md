@@ -1,23 +1,29 @@
-# Domain Glossary: @trajectonomics/docs
+# Trajectonomics Docs
 
-Ubiquitous language for `trajectonomics/docs`. Every term defined here is binding across code, tests, documentation, and PR titles. Synonyms in a diff are defects.
+The public documentation portal for the Trajectonomics ecosystem, written for two audiences and served under `trajectonomics.com/docs`.
 
-## Core Terms
+## Language
 
-### Docs Portal
-The public documentation site served at `trajectonomics.com/docs`, built with Astro and Fumadocs and deployed as a Cloudflare Workers Static Assets micro-frontend.
+**Docs Portal**:
+The public documentation site for Trajectonomics. Everything in it is public; nothing about private infrastructure appears.
+_Avoid_: Docs site, developer portal, wiki
 
-### Tab
-A top-level navigation section of the Docs Portal aimed at one audience. There are two: CLI & Quickstart (`cli/`, end users and operators) and Build on Trajectonomics (`developers/`, developers and contributors).
+**Operator**:
+A person who installs and runs the Trajectonomics CLI.
+_Avoid_: User, end user, customer
 
-### Upstream Package
-A Trajectonomics repository whose documentation this portal carries: `cli`, `sim-core`, `ledger-core`, `tax-core`, `design-system`.
+**Builder**:
+A person who builds on Trajectonomics packages or contributes to them.
+_Avoid_: Developer, consumer, contributor
 
-### Upstream Release
-A production release of an Upstream Package. It dispatches an `upstream_release` event with `{ repo, tag, changelog }` and triggers a Docs Sync.
+**Tab**:
+A top-level section of the Docs Portal addressed to exactly one audience. There are two: the Operator tab (CLI and quickstart) and the Builder tab (build on Trajectonomics).
+_Avoid_: Section, category, track
 
-### Docs Sync
-The automated step that turns an Upstream Release into documentation updates, always delivered as a Draft Pull Request and never committed to `main`.
+**Upstream Package**:
+A Trajectonomics repository whose releases the Docs Portal documents: `cli`, `sim-core`, `ledger-core`, `tax-core` and `design-system`.
+_Avoid_: Dependency, upstream repo
 
-### Invariant
-A rule or condition that must hold true across all state transitions in this system.
+**Docs Sync**:
+The automated proposal of Docs Portal edits after an Upstream Package release. It only proposes; a human reviews every change before it lands.
+_Avoid_: Auto-update, docs bot
