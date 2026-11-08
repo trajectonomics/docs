@@ -11,26 +11,43 @@ Part of the [Trajectonomics](https://github.com/trajectonomics) ecosystem.
 
 ## About
 
-Public documentation for the Trajectonomics ecosystem, served at `trajectonomics.com/docs`.
-This repository is a deployable site, not a published npm package.
+The Docs Portal: public documentation for the Trajectonomics ecosystem, served at `trajectonomics.com/docs`
+(see [issue #1](https://github.com/trajectonomics/docs/issues/1)). This repository is a deployed site; it is
+never published to npm.
 
-Planned shape (see [issue #1](https://github.com/trajectonomics/docs/issues/1)):
+- Static [Astro](https://astro.build) site with [Fumadocs](https://fumadocs.dev) (React islands) and the built-in
+  local static search (no external search service, no API key).
+- Two Tabs: the **Operator tab** (`/docs/cli/`, CLI and quickstart) and the **Builder tab**
+  (`/docs/developers/`, build on Trajectonomics). `/docs` redirects to the Operator tab.
+- Served by a Cloudflare Worker named `trajectonomics-docs` with Workers Static Assets
+  ([`wrangler.jsonc`](./wrangler.jsonc)). Pages are authored in `src/content/docs/`.
+- Deployed by Cloudflare Workers Builds from `main`, whose build command runs `bun run check`
+  ([ADR 0003](./docs/adr/0003-direct-route-and-workers-builds-deploy.md)). There is no GitHub Actions deploy workflow.
 
-- Static Astro site with Fumadocs, deployed to Cloudflare Workers Static Assets.
-- Tab 1, CLI & Quickstart, for end users and operators.
-- Tab 2, Build on Trajectonomics, for developers and contributors.
-- Docs updated by draft pull request whenever an upstream package releases.
+### How `/docs` URLs resolve
+
+Workers Static Assets serves files by request path, so Astro builds into `dist/docs/` (`base: "/docs"`,
+`outDir: "./dist/docs"`) and the Worker serves `./dist`. A small build hook writes `dist/_redirects` so that
+`/docs` answers with a 302 to `/docs/cli/`.
 
 ---
 
 ## Development
 
+Requires Bun and Node 22.23.4 or later (Astro; `.node-version` pins 24).
+
 ```bash
 # Install dependencies
 bun install
 
-# Run full verification suite (lint, typecheck, tests, build)
+# Run the full verification suite (lint, typecheck + astro check, tests, build)
 bun run check
+
+# Develop with hot reload (http://localhost:4321/docs/)
+bun run dev
+
+# Build, then serve dist/ exactly as the Worker does (http://localhost:8787/docs/)
+bun run preview
 
 # Run tests
 bun test
@@ -39,6 +56,8 @@ bun test
 bun run format
 bun run lint
 ```
+
+`typescript` is pinned to 6.0.x because `astro check` does not support TypeScript 7 yet.
 
 ---
 

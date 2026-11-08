@@ -5,11 +5,11 @@ Instructions for AI coding agents in `trajectonomics/docs` (`@trajectonomics/doc
 ## Rules
 
 1. Never commit to `main`. Branch (`feat/*`, `fix/*`, `docs/*`) and open a PR.
-2. Never commit secrets or `.env` files. `NPM_TOKEN` lives in repo secrets only.
+2. Never commit secrets or `.env` files. Cloudflare credentials live in Cloudflare (Workers Builds), never in this repo or in GitHub secrets.
 3. Package design: Keep core packages pure and deterministic wherever applicable (data in, data out, no I/O, no clock, no unseeded randomness). Keep boundaries closed-world with explicit contracts.
 4. Bun only: `bun install`, `bun test`, `bun run <script>`. Do not add npm/pnpm/yarn lockfiles.
-5. Done means `bun run check` passes (Biome lint with zero warnings, strict typecheck, tests, build, publint + are-the-types-wrong). `bun run format` fixes formatting and import order. Do not loosen `tsconfig.base.json` or `biome.json` to make an error go away.
-6. Never edit `version` in `package.json` (a first-publish bump is never committed) and never run `npm publish` locally, except the very first publish of a brand-new package, which the maintainer may run locally with `--provenance=false`. Merges to `main` publish alphas; a stable release is the manual Release workflow. PR titles are conventional commits (`feat:`, `fix:`, `feat!:` ...) because they decide the next version (see README "Releasing").
+5. Done means `bun run check` passes (Biome lint with zero warnings, strict typecheck plus `astro check`, tests, Astro build). `bun run format` fixes formatting and import order. Do not loosen `tsconfig.base.json` or `biome.json` to make an error go away.
+6. This repo is a deployed site, never published: never edit `version` in `package.json`, never run `npm publish`, and keep `private: true`. Merges to `main` deploy to Cloudflare through Workers Builds, whose build command runs `bun run check` (see ADR 0003); do not add a GitHub Actions deploy workflow. PR titles are conventional commits (`feat:`, `fix:`, `docs:` ...).
 
 ## Agent skills
 

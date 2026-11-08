@@ -15,11 +15,16 @@ concurrency:
 
 jobs:
   check:
-    name: Lint, Typecheck, Test, Build & Package Lint
+    name: Lint, Typecheck, Test & Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2

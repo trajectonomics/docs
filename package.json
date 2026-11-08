@@ -1,55 +1,49 @@
 {
 	"name": "@trajectonomics/docs",
 	"version": "0.0.0-development",
-	"description": "Trajectonomics documentation portal (Fumadocs + Astro) served at trajectonomics.com/docs",
+	"description": "Trajectonomics Docs Portal (Fumadocs + Astro), deployed to trajectonomics.com/docs on Cloudflare Workers Static Assets. Never published to npm.",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/trajectonomics/docs.git"
 	},
 	"type": "module",
-	"sideEffects": false,
 	"packageManager": "bun@1.4.4",
 	"engines": {
-		"node": ">=20.0.0"
+		"node": ">=22.23.4"
 	},
-	"main": "./dist/index.cjs",
-	"module": "./dist/index.mjs",
-	"types": "./dist/index.d.cts",
-	"exports": {
-		".": {
-			"import": {
-				"types": "./dist/index.d.mts",
-				"default": "./dist/index.mjs"
-			},
-			"require": {
-				"types": "./dist/index.d.cts",
-				"default": "./dist/index.cjs"
-			}
-		},
-		"./package.json": "./package.json"
-	},
-	"files": [
-		"dist"
-	],
 	"scripts": {
-		"build": "tsdown",
+		"dev": "astro dev",
+		"build": "astro build",
+		"preview": "astro build && wrangler dev",
 		"test": "bun test",
-		"typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.test.json",
+		"typecheck": "tsc -p tsconfig.json && astro check",
 		"lint": "biome ci --error-on-warnings .",
 		"format": "biome check --write .",
-		"check": "bun run lint && bun run typecheck && bun run test && bun run build && bun run lint:package",
-		"lint:package": "publint --strict && attw --pack . --profile node16",
+		"check": "bun run lint && bun run typecheck && bun run test && bun run build",
 		"skills:check": "bunx skills@latest check",
 		"skills:update": "bunx skills@latest update"
 	},
 	"devDependencies": {
-		"@arethetypeswrong/cli": "^0.18.5",
+		"@astrojs/check": "^0.9.12",
 		"@biomejs/biome": "2.6.3",
+		"@tailwindcss/vite": "^4.3.5",
 		"@types/bun": "^1.4.4",
-		"publint": "^0.3.25",
-		"tsdown": "^0.23.2",
-		"typescript": "^7.0.2"
+		"@types/mdx": "^2.0.14",
+		"@types/react": "^19.3.0",
+		"@types/react-dom": "^19.3.0",
+		"tailwindcss": "^4.3.5",
+		"typescript": "~6.0.3",
+		"wrangler": "^4.158.0"
 	},
-	"private": true
+	"private": true,
+	"dependencies": {
+		"@astrojs/react": "^7.1.4",
+		"@fumadocs/astro": "^0.2.1",
+		"astro": "^7.4.7",
+		"fumadocs-core": "^16.18.2",
+		"fumadocs-ui": "^16.18.2",
+		"react": "^19.3.1",
+		"react-dom": "^19.3.1"
+	}
 }
