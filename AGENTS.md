@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Instructions for AI coding agents working in `trajectonomics` repositories instantiated from this template.
+Instructions for AI coding agents in `trajectonomics/docs` (`@trajectonomics/docs`).
 
 ## Rules
 
@@ -13,9 +13,8 @@ Instructions for AI coding agents working in `trajectonomics` repositories insta
 
 ## Agent skills
 
-### Skills included in this template
+### Skills included
 
-- **Bootstrap Skill (`setup-the-repo`)**: Single-use interactive setup wizard. When initializing a new repo from this template, run `/setup-the-repo` (or `bun run setup`). It customizes the repository, verifies the build, removes itself, and instructs you to run `/setup-matt-pocock-skills`.
 - **Matt Pocock Skills (`mattpocock/skills`)**: Complete engineering workflow including `/ask-matt`, `/tdd`, `/implement`, `/code-review`, `/wayfinder`, `/diagnosing-bugs`, `/codebase-design`, `/grill-with-docs`, etc.
 - **Trajectonomics Internal Skills (`trajectonomics/internal-skills`)**: Organization-specific workflow including `/pick-the-issue` to discover unblocked GitHub issues not currently handled by active T3 Code sessions and route them into the `ask-matt` framework.
 
@@ -48,9 +47,7 @@ Skills come from [`mattpocock/skills`](https://github.com/mattpocock/skills) and
   ```
 - Restore from the lock: `npx skills experimental_install`
 
-## Checklist When Instantiating a New Repo
+## Repository Information
 
-When creating a new repository from this template:
-1. Run `/setup-the-repo` (or `bun run setup`) to interactively configure your package coordinates, description, archetype, domain glossary, and architecture records.
-2. Next, run `/setup-matt-pocock-skills` to wire up your issue tracker and triage labels.
-3. Run `bun run check` to verify linting, types, build, and tests.
+- Repository: https://github.com/trajectonomics/docs
+- Package: `@trajectonomics/docs`

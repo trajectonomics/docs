@@ -1,23 +1,29 @@
-# Domain Glossary
+# Trajectonomics Docs
 
-Ubiquitous language for this repository. Every concept named here has an exact definition that code, tests, commit messages, and PR titles must use. Synonyms in a diff are defects.
+The public documentation portal for the Trajectonomics ecosystem, written for two audiences and served under `trajectonomics.com/docs`.
 
-## Template Guide
+## Language
 
-When instantiating a new repository from this template:
-1. Define your core domain entities, value objects, and states below.
-2. In single-context repositories, maintain this single `GLOSSARY.md` at repo root.
-3. In multi-context repositories, place `GLOSSARY-MAP.md` at root pointing to each sub-context's `GLOSSARY.md`.
+**Docs Portal**:
+The public documentation site for Trajectonomics. Everything in it is public; nothing about private infrastructure appears.
+_Avoid_: Docs site, developer portal, wiki
 
----
+**Operator**:
+A person who installs and runs the Trajectonomics CLI.
+_Avoid_: User, end user, customer
 
-## Core Terms
+**Builder**:
+A person who builds on Trajectonomics packages or contributes to them.
+_Avoid_: Developer, consumer, contributor
 
-### Invariant
-A rule or condition that must hold true at all times across all state transitions within this system.
+**Tab**:
+A top-level section of the Docs Portal addressed to exactly one audience. There are two: the Operator tab (CLI and quickstart) and the Builder tab (build on Trajectonomics).
+_Avoid_: Section, category, track
 
-### Pure Core
-The isolated domain logic of a package that executes deterministically without I/O, network calls, filesystem access, system clock dependencies, or global mutable state.
+**Upstream Package**:
+A Trajectonomics repository whose releases the Docs Portal documents: `cli`, `sim-core`, `ledger-core`, `tax-core` and `design-system`.
+_Avoid_: Dependency, upstream repo
 
-### Error Code
-A strictly typed, distinct machine-readable identifier assigned to every rejection rule across the package API.
+**Docs Sync**:
+The automated proposal of Docs Portal edits after an Upstream Package release. It only proposes; a human reviews every change before it lands.
+_Avoid_: Auto-update, docs bot
