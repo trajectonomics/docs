@@ -1,7 +1,7 @@
 # Coding Standards
 
 Read at **review** time. `bun run check` already enforces the mechanical rules (formatting, strict
-types, tests, build, package shape). This file covers what it cannot: the conventions a reviewer
+types, tests, build). This file covers what it cannot: the conventions a reviewer
 must check by reading the diff.
 
 Decisions behind the API live in `docs/adr/`; vocabulary lives in `GLOSSARY.md`.
