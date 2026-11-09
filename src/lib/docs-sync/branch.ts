@@ -15,7 +15,7 @@ export function syncBranchName(upstreamPackage: UpstreamPackageName, tag: string
 	const unsafe = !REF_SAFE_TAG.test(tag) || tag.endsWith(".") || tag.endsWith(".lock")
 	if (unsafe) {
 		throw new DocsSyncError(
-			"BRANCH_NAME_INVALID",
+			"TAG_NOT_REF_SAFE",
 			`tag ${JSON.stringify(tag)} cannot be part of a branch name`,
 			"tag",
 		)

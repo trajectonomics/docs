@@ -26,6 +26,7 @@ const RELEASE: UpstreamRelease = {
 	repository: "trajectonomics/cli",
 	tag: "v0.2.0",
 	commitSha: "a1b2c3d",
+	documentationPaths: [],
 	changelog: CHANGELOG,
 }
 

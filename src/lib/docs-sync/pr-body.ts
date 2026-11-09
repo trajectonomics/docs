@@ -42,6 +42,22 @@ function provenanceLines(input: DraftPullRequestBodyInput): string[] {
 	]
 }
 
+function upstreamDocumentationLines(input: DraftPullRequestBodyInput): string[] {
+	const paths = input.release.documentationPaths
+	if (paths.length === 0) {
+		return []
+	}
+	const base = `https://github.com/${upstreamRepository(input.target.upstreamPackage)}/blob/${input.release.tag}`
+	return [
+		"## Upstream documentation at this tag",
+		"",
+		...paths.map((path) => `- [\`${path}\`](${base}/${path})`),
+		"",
+		"Linked, never copied: the portal is written here, for Operators and Builders.",
+		"",
+	]
+}
+
 function checklistLines(input: DraftPullRequestBodyInput): string[] {
 	const audience = `${input.target.audience}s`
 	return [
@@ -68,6 +84,7 @@ export function renderDraftPullRequestBody(input: DraftPullRequestBodyInput): st
 		"",
 		...changes.map((change) => `- \`${change.path}\` (${change.action})`),
 		"",
+		...upstreamDocumentationLines(input),
 		"## Release notes",
 		"",
 		excerptOf(target, release),

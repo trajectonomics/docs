@@ -31,6 +31,8 @@ export interface UpstreamRelease {
 	readonly tag: string
 	readonly commitSha: string
 	readonly changelog: string
+	/** Documentation files that exist in the upstream repository at that tag. */
+	readonly documentationPaths: readonly string[]
 }
 
 /** An open, or reused, draft pull request that proposes the documentation edits. */

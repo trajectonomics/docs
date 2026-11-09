@@ -2,7 +2,13 @@ import type { UpstreamReader } from "../../src/lib/docs-sync/deps"
 import { DocsSyncError } from "../../src/lib/docs-sync/errors"
 import type { UpstreamRelease } from "../../src/lib/docs-sync/types"
 import type { GithubApi } from "./github-api"
-import { stringAt } from "./github-api"
+import { fieldOf, stringAt } from "./github-api"
+
+/** How many upstream documentation paths the proposal carries, to keep the body readable. */
+const DOCUMENTATION_LIMIT = 20
+
+/** Documentation an Upstream Package publishes: `docs/**` and its README. */
+const DOCUMENTATION_PATH = /^(?:readme\.md|docs?\/.*\.mdx?)$/i
 
 function versionNotFound(repository: string, tag: string): DocsSyncError {
 	return new DocsSyncError(
@@ -32,9 +38,40 @@ async function commitShaOf(api: GithubApi, repository: string, tag: string): Pro
 	return sha
 }
 
+function filePathOf(node: unknown): string | undefined {
+	return stringAt(node, "type") === "file" ? stringAt(node, "path") : undefined
+}
+
+/**
+ * The documentation files that exist in the upstream repository at the tag. Their text is never
+ * copied: the portal links them, because upstream writes for contributors, not for Operators.
+ */
+async function documentationPathsOf(
+	api: GithubApi,
+	repository: string,
+	tag: string,
+): Promise<readonly string[]> {
+	const response = await api.request({
+		path: `/repos/${repository}/git/trees/${tag}?recursive=1`,
+	})
+	if (!response.ok) {
+		throw readFailed(repository, tag, `tree lookup answered ${response.status}`)
+	}
+	const tree = fieldOf(response.body, "tree")
+	if (!Array.isArray(tree)) {
+		throw readFailed(repository, tag, "the tree listing is missing")
+	}
+	return tree
+		.map(filePathOf)
+		.filter((path): path is string => path !== undefined && DOCUMENTATION_PATH.test(path))
+		.sort()
+		.slice(0, DOCUMENTATION_LIMIT)
+}
+
 /**
  * Read an Upstream Package at exactly the released tag: the release notes GitHub holds for that
- * tag, and the commit it points at. Nothing is ever read from the default branch.
+ * tag, the commit it points at, and the documentation files that exist there. Nothing is ever
+ * read from the default branch.
  */
 export function createGithubUpstreamReader(api: GithubApi): UpstreamReader {
 	return {
@@ -53,6 +90,7 @@ export function createGithubUpstreamReader(api: GithubApi): UpstreamReader {
 				tag,
 				commitSha: await commitShaOf(api, repository, tag),
 				changelog: changelog.trim().length === 0 ? `## ${name}` : changelog,
+				documentationPaths: await documentationPathsOf(api, repository, tag),
 			}
 		},
 	}

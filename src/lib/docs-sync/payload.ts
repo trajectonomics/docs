@@ -45,9 +45,9 @@ function fieldOf(payload: Record<string, unknown>, field: PayloadField): string 
 /** Read the `upstream_release` payload, refusing malformed input before any state changes. */
 export function parseUpstreamReleasePayload(raw: unknown): UpstreamReleasePayload {
 	const payload = asRecord(raw)
-	return {
+	return Object.freeze({
 		repository: fieldOf(payload, "repo"),
 		tag: fieldOf(payload, "tag"),
 		changelog: fieldOf(payload, "changelog"),
-	}
+	})
 }

@@ -28,14 +28,14 @@ describe("Docs Sync branch names", () => {
 
 	test("a tag that cannot sit inside a branch name is refused", () => {
 		expect(refusalOf(() => syncBranchName("cli", "../../main"))).toMatchObject({
-			code: "BRANCH_NAME_INVALID",
+			code: "TAG_NOT_REF_SAFE",
 			field: "tag",
 		})
 		expect(refusalOf(() => syncBranchName("cli", "v0..1"))).toMatchObject({
-			code: "BRANCH_NAME_INVALID",
+			code: "TAG_NOT_REF_SAFE",
 		})
 		expect(refusalOf(() => syncBranchName("cli", "v0 1"))).toMatchObject({
-			code: "BRANCH_NAME_INVALID",
+			code: "TAG_NOT_REF_SAFE",
 		})
 	})
 

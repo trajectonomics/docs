@@ -7,6 +7,7 @@ export type DocsSyncErrorCode =
 	| "MANIFEST_INVALID"
 	| "UPSTREAM_TAG_NOT_FOUND"
 	| "UPSTREAM_READ_FAILED"
+	| "TAG_NOT_REF_SAFE"
 	| "BRANCH_NAME_INVALID"
 	| "PROTECTED_BRANCH"
 	| "GIT_WRITE_FAILED"
@@ -26,6 +27,7 @@ export class DocsSyncError extends Error {
 		this.name = "DocsSyncError"
 		this.code = code
 		this.field = field
+		Object.freeze(this)
 	}
 }
 

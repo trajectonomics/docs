@@ -44,6 +44,15 @@ describe("Docs Sync", () => {
 		expect(files[1]?.content).toContain('"lastSyncedAt": "2026-03-01T00:00:00.000Z"')
 	})
 
+	test("a second commit records the pull request number in the manifest", async () => {
+		const fake = createFakeDeps({ manifest: MANIFEST })
+		await runDocsSync(FAKE_EVENT, fake.deps)
+
+		const recorded = fake.commits[1]?.files ?? []
+		expect(recorded.map((file) => file.path)).toEqual(["docs-sync-manifest.json"])
+		expect(recorded[0]?.content).toContain('"prNumber": 42')
+	})
+
 	test("the pull request title is a conventional commit and the body carries the context", async () => {
 		const fake = createFakeDeps({ manifest: MANIFEST })
 		await runDocsSync(FAKE_EVENT, fake.deps)

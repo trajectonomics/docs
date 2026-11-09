@@ -81,16 +81,25 @@ describe("sync manifest", () => {
 		expect(Object.isFrozen(after)).toBe(true)
 	})
 
-	test("a manifest outside the schema is refused, naming the path that is wrong", () => {
+	test("a manifest that is not JSON is refused", () => {
 		expect(refusalOf("{")).toMatchObject({ code: "MANIFEST_INVALID" })
+	})
+
+	test("a manifest of an unknown version is refused, naming version", () => {
 		expect(refusalOf('{"version":2,"packages":{}}')).toMatchObject({
 			code: "MANIFEST_INVALID",
 			field: "version",
 		})
+	})
+
+	test("an entry keyed by a repository that is not an Upstream Package is refused", () => {
 		expect(refusalOf('{"version":1,"packages":{"docs":{}}}')).toMatchObject({
 			code: "MANIFEST_INVALID",
 			field: "packages.docs",
 		})
+	})
+
+	test("an entry with no lastSyncedTag is refused, naming the path that is wrong", () => {
 		expect(refusalOf('{"version":1,"packages":{"cli":{"lastSyncedAt":"2026"}}}')).toMatchObject({
 			code: "MANIFEST_INVALID",
 			field: "packages.cli.lastSyncedTag",

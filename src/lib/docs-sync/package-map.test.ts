@@ -42,4 +42,10 @@ describe("Upstream Package mapping", () => {
 		expect(refusal.code).toBe("PACKAGE_UNSUPPORTED")
 		expect(refusal.field).toBe("repo")
 	})
+
+	test("a look-alike repository from another owner is refused", () => {
+		expect(() => resolvePackageTarget("evil-org/cli")).toThrow(DocsSyncError)
+		expect(() => resolvePackageTarget("trajectonomics/cli/extra")).toThrow(DocsSyncError)
+		expect(() => resolvePackageTarget("evil-org/cli")).toThrow(/not an Upstream Package/)
+	})
 })

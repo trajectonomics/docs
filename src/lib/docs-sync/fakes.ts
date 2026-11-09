@@ -1,7 +1,8 @@
 import type { DocsSyncDeps } from "./deps"
-import type { CommitProposalInput, OpenDraftPullRequestInput } from "./git-client"
+import { createFakeGitClient, createFakeLogger, type FakeGitRecord } from "./fake-git"
 import type { SyncManifest } from "./manifest"
 import { EMPTY_SYNC_MANIFEST } from "./manifest"
+import type { ProposalSynthesizer } from "./proposal"
 import type { DocChange, PortalFile, UpstreamRelease } from "./types"
 
 /** A release that is ready to be proposed, for tests that do not need a release of their own. */
@@ -10,6 +11,7 @@ export const FAKE_RELEASE: UpstreamRelease = {
 	tag: "v0.2.0",
 	commitSha: "a1b2c3d4",
 	changelog: "### Added\n\n- `ledger accounts` lists accounts\n",
+	documentationPaths: [],
 }
 
 /** A dispatch payload for that release. */
@@ -20,13 +22,11 @@ export const FAKE_EVENT: Readonly<Record<string, string>> = {
 }
 
 /** What an in-memory run recorded, so a test can assert on the effects Docs Sync had. */
-export interface FakeDepsRecord {
+export interface FakeDepsRecord extends FakeGitRecord {
 	readonly deps: DocsSyncDeps
-	readonly calls: string[]
-	readonly commits: CommitProposalInput[]
-	readonly pullRequests: OpenDraftPullRequestInput[]
-	readonly upstreamReads: { readonly repository: string; readonly tag: string }[]
-	readonly errors: string[]
+	readonly upstreamReads: readonly { readonly repository: string; readonly tag: string }[]
+	readonly messages: readonly string[]
+	readonly errors: readonly string[]
 }
 
 export interface FakeDepsOptions {
@@ -34,6 +34,7 @@ export interface FakeDepsOptions {
 	readonly release?: UpstreamRelease | Error
 	readonly docs?: readonly PortalFile[]
 	readonly changes?: readonly DocChange[]
+	readonly proposalSynthesizer?: ProposalSynthesizer
 	readonly nowIso?: string
 }
 
@@ -43,13 +44,26 @@ const DEFAULT_CHANGE: DocChange = {
 	content: "proposed page",
 }
 
+/** A synthesizer that proposes one fixed change, for runs that are not about synthesis. */
+export function createFakeSynthesizer(
+	changes: readonly DocChange[],
+	calls: string[],
+): ProposalSynthesizer {
+	return {
+		async synthesize(): Promise<readonly DocChange[]> {
+			calls.push("proposal.synthesize")
+			return changes
+		},
+	}
+}
+
 /** Docs Sync over in-memory adapters: no network, no filesystem, no clock. */
 export function createFakeDeps(options: FakeDepsOptions = {}): FakeDepsRecord {
 	const calls: string[] = []
-	const commits: CommitProposalInput[] = []
-	const pullRequests: OpenDraftPullRequestInput[] = []
 	const upstreamReads: { readonly repository: string; readonly tag: string }[] = []
+	const messages: string[] = []
 	const errors: string[] = []
+	const git = { calls, branches: [] as string[], commits: [], pullRequests: [] }
 	const deps: DocsSyncDeps = {
 		manifestStore: {
 			async read(): Promise<SyncManifest> {
@@ -74,34 +88,12 @@ export function createFakeDeps(options: FakeDepsOptions = {}): FakeDepsRecord {
 				return options.docs ?? []
 			},
 		},
-		proposalSynthesizer: {
-			async synthesize(): Promise<readonly DocChange[]> {
-				calls.push("proposal.synthesize")
-				return options.changes ?? [DEFAULT_CHANGE]
-			},
-		},
-		gitClient: {
-			async createBranch(input): Promise<void> {
-				calls.push(`git.createBranch:${input.branch}`)
-			},
-			async commit(input): Promise<{ readonly commitSha: string }> {
-				calls.push(`git.commit:${input.branch}`)
-				commits.push(input)
-				return { commitSha: "feedface" }
-			},
-			async openOrUpdateDraftPullRequest(input) {
-				calls.push("git.openOrUpdateDraftPullRequest")
-				pullRequests.push(input)
-				return { number: 42, url: "https://github.com/trajectonomics/docs/pull/42" }
-			},
-		},
-		logger: {
-			info(): void {},
-			error(message: string): void {
-				errors.push(message)
-			},
-		},
+		proposalSynthesizer:
+			options.proposalSynthesizer ??
+			createFakeSynthesizer(options.changes ?? [DEFAULT_CHANGE], calls),
+		gitClient: createFakeGitClient(git),
+		logger: createFakeLogger(messages, errors),
 		now: (): string => options.nowIso ?? "2026-03-01T00:00:00.000Z",
 	}
-	return { deps, calls, commits, pullRequests, upstreamReads, errors }
+	return { deps, ...git, upstreamReads, messages, errors }
 }

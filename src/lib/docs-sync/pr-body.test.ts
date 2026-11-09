@@ -8,6 +8,7 @@ const RELEASE: UpstreamRelease = {
 	repository: "trajectonomics/cli",
 	tag: "v0.2.0",
 	commitSha: "a1b2c3d4",
+	documentationPaths: [],
 	changelog: "### Added\n\n- `ledger accounts` lists accounts\n",
 }
 const CHANGES: readonly DocChange[] = [
@@ -44,6 +45,25 @@ describe("draft pull request body", () => {
 		expect(BODY).toMatch(/written for Operators/)
 		expect(BODY).toMatch(/Only the latest release/)
 		expect(BODY).toMatch(/linked to GitHub, never copied/)
+	})
+
+	test("the upstream documentation that exists at the tag is linked, never copied", () => {
+		const body = renderDraftPullRequestBody({
+			target: CLI,
+			release: { ...RELEASE, documentationPaths: ["README.md", "docs/quickstart.md"] },
+			changes: CHANGES,
+			previousTag: "v0.1.0",
+		})
+
+		expect(body).toContain("## Upstream documentation at this tag")
+		expect(body).toContain(
+			"- [`docs/quickstart.md`](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/quickstart.md)",
+		)
+		expect(body).toContain("Linked, never copied")
+	})
+
+	test("a release with no upstream documentation says nothing about it", () => {
+		expect(BODY).not.toContain("Upstream documentation")
 	})
 
 	test("with no earlier tag there is nothing to compare, so no comparison link", () => {

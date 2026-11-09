@@ -25,6 +25,16 @@ function git(repoRoot: string, args: readonly string[]): string {
 	return result.stdout.toString().trim()
 }
 
+/** Whether the index has nothing to commit, which makes a second write a no-op. */
+function isStagedClean(repoRoot: string): boolean {
+	const result = Bun.spawnSync(["git", "diff", "--cached", "--quiet"], {
+		cwd: repoRoot,
+		stdout: "pipe",
+		stderr: "pipe",
+	})
+	return result.exitCode === 0
+}
+
 /** `main` when the checkout has it, `origin/main` otherwise; a tag alone is never a base. */
 function baseRefOf(repoRoot: string, base: string): string {
 	for (const candidate of [base, `origin/${base}`]) {
@@ -62,6 +72,9 @@ export function createGithubGitClient(options: {
 				await Bun.write(path, file.content)
 			}
 			git(repoRoot, ["add", "--", ...input.files.map((file) => file.path)])
+			if (isStagedClean(repoRoot)) {
+				return { commitSha: git(repoRoot, ["rev-parse", "HEAD"]) }
+			}
 			git(repoRoot, [...COMMIT_IDENTITY, "commit", "--message", input.message])
 			git(repoRoot, ["push", "--force-with-lease", "origin", input.branch])
 			return { commitSha: git(repoRoot, ["rev-parse", "HEAD"]) }

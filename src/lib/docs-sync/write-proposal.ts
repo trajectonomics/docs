@@ -36,12 +36,13 @@ function manifestChange(manifest: SyncManifest): DocChange {
  */
 export async function writeProposal(input: WriteProposalInput): Promise<SyncResult> {
 	const { deps, target, release, previousTag } = input
+	const syncedAt = deps.now()
 	const files: readonly DocChange[] = [
 		...input.changes,
 		manifestChange(
 			withSyncedPackage(input.manifest, target.upstreamPackage, {
 				lastSyncedTag: release.tag,
-				lastSyncedAt: deps.now(),
+				lastSyncedAt: syncedAt,
 			}),
 		),
 	]
@@ -57,6 +58,19 @@ export async function writeProposal(input: WriteProposalInput): Promise<SyncResu
 		branch,
 		title: titleOf(target, release.tag),
 		body: renderDraftPullRequestBody({ target, release, changes: files, previousTag }),
+	})
+	await deps.gitClient.commit({
+		branch,
+		message: `chore: record pull request #${pullRequest.number} for ${release.tag}`,
+		files: [
+			manifestChange(
+				withSyncedPackage(input.manifest, target.upstreamPackage, {
+					lastSyncedTag: release.tag,
+					lastSyncedAt: syncedAt,
+					prNumber: pullRequest.number,
+				}),
+			),
+		],
 	})
 	deps.logger.info("opened a draft pull request", {
 		upstreamPackage: target.upstreamPackage,

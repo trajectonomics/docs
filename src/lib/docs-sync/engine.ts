@@ -4,6 +4,7 @@ import { isAlreadySynced, manifestEntry } from "./manifest"
 import { resolvePackageTarget } from "./package-map"
 import { parseUpstreamReleasePayload } from "./payload"
 import type { PackageTarget, SyncResult, UpstreamRelease } from "./types"
+import { upstreamRepository } from "./upstream-urls"
 import { writeProposal } from "./write-proposal"
 
 /** A skip, logged so a CI run says why it did nothing. */
@@ -51,7 +52,8 @@ export async function runDocsSync(event: unknown, deps: DocsSyncDeps): Promise<S
 	if (isAlreadySynced(previous, payload.tag)) {
 		return skip(deps, target, payload.tag, "already-synced", "already synced, nothing to propose")
 	}
-	const release = await readRelease(deps, payload.repository, payload.tag)
+	const repository = upstreamRepository(target.upstreamPackage)
+	const release = await readRelease(deps, repository, payload.tag)
 	const existingDocs = await deps.docsContentStore.list(target.contentDir)
 	const changes = await deps.proposalSynthesizer.synthesize({ target, release, existingDocs })
 	if (changes.length === 0) {

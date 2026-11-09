@@ -24,11 +24,14 @@ async function refusalOf(event: unknown, release?: Error): Promise<DocsSyncError
 }
 
 describe("Docs Sync failures", () => {
-	test("a malformed payload is refused before anything is read", async () => {
+	test("a payload without a repository is refused before anything is read", async () => {
 		expect(await refusalOf({ tag: "v0.2.0", changelog: "- x" })).toMatchObject({
 			code: "PAYLOAD_FIELD_MISSING",
 			field: "repo",
 		})
+	})
+
+	test("a payload that is not an object is refused", async () => {
 		expect(await refusalOf("upstream_release")).toMatchObject({ code: "PAYLOAD_NOT_OBJECT" })
 	})
 
