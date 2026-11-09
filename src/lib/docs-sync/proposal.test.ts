@@ -6,6 +6,10 @@ import type { PackageTarget, PortalFile, UpstreamRelease } from "./types"
 const CLI = resolvePackageTarget("trajectonomics/cli")
 const SIM_CORE = resolvePackageTarget("trajectonomics/sim-core")
 const RELEASE_URL = "https://github.com/trajectonomics/cli/releases/tag/v0.2.0"
+const TAB_META: PortalFile = {
+	path: "src/content/docs/developers/meta.json",
+	content: '{ "title": "Build on Trajectonomics", "root": true, "pages": ["index"] }\n',
+}
 const CLI_PAGE = `---
 title: CLI & Quickstart
 ---
@@ -51,15 +55,31 @@ describe("documentation proposal", () => {
 		expect(changes[0]?.content).toContain(`[the v0.2.0 release](${RELEASE_URL})`)
 	})
 
-	test("the first release of a core engine creates its page and the folder metadata", async () => {
-		const changes = await propose(SIM_CORE, [])
+	test("the first release of a core engine creates its page, its folder metadata and its Tab listing", async () => {
+		const changes = await propose(SIM_CORE, [TAB_META])
+		expect(changes.map((change) => change.path)).toEqual([
+			"src/content/docs/developers/sim-core/index.mdx",
+			"src/content/docs/developers/sim-core/meta.json",
+			"src/content/docs/developers/meta.json",
+		])
+		expect(changes.map((change) => change.action)).toEqual(["create", "create", "update"])
+		expect(changes[0]?.content).toStartWith("---\ntitle: sim-core release notes\n")
+		expect(changes[1]?.content).toBe('{\n\t"title": "sim-core",\n\t"pages": ["index"]\n}\n')
+		expect(changes[2]?.content).toBe(
+			'{ "title": "Build on Trajectonomics", "root": true, "pages": ["index", "sim-core"] }\n',
+		)
+	})
+
+	test("a folder the Tab already lists needs no Tab metadata change", async () => {
+		const listed: PortalFile = {
+			path: "src/content/docs/developers/meta.json",
+			content: '{ "pages": ["index", "sim-core"] }\n',
+		}
+		const changes = await propose(SIM_CORE, [listed])
 		expect(changes.map((change) => change.path)).toEqual([
 			"src/content/docs/developers/sim-core/index.mdx",
 			"src/content/docs/developers/sim-core/meta.json",
 		])
-		expect(changes.map((change) => change.action)).toEqual(["create", "create"])
-		expect(changes[0]?.content).toStartWith("---\ntitle: sim-core release notes\n")
-		expect(changes[1]?.content).toBe('{\n\t"title": "sim-core",\n\t"pages": ["index"]\n}\n')
 	})
 
 	test("a release entry the authored docs already cover is not repeated", async () => {

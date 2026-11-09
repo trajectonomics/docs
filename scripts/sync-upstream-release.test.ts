@@ -78,6 +78,7 @@ describe("sync-upstream-release CLI", () => {
 
 		const files = fake.commits[0]?.files ?? []
 		expect(files[0]?.content).toContain("## Latest release: v0.2.0")
+		expect(files[0]?.content).toContain("`ledger accounts` lists accounts")
 		expect(files[0]?.content).toContain(CLI_PAGE)
 		expect(files[1]?.content).toContain('"lastSyncedTag": "v0.2.0"')
 		expect(fake.commits[1]?.files[0]?.content).toContain('"prNumber": 42')

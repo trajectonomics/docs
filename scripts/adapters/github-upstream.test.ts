@@ -19,11 +19,6 @@ function fakeApi(route: (path: string) => GithubResponse): {
 	}
 }
 
-const RELEASE: GithubResponse = {
-	ok: true,
-	body: { name: "v0.2.0", body: "### Added\n\n- `ledger accounts` lists accounts" },
-}
-
 const TREE: GithubResponse = {
 	ok: true,
 	body: {
@@ -42,21 +37,24 @@ function routeFor(path: string): GithubResponse {
 	if (path.includes("/git/trees/")) {
 		return TREE
 	}
-	return path.endsWith("/commits/v0.2.0") ? { ok: true, body: { sha: "a1b2c3d4" } } : RELEASE
+	return { ok: true, body: { sha: "a1b2c3d4" } }
+}
+
+const INPUT = {
+	repository: "trajectonomics/cli",
+	tag: "v0.2.0",
+	changelog: "### Added\n\n- `ledger accounts` lists accounts",
 }
 
 describe("GitHub upstream reader", () => {
-	test("it reads the release notes, the commit, and the docs that exist at the tag", async () => {
-		const release = await createGithubUpstreamReader(fakeApi(routeFor).api).readAtTag({
-			repository: "trajectonomics/cli",
-			tag: "v0.2.0",
-		})
+	test("it reads the commit and the docs that exist at the tag", async () => {
+		const release = await createGithubUpstreamReader(fakeApi(routeFor).api).readAtTag(INPUT)
 
 		expect(release).toEqual({
 			repository: "trajectonomics/cli",
 			tag: "v0.2.0",
 			commitSha: "a1b2c3d4",
-			changelog: "### Added\n\n- `ledger accounts` lists accounts",
+			changelog: INPUT.changelog,
 			documentationPaths: [
 				"README.md",
 				"docs/adr/0004-balance.md",
@@ -68,22 +66,26 @@ describe("GitHub upstream reader", () => {
 
 	test("every read names the tag, never a branch", async () => {
 		const fake = fakeApi(routeFor)
-		await createGithubUpstreamReader(fake.api).readAtTag({
-			repository: "trajectonomics/cli",
-			tag: "v0.2.0",
-		})
+		await createGithubUpstreamReader(fake.api).readAtTag(INPUT)
 
 		expect(fake.paths).toEqual([
-			"/repos/trajectonomics/cli/releases/tags/v0.2.0",
 			"/repos/trajectonomics/cli/commits/v0.2.0",
 			"/repos/trajectonomics/cli/git/trees/v0.2.0?recursive=1",
 		])
 	})
 
+	test("the notes the dispatch carried are the notes of the release", async () => {
+		const release = await createGithubUpstreamReader(fakeApi(routeFor).api).readAtTag({
+			...INPUT,
+			changelog: "- only the dispatch knows this",
+		})
+		expect(release.changelog).toBe("- only the dispatch knows this")
+	})
+
 	test("a tag that upstream does not have is reported as a missing tag", async () => {
 		const fake = fakeApi(() => ({ ok: false, status: 404, text: "Not Found" }))
 		const error = await createGithubUpstreamReader(fake.api)
-			.readAtTag({ repository: "trajectonomics/cli", tag: "v9.9.9" })
+			.readAtTag({ ...INPUT, tag: "v9.9.9" })
 			.catch((thrown: unknown) => thrown)
 
 		expect(error).toBeInstanceOf(DocsSyncError)
@@ -91,10 +93,10 @@ describe("GitHub upstream reader", () => {
 		expect(fake.paths).toHaveLength(1)
 	})
 
-	test("a release read that fails for another reason is reported as a read failure", async () => {
+	test("a commit read that fails for another reason is reported as a read failure", async () => {
 		const fake = fakeApi(() => ({ ok: false, status: 503, text: "unavailable" }))
 		const error = await createGithubUpstreamReader(fake.api)
-			.readAtTag({ repository: "trajectonomics/cli", tag: "v0.2.0" })
+			.readAtTag(INPUT)
 			.catch((thrown: unknown) => thrown)
 
 		expect((error as DocsSyncError).code).toBe("UPSTREAM_READ_FAILED")
@@ -106,22 +108,9 @@ describe("GitHub upstream reader", () => {
 			path.includes("/git/trees/") ? { ok: false, status: 500, text: "boom" } : routeFor(path),
 		)
 		const error = await createGithubUpstreamReader(fake.api)
-			.readAtTag({ repository: "trajectonomics/cli", tag: "v0.2.0" })
+			.readAtTag(INPUT)
 			.catch((thrown: unknown) => thrown)
 
 		expect((error as DocsSyncError).code).toBe("UPSTREAM_READ_FAILED")
-	})
-
-	test("a release with no notes still says what was released", async () => {
-		const fake = fakeApi((path) =>
-			path.includes("/releases/")
-				? { ok: true, body: { name: "v0.2.0", body: "  " } }
-				: routeFor(path),
-		)
-		const release = await createGithubUpstreamReader(fake.api).readAtTag({
-			repository: "trajectonomics/cli",
-			tag: "v0.2.0",
-		})
-		expect(release.changelog).toBe("## v0.2.0")
 	})
 })

@@ -24,9 +24,10 @@ async function readRelease(
 	deps: DocsSyncDeps,
 	repository: string,
 	tag: string,
+	changelog: string,
 ): Promise<UpstreamRelease> {
 	try {
-		return await deps.upstreamReader.readAtTag({ repository, tag })
+		return await deps.upstreamReader.readAtTag({ repository, tag, changelog })
 	} catch (error) {
 		deps.logger.error(`could not read ${repository} at ${tag}`, { reason: describeError(error) })
 		if (error instanceof DocsSyncError) {
@@ -53,7 +54,7 @@ export async function runDocsSync(event: unknown, deps: DocsSyncDeps): Promise<S
 		return skip(deps, target, payload.tag, "already-synced", "already synced, nothing to propose")
 	}
 	const repository = upstreamRepository(target.upstreamPackage)
-	const release = await readRelease(deps, repository, payload.tag)
+	const release = await readRelease(deps, repository, payload.tag, payload.changelog)
 	const existingDocs = await deps.docsContentStore.list(target.contentDir)
 	const changes = await deps.proposalSynthesizer.synthesize({ target, release, existingDocs })
 	if (changes.length === 0) {

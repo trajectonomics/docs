@@ -10,6 +10,7 @@ const DOCUMENTATION_LIMIT = 20
 /** Documentation an Upstream Package publishes: `docs/**` and its README. */
 const DOCUMENTATION_PATH = /^(?:readme\.md|docs?\/.*\.mdx?)$/i
 
+/** A tag the upstream repository does not have, which is a refusal and not a retry. */
 function versionNotFound(repository: string, tag: string): DocsSyncError {
 	return new DocsSyncError(
 		"UPSTREAM_TAG_NOT_FOUND",
@@ -28,6 +29,9 @@ function readFailed(repository: string, tag: string, reason: string): DocsSyncEr
 /** The commit a tag points at, so the draft pull request can name it. */
 async function commitShaOf(api: GithubApi, repository: string, tag: string): Promise<string> {
 	const response = await api.request({ path: `/repos/${repository}/commits/${tag}` })
+	if (!response.ok && response.status === 404) {
+		throw versionNotFound(repository, tag)
+	}
 	if (!response.ok) {
 		throw readFailed(repository, tag, `commit lookup answered ${response.status}`)
 	}
@@ -69,27 +73,19 @@ async function documentationPathsOf(
 }
 
 /**
- * Read an Upstream Package at exactly the released tag: the release notes GitHub holds for that
- * tag, the commit it points at, and the documentation files that exist there. Nothing is ever
- * read from the default branch.
+ * Read an Upstream Package at exactly the released tag: the commit it points at, and the
+ * documentation files that exist there. The release notes come from the dispatch, because the
+ * payload is the contract cicd publishes; nothing is ever read from the default branch.
  */
 export function createGithubUpstreamReader(api: GithubApi): UpstreamReader {
 	return {
 		async readAtTag(input): Promise<UpstreamRelease> {
-			const { repository, tag } = input
-			const response = await api.request({ path: `/repos/${repository}/releases/tags/${tag}` })
-			if (!response.ok) {
-				throw response.status === 404
-					? versionNotFound(repository, tag)
-					: readFailed(repository, tag, `the release answered ${response.status}`)
-			}
-			const changelog = stringAt(response.body, "body") ?? ""
-			const name = stringAt(response.body, "name") ?? tag
+			const { repository, tag, changelog } = input
 			return {
 				repository,
 				tag,
 				commitSha: await commitShaOf(api, repository, tag),
-				changelog: changelog.trim().length === 0 ? `## ${name}` : changelog,
+				changelog,
 				documentationPaths: await documentationPathsOf(api, repository, tag),
 			}
 		},

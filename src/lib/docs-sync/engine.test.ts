@@ -92,11 +92,21 @@ describe("Docs Sync", () => {
 		expect(fake.calls.some((call) => call.startsWith("git."))).toBe(false)
 	})
 
+	test("the notes the dispatch carried are the notes the proposal shows", async () => {
+		const fake = createFakeDeps()
+		await runDocsSync(
+			{ ...FAKE_EVENT, changelog: "- a dispatch note only the dispatch has" },
+			fake.deps,
+		)
+
+		expect(fake.pullRequests[0]?.body).toContain("a dispatch note only the dispatch has")
+	})
+
 	test("the release is read at the released tag, not at the default branch", async () => {
 		const fake = createFakeDeps({ release: { ...FAKE_RELEASE, tag: "v9.9.9" } })
 		await runDocsSync({ ...FAKE_EVENT, tag: "v9.9.9" }, fake.deps)
 
-		expect(fake.upstreamReads).toEqual([{ repository: "trajectonomics/cli", tag: "v9.9.9" }])
+		expect(fake.upstreamReads).toMatchObject([{ repository: "trajectonomics/cli", tag: "v9.9.9" }])
 		expect(fake.commits[0]?.branch).toBe("docs-sync/cli/v9.9.9")
 	})
 })

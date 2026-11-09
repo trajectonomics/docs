@@ -10,7 +10,12 @@ export interface SyncManifestStore {
 
 /** Reads an Upstream Package at the released tag, never at its default branch. */
 export interface UpstreamReader {
-	readAtTag(input: { readonly repository: string; readonly tag: string }): Promise<UpstreamRelease>
+	readAtTag(input: {
+		readonly repository: string
+		readonly tag: string
+		/** The notes the dispatch carried: they are the changelog Docs Sync proposes from. */
+		readonly changelog: string
+	}): Promise<UpstreamRelease>
 }
 
 /** Reads the Docs Portal files that exist under one Tab folder. */

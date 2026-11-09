@@ -1,13 +1,13 @@
 import { rewriteUpstreamAdrLinks } from "./adr-links"
 import type { ChangelogEntry } from "./changelog"
 import { parseChangelog } from "./changelog"
+import { newMeta, newPage, parentMetaChange } from "./portal-files"
 import { renderReleaseBlock, stripReleaseBlock, upsertReleaseBlock } from "./release-block"
 import type { DocChange, PackageTarget, PortalFile, UpstreamRelease } from "./types"
 import { upstreamReleaseUrl, upstreamRepository } from "./upstream-urls"
 
 /** The page Docs Sync writes inside a package's folder. */
-const PAGE_ID = "index"
-const PAGE_FILE = `${PAGE_ID}.mdx`
+const PAGE_FILE = "index.mdx"
 /** The Fumadocs folder metadata, written only when the folder is new. */
 const META_FILE = "meta.json"
 
@@ -27,18 +27,6 @@ function normalize(text: string): string {
 	return text.replace(/\s+/g, " ").trim().toLowerCase()
 }
 
-/** A page the portal does not have yet, titled for the package it documents. */
-function newPage(target: PackageTarget, release: UpstreamRelease): string {
-	const description = `What changed in ${target.upstreamPackage} at ${release.tag}.`
-	const title = `${target.upstreamPackage} release notes`
-	return `---\ntitle: ${title}\ndescription: ${description}\n---\n`
-}
-
-/** The folder metadata Fumadocs needs before a new package folder shows up in the Builder tab. */
-function newMeta(target: PackageTarget): string {
-	return `{\n\t"title": "${target.upstreamPackage}",\n\t"pages": ["${PAGE_ID}"]\n}\n`
-}
-
 /** The release notes as entries, with upstream ADRs linked instead of copied. */
 function releaseEntries(
 	target: PackageTarget,
@@ -51,7 +39,7 @@ function releaseEntries(
 	}))
 }
 
-/** The edits that put the release's notes on the package's page, and the folder around it. */
+/** The edits that put the release's notes on the package's page, and the folders around it. */
 export function createProposalSynthesizer(): ProposalSynthesizer {
 	return {
 		async synthesize(input: ProposalInput): Promise<readonly DocChange[]> {
@@ -76,11 +64,23 @@ export function createProposalSynthesizer(): ProposalSynthesizer {
 			const changes: DocChange[] = [
 				{ path: pagePath, action: page === undefined ? "create" : "update", content },
 			]
-			const metaPath = `${target.contentDir}/${META_FILE}`
-			if (page === undefined && !existingDocs.some((file) => file.path === metaPath)) {
-				changes.push({ path: metaPath, action: "create", content: newMeta(target) })
+			if (page === undefined) {
+				changes.push(...newFolderChanges(target, existingDocs))
 			}
 			return changes
 		},
 	}
+}
+
+/** The metadata a brand-new package folder needs: its own, and its Tab's listing. */
+function newFolderChanges(
+	target: PackageTarget,
+	existingDocs: readonly PortalFile[],
+): readonly DocChange[] {
+	const metaPath = `${target.contentDir}/${META_FILE}`
+	const ownMeta = existingDocs.some((file) => file.path === metaPath)
+		? []
+		: [{ path: metaPath, action: "create" as const, content: newMeta(target) }]
+	const listed = parentMetaChange(target, existingDocs)
+	return listed === null ? ownMeta : [...ownMeta, listed]
 }

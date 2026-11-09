@@ -39,16 +39,24 @@ describe("Docs Sync branch names", () => {
 		})
 	})
 
-	test("Docs Sync only writes docs-sync branches and never the default branch", () => {
+	test("a docs-sync branch passes the write guard", () => {
 		expect(() => assertSyncBranch("docs-sync/cli/v0.1.0")).not.toThrow()
+	})
+
+	test("the default branch is never written, however it is spelled", () => {
 		expect(refusalOf(() => assertSyncBranch(MAIN_BRANCH))).toMatchObject({
 			code: "PROTECTED_BRANCH",
+			field: "branch",
 		})
 		expect(refusalOf(() => assertSyncBranch("refs/heads/main"))).toMatchObject({
 			code: "PROTECTED_BRANCH",
 		})
+	})
+
+	test("a branch outside the docs-sync prefix is refused", () => {
 		expect(refusalOf(() => assertSyncBranch("factory/12-docs-sync"))).toMatchObject({
 			code: "BRANCH_NAME_INVALID",
+			field: "branch",
 		})
 	})
 })

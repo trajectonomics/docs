@@ -79,7 +79,12 @@ export function createFakeDeps(options: FakeDepsOptions = {}): FakeDepsRecord {
 				if (release instanceof Error) {
 					throw release
 				}
-				return release
+				return {
+					...release,
+					repository: input.repository,
+					tag: input.tag,
+					changelog: input.changelog,
+				}
 			},
 		},
 		docsContentStore: {
