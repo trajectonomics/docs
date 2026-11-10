@@ -5,6 +5,10 @@
  * Values are the Fumadocs neutral preset, copied here so adopting
  * design-system's `--ds-*` Theme later changes this file only. The exceptions
  * are named where they sit.
+ *
+ * The status colours (`--color-fd-info`, `-warning`, `-error`, `-success`,
+ * `-idea` and `-diff-*`) stay in the preset: they do not vary by theme and
+ * the shell only reads them.
  * See docs/adr/0004-docs-portal-shell.md.
  */
 

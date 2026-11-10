@@ -12,14 +12,32 @@ const DECLARATION = /([-\w]+)\s*:\s*([^;{}]+)(?=[;}])/g
 const COLOUR_LITERAL =
 	/#[\da-f]{3,8}\b|\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|color-mix|light-dark)\s*\(/i
 const COLOUR_REFERENCE = /var\(\s*--color-/i
-const NAMED_COLOUR =
-	/\b(?:aqua|black|blue|fuchsia|gray|grey|green|lime|maroon|navy|olive|orange|purple|red|rebeccapurple|silver|teal|white|yellow)\b/i
 const COLOUR_TOKEN = /^--color-/
+/** Every CSS named colour; `transparent` and `currentColor` carry no palette and are allowed. */
+const NAMED_COLOURS = [
+	"aliceblue antiquewhite aqua aquamarine azure beige bisque black blanchedalmond blue blueviolet",
+	"brown burlywood cadetblue chartreuse chocolate coral cornflowerblue cornsilk crimson cyan darkblue",
+	"darkcyan darkgoldenrod darkgray darkgreen darkgrey darkkhaki darkmagenta darkolivegreen darkorange",
+	"darkorchid darkred darksalmon darkseagreen darkslateblue darkslategray darkslategrey darkturquoise",
+	"darkviolet deeppink deepskyblue dimgray dimgrey dodgerblue firebrick floralwhite forestgreen fuchsia",
+	"gainsboro ghostwhite gold goldenrod gray green greenyellow grey honeydew hotpink indianred indigo",
+	"ivory khaki lavender lavenderblush lawngreen lemonchiffon lightblue lightcoral lightcyan",
+	"lightgoldenrodyellow lightgray lightgreen lightgrey lightpink lightsalmon lightseagreen lightskyblue",
+	"lightslategray lightslategrey lightsteelblue lightyellow lime limegreen linen magenta maroon",
+	"mediumaquamarine mediumblue mediumorchid mediumpurple mediumseagreen mediumslateblue",
+	"mediumspringgreen mediumturquoise mediumvioletred midnightblue mintcream mistyrose moccasin",
+	"navajowhite navy oldlace olive olivedrab orange orangered orchid palegoldenrod palegreen",
+	"paleturquoise palevioletred papayawhip peachpuff peru pink plum powderblue purple rebeccapurple red",
+	"rosybrown royalblue saddlebrown salmon sandybrown seagreen seashell sienna silver skyblue slateblue",
+	"slategray slategrey snow springgreen steelblue tan teal thistle tomato turquoise violet wheat white",
+	"whitesmoke yellow yellowgreen",
+].join(" ")
+const NAMED_COLOUR = new RegExp(`\\b(?:${NAMED_COLOURS.replaceAll(" ", "|")})\\b`, "i")
 const FONT_PROPERTY = /^(?:font|font-family|--(?:default-)?font-[\w-]+)$/i
-const RADIUS_PROPERTY = /^(?:border(?:-[\w-]+)?-radius|--radius-[\w-]+)$/i
+const RADIUS_PROPERTY = /^(?:border(?:-[\w-]+)?-radius|--radius(?:-[\w-]+)?)$/i
 const LAYOUT_WIDTH_PROPERTY = /^--fd-layout-width$/i
 
-/** Finds the declarations in one stylesheet that only the theme seam may set. */
+/** The declarations in one stylesheet that only the theme seam may set. */
 export function findSeamViolations(css: string): readonly SeamViolation[] {
 	const source = withoutComments(css)
 	const violations: SeamViolation[] = []
