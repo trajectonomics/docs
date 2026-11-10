@@ -21,6 +21,7 @@
 		"lint": "biome ci --error-on-warnings .",
 		"format": "biome check --write .",
 		"check": "bun run lint && bun run typecheck && bun run test && bun run build",
+		"sync:release": "bun scripts/sync-upstream-release.ts",
 		"skills:check": "bunx skills@latest check",
 		"skills:update": "bunx skills@latest update"
 	},

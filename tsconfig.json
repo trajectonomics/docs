@@ -8,5 +8,5 @@
 		"isolatedDeclarations": false,
 		"declaration": false
 	},
-	"include": ["src", "astro.config.ts", ".astro/types.d.ts"]
+	"include": ["src", "scripts", "astro.config.ts", ".astro/types.d.ts"]
 }
