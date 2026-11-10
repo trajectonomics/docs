@@ -1,10 +1,7 @@
 import { existsSync } from "node:fs"
 import type { BuiltFile } from "../../src/lib/build"
 
-/**
- * Read every file under the build output root, keyed by its path relative to that root
- * (`docs/404.html`, `_redirects`). A missing root reads as no files, so the checker reports it.
- */
+/** The files of the build output under `root`, at paths relative to that root. */
 export async function readBuildFiles(root: string): Promise<readonly BuiltFile[]> {
 	if (!existsSync(root)) return []
 	const paths: string[] = []
