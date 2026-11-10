@@ -8,7 +8,7 @@ function redirectsFile(content: string): BuiltFile {
 }
 
 describe("the built redirect rules", () => {
-	test("the rules renderWorkerRedirects produces report no failure", () => {
+	test("redirect rules matching the Worker report no failure", () => {
 		expect(checkRedirects([redirectsFile(renderWorkerRedirects())])).toEqual([])
 	})
 

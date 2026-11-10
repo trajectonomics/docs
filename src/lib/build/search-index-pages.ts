@@ -18,7 +18,7 @@ function contentPagePath(path: string): string | undefined {
 }
 
 /** The URL paths of the content pages the build produced under each Tab folder, sorted. */
-export function contentPagePaths(files: readonly BuiltFile[]): readonly string[] {
+function contentPagePaths(files: readonly BuiltFile[]): readonly string[] {
 	const pages = files
 		.map((file) => contentPagePath(file.path))
 		.filter((page): page is string => page !== undefined)
