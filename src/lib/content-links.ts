@@ -1,13 +1,10 @@
 import type { ContentFile } from "./content-pages"
-import { contentPathOf, hasLandingPage, hasPage, internalLinks } from "./content-pages"
+import { contentPathOf, internalLinks, resolvesPagePath } from "./content-pages"
 import type { ContentStructureProblem } from "./content-structure"
 
 /** A site-absolute link under `/docs` that has no page behind it. */
 function linkProblems(file: ContentFile, files: readonly ContentFile[]): readonly string[] {
-	return internalLinks(file.content).filter((link) => {
-		const path = contentPathOf(link)
-		return !hasPage(files, path) && !hasLandingPage(files, path)
-	})
+	return internalLinks(file.content).filter((link) => !resolvesPagePath(files, contentPathOf(link)))
 }
 
 /** Every site-absolute link under `/docs` in an authored page names a page that exists. */

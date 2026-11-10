@@ -22,10 +22,7 @@ export function hasLandingPage(files: readonly ContentFile[], folder: string): b
 	return hasPage(files, `${folder}/index`)
 }
 
-/**
- * The page entries of a folder's `meta.json`: separators, exclusions, links and the `...`
- * placeholders are not pages, so they are left out.
- */
+/** The page entries a folder's `meta.json` lists, with separators, exclusions and links left out. */
 export function navigationEntries(
 	files: readonly ContentFile[],
 	folder: string,
@@ -54,14 +51,18 @@ export function navigationEntries(
 	)
 }
 
+/** Whether `path`, without an extension, names a page or a folder that has a landing page. */
+export function resolvesPagePath(files: readonly ContentFile[], path: string): boolean {
+	return hasPage(files, path) || hasLandingPage(files, path)
+}
+
 /** Whether a `meta.json` page entry names a page or a folder that has one. */
 export function resolvesNavigationEntry(
 	files: readonly ContentFile[],
 	folder: string,
 	entry: string,
 ): boolean {
-	const target = folder === "" ? entry : `${folder}/${entry}`
-	return hasPage(files, target) || hasLandingPage(files, target)
+	return resolvesPagePath(files, folder === "" ? entry : `${folder}/${entry}`)
 }
 
 /** A markdown link to a site path under the Docs Portal base; `!` makes it an image. */

@@ -4,9 +4,7 @@ description: The Trajectonomics packages and how they fit together.
 ---
 
 Trajectonomics is built from small TypeScript packages. Each one is pure: data in, data out, no
-I/O, no clock and no unseeded randomness. They share conventions for money, dates and rates, so
-values move between them without a translation layer, and you can adopt one package without
-adopting the others.
+I/O, no clock and no unseeded randomness. You can adopt one package without adopting the others.
 
 ## The packages
 
@@ -15,7 +13,7 @@ adopting the others.
 | [sim-core](/docs/developers/sim-core/) | `@trajectonomics/sim` | A deterministic projection of a personal-finance plan over time |
 | [ledger-core](/docs/developers/ledger-core/) | `@trajectonomics/ledger` | Double-entry bookkeeping that cannot hold an unbalanced transaction |
 | [tax-core](/docs/developers/tax-core/) | `@trajectonomics/tax` | Statutory income tax for Thailand and the United States |
-| [design-system](/docs/developers/design-system/) | not released | Design tokens, Themes and Svelte components for Trajectonomics interfaces |
+| [design-system](/docs/developers/design-system/) | not released | Design tokens, Themes and components for Trajectonomics interfaces |
 
 ## How they fit together
 
@@ -27,9 +25,9 @@ adopting the others.
   Reversal or an Amendment.
 - **Compute the statutory amount.** `tax-core` turns a jurisdiction-specific filing input into a
   Tax Result, with a Breakdown that shows how each figure was reached. Thailand and the United
-  States are separate subpath exports, so a consumer bundles only what it imports.
-- **Build the interface.** `design-system` supplies tokens, Themes and components. It has no
-  published release yet.
+  States are separate subpath exports, so an application bundles only the package it imports.
+- **Build the interface.** `design-system` will supply tokens, Themes and components for
+  Trajectonomics interfaces; it has no published release yet.
 
-The CLI is the Operator-facing entry point to this ecosystem. Each package's section links its
-decisions on GitHub instead of copying them here.
+The CLI is what Operators install and run. Each Upstream Package's page links its decisions on
+GitHub instead of copying them here.
