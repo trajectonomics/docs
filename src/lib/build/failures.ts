@@ -5,6 +5,9 @@ export type BuildFailureCode =
 	| "SEARCH_INDEX_MISSING"
 	| "SEARCH_INDEX_INVALID"
 	| "SEARCH_INDEX_EMPTY"
+	| "SEARCH_INDEX_PAGE_MISSING"
+	| "REDIRECT_RULES_MISSING"
+	| "REDIRECT_RULES_MISMATCH"
 
 /** One failed build check: the rule's code, the file it concerns and a line a maintainer can act on. */
 export interface BuildFailure {
