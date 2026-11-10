@@ -1,13 +1,82 @@
 ---
 title: tax-core
-description: The statutory income tax engine.
+description: The statutory income tax engine, published as @trajectonomics/tax.
 ---
 
 `tax-core` is a pure, deterministic statutory tax engine, published as
 [`@trajectonomics/tax`](https://www.npmjs.com/package/@trajectonomics/tax). The latest release is
-`v0.1.0`.
+`v0.1.0`. It covers Thailand and the United States behind separate subpath exports, so a consumer
+bundles only the jurisdiction it imports.
 
-This section is being written: it will cover what the package does, how to install it, its main
-concepts, and how it fits into the rest of the ecosystem.
+## Install
+
+```bash
+bun add @trajectonomics/tax
+```
+
+```ts
+import { calculateThTax } from "@trajectonomics/tax/th"
+import { calculateUsTax } from "@trajectonomics/tax/us"
+```
+
+## What it does
+
+Both jurisdictions return the same **Tax Result** envelope: gross income, taxable income, total
+tax, effective and marginal rate, net tax payable, and a jurisdiction-specific **Breakdown** that
+shows requested against allowed amounts at every step. Public amounts are in the currency's major
+unit (baht or dollars); the engine converts to exact integer minor units internally.
+
+```ts
+import { calculateThTax } from "@trajectonomics/tax/th"
+
+const result = calculateThTax({
+  income: { section40_1: 600_000 },
+  allowances: { socialSecurity: 9_000 },
+})
+
+console.log(result.totalTax) // 20600
+console.log(result.taxableIncome) // 431000
+```
+
+The United States system covers federal income tax, payroll (FICA) and self-employment (SECA) tax,
+AMT, NIIT, credits, preferential rates for long-term gains and qualified dividends, and all 50
+states plus the District of Columbia. When a state is set, its liability is folded into the
+top-level total.
+
+```ts
+import { calculateUsTax } from "@trajectonomics/tax/us"
+
+const result = calculateUsTax({
+  filingStatus: "single",
+  income: { w2Wages: 120_000 },
+  state: "CA",
+})
+```
+
+## Main concepts
+
+- **Jurisdiction and Tax System**: each supported country is one system with its own filing input
+  and its own Breakdown, under one Tax Result envelope.
+- **Tax Year**: a constant, never read from the clock. The 2026 rules are the only ones shipped.
+- **Statutory Cap**: an input above the statutory limit is clamped, not rejected. The Breakdown
+  records both the requested and the allowed amount.
+- **Minor Unit**: internal arithmetic uses exact integer minor units; inputs and results use the
+  major unit at the boundary.
+- **Thailand**: assessable income under Section 40(1)–40(8), expense deductions, allowances,
+  separate-sheet lump sums, real-estate transfers, dividend credits and minimum gross tax.
+- **United States**: AGI and above-the-line adjustments, the standard or itemized election,
+  preferential stacking, AMT, payroll taxes, credits and state income tax.
+
+## Boundaries
+
+The engine is pure: no I/O, no clock and no randomness. It validates its input and throws
+`TaxValidationError` for values it cannot use. It is not a filing system: it computes the statutory
+figures and returns the audit trail, and leaves forms, payments and advice to the caller.
+
+## Decisions
+
+- [ADR 0001: per-jurisdiction subpath exports and statutory inputs](https://github.com/trajectonomics/tax-core/blob/v0.1.0/docs/adr/0001-per-jurisdiction-subpath-exports-and-statutory-inputs.md)
+- [ADR 0002: minor-unit integer arithmetic and statutory clamping](https://github.com/trajectonomics/tax-core/blob/v0.1.0/docs/adr/0002-minor-unit-integer-arithmetic-and-statutory-clamping.md)
+- [ADR 0003: typed fields, stage isolation and statutory standards](https://github.com/trajectonomics/tax-core/blob/v0.1.0/docs/adr/0003-typed-fields-stage-isolation-and-statutory-standards.md)
 
 Source: [`trajectonomics/tax-core`](https://github.com/trajectonomics/tax-core).
