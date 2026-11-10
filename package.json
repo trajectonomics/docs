@@ -20,7 +20,8 @@
 		"typecheck": "tsc -p tsconfig.json && astro check",
 		"lint": "biome ci --error-on-warnings .",
 		"format": "biome check --write .",
-		"check": "bun run lint && bun run typecheck && bun run test && bun run build",
+		"check": "bun run lint && bun run typecheck && bun run test && bun run build && bun run verify:build",
+		"verify:build": "bun scripts/verify-build.ts",
 		"sync:release": "bun scripts/sync-upstream-release.ts",
 		"skills:check": "bunx skills@latest check",
 		"skills:update": "bunx skills@latest update"
