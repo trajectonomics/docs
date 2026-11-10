@@ -40,8 +40,11 @@ Requires Bun and Node 22.23.4 or later (Astro; `.node-version` pins 24).
 # Install dependencies
 bun install
 
-# Run the full verification suite (lint, typecheck + astro check, tests, build)
+# Run the full verification suite (lint, typecheck + astro check, tests, build, built Docs Portal check)
 bun run check
+
+# Check the built Docs Portal in dist/ on its own (the last step of bun run check)
+bun run verify:build
 
 # Develop with hot reload (http://localhost:4321/docs/)
 bun run dev
