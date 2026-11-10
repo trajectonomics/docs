@@ -5,7 +5,6 @@ const COLOUR_DECLARATIONS = [
 	".x { color: #ffffff; }",
 	".x { background: hsl(0, 0%, 96%); }",
 	".x { border: 1px solid pink; }",
-	".x { outline: var(--color-fd-border); }",
 	":root { --color-fd-accent: oklch(62% 0.2 259); }",
 ] as const
 
@@ -24,6 +23,11 @@ const ALLOWED_DECLARATIONS = [
 	"/* #fff, Inter, 4px, --fd-layout-width */ .x { display: block; }",
 	".x { display: grid; gap: 1rem; margin: 0 auto; }",
 	".x { color: inherit; }",
+	".x { font: inherit; }",
+	".x { border-color: var(--color-fd-border); }",
+	".x { animation: gold-fade 1s; }",
+	'.x { content: "red"; }',
+	".x { background: url(/img/red.png); }",
 ] as const
 
 function rules(css: string): readonly string[] {

@@ -11,8 +11,9 @@ export interface SeamViolation {
 const DECLARATION = /([-\w]+)\s*:\s*([^;{}]+)(?=[;}])/g
 const COLOUR_LITERAL =
 	/#[\da-f]{3,8}\b|\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|color-mix|light-dark)\s*\(/i
-const COLOUR_REFERENCE = /var\(\s*--color-/i
 const COLOUR_TOKEN = /^--color-/
+const COLOUR_PROPERTY =
+	/^(?:color|background|background-color|border|border-color|border-(?:top|right|bottom|left|block|inline)(?:-(?:start|end))?(?:-color)?|outline|outline-color|fill|stroke|box-shadow|text-shadow|accent-color|caret-color|text-decoration-color|column-rule-color|stop-color|flood-color|lighting-color)$/i
 /** Every CSS named colour; `transparent` and `currentColor` carry no palette and are allowed. */
 const NAMED_COLOURS = [
 	"aliceblue antiquewhite aqua aquamarine azure beige bisque black blanchedalmond blue blueviolet",
@@ -32,12 +33,16 @@ const NAMED_COLOURS = [
 	"slategray slategrey snow springgreen steelblue tan teal thistle tomato turquoise violet wheat white",
 	"whitesmoke yellow yellowgreen",
 ].join(" ")
-const NAMED_COLOUR = new RegExp(`\\b(?:${NAMED_COLOURS.replaceAll(" ", "|")})\\b`, "i")
+const NAMED_COLOUR = new RegExp(
+	`(?<![\\w-])(?:${NAMED_COLOURS.replaceAll(" ", "|")})(?![\\w-])`,
+	"i",
+)
 const FONT_PROPERTY = /^(?:font|font-family|--(?:default-)?font-[\w-]+)$/i
 const RADIUS_PROPERTY = /^(?:border(?:-[\w-]+)?-radius|--radius(?:-[\w-]+)?)$/i
 const LAYOUT_WIDTH_PROPERTY = /^--fd-layout-width$/i
+const GLOBAL_KEYWORD = /^(?:inherit|initial|unset|revert|revert-layer)$/i
 
-/** The declarations in one stylesheet that only the theme seam may set. */
+/** The declarations in one stylesheet that only the theme seam may define. */
 export function findSeamViolations(css: string): readonly SeamViolation[] {
 	const source = withoutComments(css)
 	const violations: SeamViolation[] = []
@@ -54,23 +59,29 @@ function withoutComments(css: string): string {
 	return css.replace(/\/\*[\s\S]*?\*\//g, (comment) => comment.replace(/[^\n]/g, " "))
 }
 
+function withoutStrings(value: string): string {
+	return value.replace(/"[^"]*"|'[^']*'/g, " ")
+}
+
 function lineNumberAt(source: string, index: number): number {
 	return source.slice(0, index).split("\n").length
 }
 
 function classify(property: string, value: string): SeamRule | undefined {
 	if (LAYOUT_WIDTH_PROPERTY.test(property)) return "layout-width"
-	if (FONT_PROPERTY.test(property)) return "font-family"
+	if (FONT_PROPERTY.test(property)) {
+		const shorthand = property.toLowerCase() === "font"
+		return shorthand && GLOBAL_KEYWORD.test(value.trim()) ? undefined : "font-family"
+	}
 	if (RADIUS_PROPERTY.test(property)) return "border-radius"
 	if (isColour(property, value)) return "colour"
 	return undefined
 }
 
 function isColour(property: string, value: string): boolean {
-	return (
-		COLOUR_TOKEN.test(property) ||
-		COLOUR_LITERAL.test(value) ||
-		COLOUR_REFERENCE.test(value) ||
-		NAMED_COLOUR.test(value)
-	)
+	if (COLOUR_TOKEN.test(property)) return true
+	if (COLOUR_LITERAL.test(withoutStrings(value))) return true
+	// A `var(--color-*)` reference is how another stylesheet consumes the seam, not a colour of its own.
+	const named = withoutStrings(value).replace(/(?:url|var)\([^)]*\)/gi, " ")
+	return COLOUR_PROPERTY.test(property) && NAMED_COLOUR.test(named)
 }

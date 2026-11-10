@@ -57,7 +57,7 @@ function declarationValue(declarations: string, property: string): string | unde
 }
 
 describe("theme seam", () => {
-	test("only the seam stylesheet sets a colour, a font family, a border radius or the layout width", async () => {
+	test("only the seam stylesheet defines a colour, a font family, a border radius or the layout width", async () => {
 		const stylesheets = await projectStylesheets()
 		const paths = stylesheets.map((stylesheet) => stylesheet.path)
 		expect(paths).toContain(GLOBAL_PATH)
