@@ -1,3 +1,11 @@
 @import "tailwindcss";
 @import "fumadocs-ui/css/neutral.css";
 @import "fumadocs-ui/css/preset.css";
+
+/*
+ * WCAG AA needs 4.5:1 for body text, and Fumadocs' muted grey is 4.34:1 on its own light
+ * surfaces. One step darker keeps the hierarchy and passes the accessibility spec.
+ */
+:root:not(.dark) {
+	--color-fd-muted-foreground: #525252;
+}
