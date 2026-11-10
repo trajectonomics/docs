@@ -46,14 +46,18 @@ bun run check
 # Check the built Docs Portal in dist/ on its own (the last step of bun run check)
 bun run verify:build
 
+# Run the browser tests against the built site (Chromium)
+bunx playwright install chromium
+bun run test:e2e
+
 # Develop with hot reload (http://localhost:4321/docs/)
 bun run dev
 
 # Build, then serve dist/ exactly as the Worker does (http://localhost:8787/docs/)
 bun run preview
 
-# Run tests
-bun test
+# Run the unit tests (no build needed)
+bun run test
 
 # Code formatting & lint
 bun run format
