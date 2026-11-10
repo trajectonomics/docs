@@ -1,1 +1,5 @@
-{ "title": "CLI & Quickstart", "root": true, "pages": ["index"] }
+{
+	"title": "CLI & Quickstart",
+	"root": true,
+	"pages": ["index", "installation", "configuration", "commands"]
+}

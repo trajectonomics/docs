@@ -1,0 +1,74 @@
+---
+title: sim-core
+description: The deterministic personal-finance projection engine, published as @trajectonomics/sim.
+---
+
+`sim-core` is a pure, deterministic personal-finance projection engine, published as
+[`@trajectonomics/sim`](https://www.npmjs.com/package/@trajectonomics/sim). The latest release is
+`v0.1.0`.
+
+## Install
+
+```bash
+bun add @trajectonomics/sim
+```
+
+`npm install @trajectonomics/sim` works too. Alpha builds are published under the `alpha` dist-tag.
+
+## What it does
+
+Give `project()` three values and it returns a **Projection**:
+
+- a **Baseline**: the balance of each Account on the start date;
+- a **Scenario**: the accounts, the Flows that move money, the cashflow routing and any Levies;
+- a **Timeline**: the start date, the horizon, and whether rows are daily or monthly.
+
+```ts
+import { project } from "@trajectonomics/sim"
+
+const result = project(baseline, scenario, {
+  start: "2026-01-01",
+  horizon: "2056-01-01",
+  resolution: "month",
+})
+
+if (!result.ok) {
+  console.error(result.problems)
+} else {
+  console.log(result.projection.rows)
+}
+```
+
+A Projection has one row per date in the Timeline, annual roll-ups, and the Runs-out date with the
+unmet amount if the money does not last. `project()` never throws on a valid input, and it never
+reads a clock.
+
+## Main concepts
+
+- **Baseline, Scenario, Timeline**: the three inputs. The Scenario is self-contained; build a
+  variant by copying and editing it.
+- **Flow**: a dated cash movement of kind income, expense or contribution. A contribution moves
+  money into an Account and is not an expense.
+- **Levy**: a closed rule set in the Scenario that charges an amount per Settlement period. The
+  core does not know what a Levy represents; a caller authors it as data.
+- **Shortfall**: money owed on an Occurrence that no unlocked Account can supply. Expenses are
+  never refused; the Projection ends on that date.
+- **Financial Independence**: the earliest month in which earned income can stop with no Shortfall
+  through the horizon.
+
+`check()` reports input problems as `{ code, path }[]` without projecting. `project()` runs it
+first and returns the same problems when the input is invalid.
+
+## Boundaries
+
+Amounts are integer minor units in one currency per Scenario, dates are `YYYY-MM-DD`, and rates are
+integer basis points. All growth is exact integer arithmetic, so a Projection is identical across
+runtimes. The engine has no I/O, no callbacks and no extension points: a rule that does not fit the
+Levy vocabulary is a new core primitive, not a plugin.
+
+## Decisions
+
+- [ADR 0001: exact integer compounding with lazy per-account commits](https://github.com/trajectonomics/sim-core/blob/v0.1.0/docs/adr/0001-exact-integer-compounding.md)
+- [ADR 0002: tax is a generic Levy computed from data, not code that knows tax](https://github.com/trajectonomics/sim-core/blob/v0.1.0/docs/adr/0002-levies-as-data-not-tax-code.md)
+
+Source: [`trajectonomics/sim-core`](https://github.com/trajectonomics/sim-core).

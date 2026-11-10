@@ -1,0 +1,73 @@
+---
+title: ledger-core
+description: The pure double-entry ledger, published as @trajectonomics/ledger.
+---
+
+`ledger-core` is a pure double-entry ledger domain, published as
+[`@trajectonomics/ledger`](https://www.npmjs.com/package/@trajectonomics/ledger). The latest release
+is `v0.1.0`. It has no I/O: Transactions go in, reports come out.
+
+## Install
+
+```bash
+bun add @trajectonomics/ledger
+```
+
+## What it does
+
+A **Chart of Accounts** validates every Account once. A **Transaction** is a set of Postings that
+sum to zero per entity and currency, so an unbalanced Transaction cannot be constructed. The
+queries then answer the usual questions for a date or a period.
+
+```ts
+import { balances, createChartOfAccounts, simple, toMinorUnits } from "@trajectonomics/ledger"
+
+const chart = createChartOfAccounts([
+  { id: "cash", type: "asset", currency: "THB" },
+  { id: "revenue", type: "income", currency: "THB" },
+])
+
+const sale = simple(
+  {
+    id: "tx-1",
+    date: "2026-01-15",
+    debit: "cash",
+    credit: "revenue",
+    amount: toMinorUnits(12_500, "THB"),
+  },
+  chart,
+)
+
+const rows = balances([sale], "2026-12-31", chart)
+```
+
+Amounts are signed integer minor units: Debit `+`, Credit `-`. `toMinorUnits` and
+`fromMinorUnits` convert at the boundary, so floats never enter the model.
+
+## Main concepts
+
+- **Account and Chart of Accounts**: five types (`asset`, `liability`, `equity`, `income`,
+  `expense`) with optional Header Accounts that only aggregate. Postings target Leaf Accounts only.
+- **Posting and Transaction**: one signed amount against one Account; a Transaction is at least two
+  Postings that balance per entity and currency.
+- **Simple Entry and Compound Entry**: the builders for the two common shapes. `simple` takes one
+  Debit and one Credit; `compound` takes many on either side.
+- **Reversal and Amendment**: corrections are new Transactions. `reverse` negates an earlier
+  Transaction; `amend` returns the Reversal and the Replacement. History is never edited.
+- **Balance, Net Worth, P&L, Trial Balance**: the queries. Rows keep the raw signed amount; named
+  totals use the natural sign.
+
+## Boundaries
+
+Every query re-checks the Transactions against the Chart of Accounts it is given. Currencies are
+validated against the runtime's ISO 4217 data, every Posting in a Transaction uses its Account's
+currency, and there is no FX. The package generates no ids and reads no clock: the caller supplies
+the id and the date.
+
+## Decisions
+
+- [ADR 0001: core domain model and invariants](https://github.com/trajectonomics/ledger-core/blob/v0.1.0/docs/adr/0001-core-domain-model-and-invariants.md)
+- [ADR 0002: correction and common-pattern builders](https://github.com/trajectonomics/ledger-core/blob/v0.1.0/docs/adr/0002-corrections-and-pattern-builders.md)
+- [ADR 0003: pure queries: balances, net worth, P&L, trial balance](https://github.com/trajectonomics/ledger-core/blob/v0.1.0/docs/adr/0003-pure-queries.md)
+
+Source: [`trajectonomics/ledger-core`](https://github.com/trajectonomics/ledger-core).

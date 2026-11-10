@@ -1,9 +1,34 @@
 ---
-title: Build on Trajectonomics
-description: Architecture and package guides. For Builders.
+title: Overview
+description: The Trajectonomics packages and how they fit together.
 ---
 
-This is the **Builder tab** of the Trajectonomics Docs Portal. The ecosystem architecture and
-guides for `sim-core`, `ledger-core`, `tax-core` and `design-system` will live here.
+Trajectonomics is built from small TypeScript packages. The three released ones are pure: data in,
+data out, no I/O, no clock and no unseeded randomness. You can adopt one package without adopting
+the others.
 
-This page is a placeholder.
+## The packages
+
+| Package | Published as | What it gives you |
+| --- | --- | --- |
+| [sim-core](/docs/developers/sim-core/) | `@trajectonomics/sim` | A deterministic projection of a personal-finance plan over time |
+| [ledger-core](/docs/developers/ledger-core/) | `@trajectonomics/ledger` | Double-entry bookkeeping that cannot hold an unbalanced transaction |
+| [tax-core](/docs/developers/tax-core/) | `@trajectonomics/tax` | Statutory income tax for Thailand and the United States |
+| [design-system](/docs/developers/design-system/) | not released | Design tokens, Themes and components for Trajectonomics interfaces |
+
+## How they fit together
+
+- **Project what is planned.** `sim-core` takes a Baseline of balances and a Scenario of Flows and
+  Levies, and returns a Projection over a Timeline. It knows nothing about tax: a Levy is data
+  authored outside the core, so nothing forces an application to use `tax-core`.
+- **Record what happened.** `ledger-core` records Postings in a Chart of Accounts and answers
+  Balance, Net Worth, P&L and Trial Balance questions. It never edits history: a correction adds a
+  Reversal or an Amendment.
+- **Compute the statutory amount.** `tax-core` turns a jurisdiction-specific filing input into a
+  Tax Result, with a Breakdown that shows how each figure was reached. Thailand and the United
+  States are separate subpath exports, so an application bundles only the package it imports.
+- **Build the interface.** `design-system` will supply tokens, Themes and components for
+  Trajectonomics interfaces; it has no published release yet.
+
+The CLI is what Operators install and run. The released packages' pages link their decisions on
+GitHub instead of copying them here.

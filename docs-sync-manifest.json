@@ -1,4 +1,17 @@
 {
 	"version": 1,
-	"packages": {}
+	"packages": {
+		"sim-core": {
+			"lastSyncedTag": "v0.1.0",
+			"lastSyncedAt": "2026-11-07T15:49:33Z"
+		},
+		"ledger-core": {
+			"lastSyncedTag": "v0.1.0",
+			"lastSyncedAt": "2026-11-07T15:49:28Z"
+		},
+		"tax-core": {
+			"lastSyncedTag": "v0.1.0",
+			"lastSyncedAt": "2026-11-07T15:38:30Z"
+		}
+	}
 }
