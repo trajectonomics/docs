@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs"
 import { checkBuild } from "../src/lib/build"
 import { readBuildFiles } from "./adapters/build-files"
 
@@ -6,6 +7,10 @@ const BUILD_ROOT = "dist"
 
 /** Check the built Docs Portal on disk, returning the process exit code. */
 export async function main(root: string): Promise<number> {
+	if (!existsSync(root)) {
+		console.error(`verify:build: ${root}/ is missing. Run \`bun run build\` first.`)
+		return 1
+	}
 	const failures = checkBuild(await readBuildFiles(root))
 	for (const failure of failures) {
 		console.error(`${failure.code} ${failure.path}: ${failure.message}`)

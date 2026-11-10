@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test"
+import { renderWorkerRedirects } from "../worker-redirects"
 import type { BuiltFile } from "./built-files"
 import { checkBuild } from "./index"
 
@@ -14,8 +15,10 @@ const COMPLETE_BUILD: readonly BuiltFile[] = [
 		content: JSON.stringify({
 			type: "advanced",
 			internalDocumentIDStore: { internalIdToId: ["/docs/cli"] },
+			docs: { docs: { "1": { page_id: "/docs/cli", type: "page" } } },
 		}),
 	},
+	{ path: "_redirects", content: renderWorkerRedirects() },
 ]
 
 describe("the check of the built Docs Portal", () => {
@@ -28,6 +31,7 @@ describe("the check of the built Docs Portal", () => {
 			"NOT_FOUND_PAGE_MISSING",
 			"OPERATOR_TAB_PAGE_MISSING",
 			"SEARCH_INDEX_MISSING",
+			"REDIRECT_RULES_MISSING",
 		])
 	})
 })

@@ -8,5 +8,12 @@
 		"isolatedDeclarations": false,
 		"declaration": false
 	},
-	"include": ["src", "scripts", "astro.config.ts", ".astro/types.d.ts"]
+	"include": [
+		"src",
+		"scripts",
+		"e2e",
+		"astro.config.ts",
+		"playwright.config.ts",
+		".astro/types.d.ts"
+	]
 }

@@ -53,7 +53,7 @@
 			}
 		},
 		{
-			"includes": ["**/*.test.ts"],
+			"includes": ["**/*.test.ts", "**/*.e2e.ts"],
 			"linter": {
 				"rules": {
 					"style": {
