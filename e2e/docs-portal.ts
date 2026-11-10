@@ -1,6 +1,12 @@
 import type { Page } from "@playwright/test"
 import { TABS, type TabDefinition } from "../src/lib/tabs"
 
+/** Wait until the Docs island has hydrated, so its server-rendered controls respond to clicks. */
+async function waitForDocsIsland(page: Page): Promise<void> {
+	// Astro drops the `ssr` attribute when the island finishes hydrating.
+	await page.locator("astro-island[component-export='Docs']:not([ssr])").waitFor()
+}
+
 /** The Tab a given Tab is not: the switcher's only other choice. */
 export function otherTab(tab: TabDefinition): TabDefinition {
 	const other = TABS.find((candidate) => candidate !== tab)
@@ -28,8 +34,10 @@ export async function openPageTitle(page: Page): Promise<string> {
 	return title.trim()
 }
 
-/** Open the search dialog; the header control shows the shortcut, so match on "search". */
+/** Open the Docs Portal search dialog. */
 export async function openSearch(page: Page): Promise<void> {
+	await waitForDocsIsland(page)
+	// The header control's name shows the keyboard shortcut, so match on "search".
 	await page
 		.getByRole("button", { name: /search/i })
 		.first()
@@ -38,6 +46,7 @@ export async function openSearch(page: Page): Promise<void> {
 
 /** Choose `to` in the Tab switcher, which is named after the Tab currently open. */
 export async function switchTab(page: Page, from: TabDefinition, to: TabDefinition): Promise<void> {
+	await waitForDocsIsland(page)
 	await page.getByRole("button", { name: from.title }).click()
 	await page.getByRole("dialog").getByRole("link", { name: to.title, exact: true }).click()
 }
