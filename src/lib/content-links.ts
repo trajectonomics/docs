@@ -2,9 +2,15 @@ import type { ContentFile } from "./content-pages"
 import { contentPathOf, internalLinks, resolvesPagePath } from "./content-pages"
 import type { ContentStructureProblem } from "./content-structure"
 
-/** A site-absolute link under `/docs` that has no page behind it. */
+/**
+ * A site-absolute link under `/docs` that has no page behind it. The Landing Page at `/docs/` is
+ * an Astro page, not a content page, so a link to it resolves without a file.
+ */
 function linkProblems(file: ContentFile, files: readonly ContentFile[]): readonly string[] {
-	return internalLinks(file.content).filter((link) => !resolvesPagePath(files, contentPathOf(link)))
+	return internalLinks(file.content).filter((link) => {
+		const path = contentPathOf(link)
+		return path !== "" && !resolvesPagePath(files, path)
+	})
 }
 
 /** Every site-absolute link under `/docs` in an authored page names a page that exists. */

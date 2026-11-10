@@ -66,14 +66,23 @@ export function resolvesNavigationEntry(
 }
 
 /** A markdown link to a site path under the Docs Portal base; `!` makes it an image. */
-const INTERNAL_LINK = /(!?)\]\((\/docs(?:\/[^)\s]*)?)\)/g
+const MARKDOWN_LINK = /(!?)\]\((\/docs(?:\/[^)\s]*)?)\)/g
 
-/** Every site-absolute link under `/docs` in `content`, in source order. */
+/** An `href` attribute pointing at a site path under the Docs Portal base. */
+const ATTRIBUTE_LINK = /href="(\/docs(?:\/[^"]*)?)"/g
+
+/** Every site-absolute link under `/docs` in `content`, markdown or JSX, in source order. */
 export function internalLinks(content: string): readonly string[] {
 	const links: string[] = []
-	for (const match of content.matchAll(INTERNAL_LINK)) {
+	for (const match of content.matchAll(MARKDOWN_LINK)) {
 		const [, image, link] = match
 		if (image !== "!" && link !== undefined) {
+			links.push(link)
+		}
+	}
+	for (const match of content.matchAll(ATTRIBUTE_LINK)) {
+		const link = match[1]
+		if (link !== undefined) {
 			links.push(link)
 		}
 	}

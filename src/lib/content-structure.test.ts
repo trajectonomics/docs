@@ -32,10 +32,14 @@ function withMeta(path: string, pages: readonly string[]): ContentFile[] {
 	})
 }
 
-function withPageLink(path: string, link: string): ContentFile[] {
+function withContent(path: string, block: string): ContentFile[] {
 	return tree.map((file) =>
-		file.path === path ? { ...file, content: `${file.content}\n\n[Broken](${link})\n` } : file,
+		file.path === path ? { ...file, content: `${file.content}\n\n${block}\n` } : file,
 	)
+}
+
+function withPageLink(path: string, link: string): ContentFile[] {
+	return withContent(path, `[Broken](${link})`)
 }
 
 function rulesOf(files: readonly ContentFile[]): readonly ContentStructureRule[] {
@@ -79,6 +83,17 @@ describe("Docs Portal content structure", () => {
 
 	test("an internal link with no page behind it is reported", () => {
 		expect(rulesOf(withPageLink("developers/index.mdx", "/docs/developers/missing/"))).toContain(
+			"internal-link",
+		)
+	})
+
+	test("a JSX link with no page behind it is reported", () => {
+		const link = '<a href="/docs/developers/missing/">Broken</a>'
+		expect(rulesOf(withContent("developers/index.mdx", link))).toContain("internal-link")
+	})
+
+	test("a link to the Landing Page at /docs/ needs no content page", () => {
+		expect(rulesOf(withContent("developers/index.mdx", "[Home](/docs/)"))).not.toContain(
 			"internal-link",
 		)
 	})
