@@ -27,3 +27,7 @@ _Avoid_: Dependency, upstream repo
 **Docs Sync**:
 The automated proposal of Docs Portal edits after an Upstream Package release. It only proposes; a human reviews every change before it lands.
 _Avoid_: Auto-update, docs bot
+
+**Backfill**:
+The first authored pages for an Upstream Package, written by hand from its latest release. Docs Sync only proposes edits to them afterwards.
+_Avoid_: Import, mirror, migration
