@@ -18,6 +18,13 @@ Closes #
 - [ ] Complies with architectural invariants in [`CODING_STANDARDS.md`](./CODING_STANDARDS.md).
 - [ ] If architectural decisions were made or updated, recorded in [`docs/adr/`](./docs/adr/).
 
+## Surface & design
+
+<!-- Tick one. The rule is in [docs/agents/planning.md](https://github.com/trajectonomics/docs/blob/main/docs/agents/planning.md). -->
+
+- [ ] **UI change**: a reader of the Docs Portal sees or does something different. The reference is named, and screenshots at 1280, 2000 and 390 px, light and dark, are attached.
+- [ ] **No UI change**: Surface & design is not applicable.
+
 ## Pre-Merge Verification
 
 - [ ] `bun run check` passes locally (Biome lint/format, strict typecheck plus `astro check`, tests, Astro build).
