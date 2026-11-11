@@ -39,4 +39,4 @@ The rule is a convention, checked by people and by reviewers; no CI step enforce
 
 ## Language
 
-Name the audience the way [`GLOSSARY.md`](../../GLOSSARY.md) does: a **reader of the Docs Portal**, never an end user or a user.
+The audience is a **reader of the Docs Portal** ([`GLOSSARY.md`](../../GLOSSARY.md)): never an end user or a user. "User-facing" describes work a reader can see or do; it never names the person.

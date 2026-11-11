@@ -20,7 +20,7 @@ assignees: []
 
 ## Surface & design
 
-<!-- For a change a reader of the Docs Portal can see: name the design reference, the states it handles, and its screenshots at 1280, 2000 and 390 px in light and dark. Otherwise write "none". See https://github.com/trajectonomics/docs/blob/main/docs/agents/planning.md -->
+<!-- For user-facing work (a change a reader of the Docs Portal can see or do): name the design reference, the states it handles, and its screenshots at 1280, 2000 and 390 px in light and dark. Otherwise write "none". See https://github.com/trajectonomics/docs/blob/main/docs/agents/planning.md -->
 
 ## Domain Terminology
 
