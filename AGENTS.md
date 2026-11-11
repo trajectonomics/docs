@@ -32,6 +32,10 @@ GitHub Issues via the `gh` CLI. See `docs/agents/issue-tracker.md`.
 
 Default five-role vocabulary (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
 
+### Planning
+
+Every plan and issue states goals and non-goals; user-facing work adds a Surface & design section. See `docs/agents/planning.md`.
+
 ### Domain docs
 
 Single-context: one `GLOSSARY.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
