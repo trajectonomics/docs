@@ -18,12 +18,16 @@ const COLOUR_DECLARATIONS = [
 	".x { -webkit-box-shadow: 0 0 1px red; }",
 	".x { -webkit-mask: linear-gradient(red, blue); }",
 	".x { mask-border: linear-gradient(red, blue) 1; }",
+	".x { caret: red block; }",
+	"@property --a { initial-value: red; }",
+	":root { --brand: red; }",
 	":root { --color-fd-accent: oklch(62% 0.2 259); }",
 ] as const
 
 const FONT_DECLARATIONS = [
 	".x { font-family: Inter, sans-serif; }",
 	":root { --font-sans: Inter, sans-serif; }",
+	":root { --default-mono-font-family: Menlo, monospace; }",
 ] as const
 
 const RADIUS_DECLARATIONS = [
