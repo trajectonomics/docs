@@ -20,6 +20,12 @@ export function tabUrl(tab: TabDefinition): string {
 	return `${DOCS_BASE_PATH}/${tab.folder}/`
 }
 
+/** Whether `pathname` is a page of the Tab `tab`, its landing page included. */
+export function isTabPath(tab: TabDefinition, pathname: string): boolean {
+	const url = tabUrl(tab)
+	return pathname === url || pathname.startsWith(url)
+}
+
 /** The Tab that `/docs` redirects to (the Operator tab). */
 export const DEFAULT_TAB: TabDefinition = TABS[0]
 

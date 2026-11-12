@@ -1,8 +1,10 @@
 import { type SerializedPageTree, useFumadocsLoader } from "fumadocs-core/source/client"
 import type { TOCItemType } from "fumadocs-core/toc"
-import { DocsLayout } from "fumadocs-ui/layouts/docs"
-import { DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/layouts/docs/page"
+import { DocsLayout } from "fumadocs-ui/layouts/notebook"
+import { DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/layouts/notebook/page"
+import type { LayoutTab } from "fumadocs-ui/layouts/shared"
 import { baseOptions } from "../lib/layout.shared"
+import { isTabPath, TABS, tabUrl } from "../lib/tabs"
 import { Provider, type ProviderProps } from "./provider"
 
 export interface DocsProps extends ProviderProps {
@@ -12,14 +14,31 @@ export interface DocsProps extends ProviderProps {
 	toc: TOCItemType[]
 }
 
+/** The header Tabs of one page, marking the current Tab for assistive technology. */
+function headerTabs(pathname: string): LayoutTab[] {
+	return TABS.map((tab) => ({
+		title: tab.title,
+		url: tabUrl(tab),
+		...(isTabPath(tab, pathname) ? { props: { "aria-current": "page" } } : {}),
+	}))
+}
+
 /** React island for a Docs Portal page; the page content is passed as children. */
 export function Docs({ tree, title, description, toc, children, ...props }: DocsProps) {
 	const data = useFumadocsLoader({ tree })
+	const options = baseOptions()
 
 	return (
 		<Provider {...props}>
-			<DocsLayout {...baseOptions()} tree={data.tree}>
-				<DocsPage toc={toc}>
+			<DocsLayout
+				{...options}
+				nav={{ ...options.nav, mode: "top" }}
+				tree={data.tree}
+				tabMode="navbar"
+				tabs={headerTabs(props.pathname)}
+				sidebar={{ className: "border-e" }}
+			>
+				<DocsPage toc={toc} tableOfContent={{ enabled: toc.length > 0 }}>
 					<DocsTitle>{title}</DocsTitle>
 					<DocsDescription>{description}</DocsDescription>
 					{children}

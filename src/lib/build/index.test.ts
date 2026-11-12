@@ -3,13 +3,21 @@ import { renderWorkerRedirects } from "../worker-redirects"
 import type { BuiltFile } from "./built-files"
 import { checkBuild } from "./index"
 
-function page(path: string): BuiltFile {
-	return { path, content: "<!doctype html><title>A page</title>" }
+function page(path: string, content = "<!doctype html><title>A page</title>"): BuiltFile {
+	return { path, content }
 }
+
+const OPERATOR_TAB_PAGE = [
+	'<header id="nd-subnav">',
+	'<a href="/docs/cli/" aria-current="page">CLI &amp; Quickstart</a>',
+	'<a href="/docs/developers/">Build on Trajectonomics</a>',
+	"</header>",
+	'<aside id="nd-sidebar"><a href="/docs/cli/">Quickstart</a></aside>',
+].join("")
 
 const COMPLETE_BUILD: readonly BuiltFile[] = [
 	page("docs/404.html"),
-	page("docs/cli/index.html"),
+	page("docs/cli/index.html", OPERATOR_TAB_PAGE),
 	{
 		path: "docs/api/search.json",
 		content: JSON.stringify({
