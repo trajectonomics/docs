@@ -5,6 +5,11 @@ const COLOUR_DECLARATIONS = [
 	".x { color: #ffffff; }",
 	".x { background: hsl(0, 0%, 96%); }",
 	".x { border: 1px solid pink; }",
+	".x { background-image: linear-gradient(red, blue); }",
+	".x { border-image: linear-gradient(red, blue) 1; }",
+	".x { text-decoration: underline red; }",
+	".x { text-emphasis-color: red; }",
+	".x { scrollbar-color: red blue; }",
 	":root { --color-fd-accent: oklch(62% 0.2 259); }",
 ] as const
 
@@ -24,7 +29,11 @@ const ALLOWED_DECLARATIONS = [
 	".x { display: grid; gap: 1rem; margin: 0 auto; }",
 	".x { color: inherit; }",
 	".x { font: inherit; }",
+	".x { font-family: inherit; }",
 	".x { border-color: var(--color-fd-border); }",
+	".x { filter: url(#add); }",
+	".x { mask: url(#mask); }",
+	".x { background-image: url(/img/hero.png); }",
 	".x { animation: gold-fade 1s; }",
 	'.x { content: "red"; }',
 	".x { background: url(/img/red.png); }",

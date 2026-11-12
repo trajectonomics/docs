@@ -13,7 +13,7 @@ const COLOUR_LITERAL =
 	/#[\da-f]{3,8}\b|\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|color-mix|light-dark)\s*\(/i
 const COLOUR_TOKEN = /^--color-/
 const COLOUR_PROPERTY =
-	/^(?:color|background|background-color|border|border-color|border-(?:top|right|bottom|left|block|inline)(?:-(?:start|end))?(?:-color)?|outline|outline-color|fill|stroke|box-shadow|text-shadow|accent-color|caret-color|text-decoration-color|column-rule-color|stop-color|flood-color|lighting-color)$/i
+	/^(?:color|background|background-color|background-image|border|border-color|border-(?:top|right|bottom|left|block|inline)(?:-(?:start|end))?(?:-color)?|border-image|border-image-source|outline|outline-color|fill|stroke|box-shadow|text-shadow|accent-color|caret-color|text-decoration|text-decoration-color|text-emphasis|text-emphasis-color|column-rule|column-rule-color|scrollbar-color|mask|mask-image|stop-color|flood-color|lighting-color)$/i
 /** Every CSS named colour; `transparent` and `currentColor` carry no palette and are allowed. */
 const NAMED_COLOURS = [
 	"aliceblue antiquewhite aqua aquamarine azure beige bisque black blanchedalmond blue blueviolet",
@@ -41,6 +41,14 @@ const FONT_PROPERTY = /^(?:font|font-family|--(?:default-)?font-[\w-]+)$/i
 const RADIUS_PROPERTY = /^(?:border(?:-[\w-]+)?-radius|--radius(?:-[\w-]+)?)$/i
 const LAYOUT_WIDTH_PROPERTY = /^--fd-layout-width$/i
 const GLOBAL_KEYWORD = /^(?:inherit|initial|unset|revert|revert-layer)$/i
+const URL_FUNCTION = /url\([^)]*\)/gi
+const VAR_FUNCTION = /var\([^)]*\)/gi
+
+/*
+ * Tailwind `@apply` utilities are deliberately out of scope: this rule reads
+ * `name: value` declarations, and an `@apply` line carries utility names, not
+ * values. The shell uses className utilities in JSX.
+ */
 
 /** The declarations in one stylesheet that only the theme seam may define. */
 export function findSeamViolations(css: string): readonly SeamViolation[] {
@@ -70,8 +78,8 @@ function lineNumberAt(source: string, index: number): number {
 function classify(property: string, value: string): SeamRule | undefined {
 	if (LAYOUT_WIDTH_PROPERTY.test(property)) return "layout-width"
 	if (FONT_PROPERTY.test(property)) {
-		const shorthand = property.toLowerCase() === "font"
-		return shorthand && GLOBAL_KEYWORD.test(value.trim()) ? undefined : "font-family"
+		const namesAFamily = /^(?:font|font-family)$/i.test(property)
+		return namesAFamily && GLOBAL_KEYWORD.test(value.trim()) ? undefined : "font-family"
 	}
 	if (RADIUS_PROPERTY.test(property)) return "border-radius"
 	if (isColour(property, value)) return "colour"
@@ -80,8 +88,9 @@ function classify(property: string, value: string): SeamRule | undefined {
 
 function isColour(property: string, value: string): boolean {
 	if (COLOUR_TOKEN.test(property)) return true
-	if (COLOUR_LITERAL.test(withoutStrings(value))) return true
+	const unquoted = withoutStrings(value).replace(URL_FUNCTION, " ")
+	if (COLOUR_LITERAL.test(unquoted)) return true
 	// A `var(--color-*)` reference is how another stylesheet consumes the seam, not a colour of its own.
-	const named = withoutStrings(value).replace(/(?:url|var)\([^)]*\)/gi, " ")
+	const named = unquoted.replace(VAR_FUNCTION, " ")
 	return COLOUR_PROPERTY.test(property) && NAMED_COLOUR.test(named)
 }
