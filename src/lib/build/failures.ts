@@ -8,6 +8,11 @@ export type BuildFailureCode =
 	| "SEARCH_INDEX_PAGE_MISSING"
 	| "REDIRECT_RULES_MISSING"
 	| "REDIRECT_RULES_MISMATCH"
+	| "HEADER_TAB_LINK_MISSING"
+	| "HEADER_TAB_NOT_CURRENT"
+	| "HEADER_TAB_OTHER_CURRENT"
+	| "SIDEBAR_TAB_TITLE_LINK"
+	| "TOC_PLACEHOLDER_PRESENT"
 
 /** One failed build check: the rule's code, the file it concerns and a line a maintainer can act on. */
 export interface BuildFailure {

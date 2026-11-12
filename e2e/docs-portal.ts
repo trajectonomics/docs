@@ -44,9 +44,14 @@ export async function openSearch(page: Page): Promise<void> {
 		.click()
 }
 
-/** Choose `to` in the Tab switcher, which is named after the Tab currently open. */
+/** Choose `to` in the Tab switcher. */
 export async function switchTab(page: Page, from: TabDefinition, to: TabDefinition): Promise<void> {
 	await waitForDocsIsland(page)
+	const headerTab = page.locator("#nd-subnav").getByRole("link", { name: to.title, exact: true })
+	if (await headerTab.isVisible()) {
+		await headerTab.click()
+		return
+	}
 	await page.getByRole("button", { name: from.title }).click()
 	await page.getByRole("dialog").getByRole("link", { name: to.title, exact: true }).click()
 }

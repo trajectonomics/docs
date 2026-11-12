@@ -1,4 +1,4 @@
-import { DocsBody } from "fumadocs-ui/layouts/docs/page"
+import { DocsBody } from "fumadocs-ui/layouts/notebook/page"
 import defaultMdxComponents from "fumadocs-ui/mdx"
 import type { MDXComponents } from "mdx/types"
 

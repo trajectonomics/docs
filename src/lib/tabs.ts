@@ -15,9 +15,14 @@ export const TABS: readonly [TabDefinition, TabDefinition] = [
 	{ folder: "developers", title: "Build on Trajectonomics", audience: "Builder" },
 ]
 
-/** Absolute URL path of a Tab's landing page, with a trailing slash. */
+/** Absolute URL path of a Tab's index page, with a trailing slash. */
 export function tabUrl(tab: TabDefinition): string {
 	return `${DOCS_BASE_PATH}/${tab.folder}/`
+}
+
+/** Whether `pathname` is a page of the Tab `tab`, its index page included. */
+export function isTabPath(tab: TabDefinition, pathname: string): boolean {
+	return pathname.startsWith(tabUrl(tab))
 }
 
 /** The Tab that `/docs` redirects to (the Operator tab). */
