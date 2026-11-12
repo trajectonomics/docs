@@ -1,6 +1,7 @@
 import type { BuiltFile } from "./built-files"
 import type { BuildFailure } from "./failures"
 import { checkHeaderTabs } from "./header-tabs"
+import { checkLandingPage } from "./landing-page"
 import { checkRedirects } from "./redirects"
 import { checkRequiredPages } from "./required-pages"
 import { checkSearchIndex } from "./search-index"
@@ -14,6 +15,7 @@ export function checkBuild(files: readonly BuiltFile[]): readonly BuildFailure[]
 		...checkRequiredPages(files),
 		...checkSearchIndex(files),
 		...checkSearchIndexPages(files),
+		...checkLandingPage(files),
 		...checkRedirects(files),
 		...checkHeaderTabs(files),
 		...checkSidebarTitles(files),

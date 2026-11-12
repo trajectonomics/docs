@@ -1,5 +1,4 @@
 import { describe, expect, test } from "bun:test"
-import { renderWorkerRedirects } from "../worker-redirects"
 import type { BuiltFile } from "./built-files"
 import { checkBuild } from "./index"
 
@@ -15,8 +14,16 @@ const OPERATOR_TAB_PAGE = [
 	'<aside id="nd-sidebar"><a href="/docs/cli/">Quickstart</a></aside>',
 ].join("")
 
+const LANDING_PAGE = [
+	"<main>",
+	'<a href="/docs/cli/">For Operators: install and run the CLI</a>',
+	'<a href="/docs/developers/">For Builders: build on Trajectonomics packages</a>',
+	"</main>",
+].join("")
+
 const COMPLETE_BUILD: readonly BuiltFile[] = [
 	page("docs/404.html"),
+	page("docs/index.html", LANDING_PAGE),
 	page("docs/cli/index.html", OPERATOR_TAB_PAGE),
 	{
 		path: "docs/api/search.json",
@@ -26,7 +33,6 @@ const COMPLETE_BUILD: readonly BuiltFile[] = [
 			docs: { docs: { "1": { page_id: "/docs/cli", type: "page" } } },
 		}),
 	},
-	{ path: "_redirects", content: renderWorkerRedirects() },
 ]
 
 describe("the check of the built Docs Portal", () => {
@@ -35,11 +41,14 @@ describe("the check of the built Docs Portal", () => {
 	})
 
 	test("a build that breaks several rules reports every failed rule, not only the first", () => {
-		expect(checkBuild([]).map((failure) => failure.code)).toEqual([
+		const stale: BuiltFile = { path: "_redirects", content: "/docs /docs/cli/ 302\n" }
+
+		expect(checkBuild([stale]).map((failure) => failure.code)).toEqual([
 			"NOT_FOUND_PAGE_MISSING",
+			"LANDING_PAGE_MISSING",
 			"OPERATOR_TAB_PAGE_MISSING",
 			"SEARCH_INDEX_MISSING",
-			"REDIRECT_RULES_MISSING",
+			"REDIRECT_TO_OPERATOR_TAB",
 		])
 	})
 })

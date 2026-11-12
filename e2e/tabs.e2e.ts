@@ -1,31 +1,30 @@
-import { DEFAULT_TAB, tabUrl } from "../src/lib/tabs"
+import { TABS, tabUrl } from "../src/lib/tabs"
 import { openPageTitle, otherTab, switchTab } from "./docs-portal"
 import { expect, test } from "./fixtures"
 
-test("the Docs Portal opens the default Tab, and switching Tab changes the URL, heading and sidebar", async ({
-	page,
-}) => {
-	const other = otherTab(DEFAULT_TAB)
-	await page.goto("/docs")
-	await expect(page).toHaveURL(tabUrl(DEFAULT_TAB))
-	const defaultTitle = await openPageTitle(page)
+const [operatorTab] = TABS
 
-	await switchTab(page, DEFAULT_TAB, other)
+test("switching Tab changes the URL, heading and sidebar", async ({ page }) => {
+	const other = otherTab(operatorTab)
+	await page.goto(tabUrl(operatorTab))
+	const operatorTitle = await openPageTitle(page)
+
+	await switchTab(page, operatorTab, other)
 	await expect(page).toHaveURL(tabUrl(other))
-	await expect.poll(() => openPageTitle(page)).not.toBe(defaultTitle)
+	await expect.poll(() => openPageTitle(page)).not.toBe(operatorTitle)
 	const otherTitle = await openPageTitle(page)
 	await expect(
 		page.getByRole("complementary").getByRole("link", { name: otherTitle }),
 	).toBeVisible()
 	await expect(
-		page.getByRole("complementary").getByRole("link", { name: defaultTitle }),
+		page.getByRole("complementary").getByRole("link", { name: operatorTitle }),
 	).toHaveCount(0)
 
 	await page.goBack()
-	await expect(page).toHaveURL(tabUrl(DEFAULT_TAB))
-	await expect.poll(() => openPageTitle(page)).toBe(defaultTitle)
+	await expect(page).toHaveURL(tabUrl(operatorTab))
+	await expect.poll(() => openPageTitle(page)).toBe(operatorTitle)
 	await expect(
-		page.getByRole("complementary").getByRole("link", { name: defaultTitle }),
+		page.getByRole("complementary").getByRole("link", { name: operatorTitle }),
 	).toBeVisible()
 })
 
@@ -38,8 +37,8 @@ test("a Tab switch is client-side navigation, so the Docs island stays mounted",
 			documentRequests++
 		}
 	})
-	await page.goto(tabUrl(DEFAULT_TAB))
-	const defaultTitle = await openPageTitle(page)
+	await page.goto(tabUrl(operatorTab))
+	const operatorTitle = await openPageTitle(page)
 	await page.evaluate(() => {
 		// The Docs island's own element: if Astro remounts the island, the marker is gone.
 		document
@@ -48,8 +47,8 @@ test("a Tab switch is client-side navigation, so the Docs island stays mounted",
 			?.setAttribute("data-island-probe", "mounted")
 	})
 
-	await switchTab(page, DEFAULT_TAB, otherTab(DEFAULT_TAB))
-	await expect.poll(() => openPageTitle(page)).not.toBe(defaultTitle)
+	await switchTab(page, operatorTab, otherTab(operatorTab))
+	await expect.poll(() => openPageTitle(page)).not.toBe(operatorTitle)
 
 	await expect(page.locator("[data-island-probe='mounted']")).toBeAttached()
 	expect(documentRequests, "the Tab switch did not reload the document").toBe(1)
