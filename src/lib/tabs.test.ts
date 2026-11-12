@@ -25,7 +25,7 @@ describe("Docs Portal Tabs", () => {
 })
 
 describe("the Tab a pathname belongs to", () => {
-	test("a Tab's landing page belongs to that Tab", () => {
+	test("a Tab's index page belongs to that Tab", () => {
 		expect(isTabPath(TABS[0], "/docs/cli/")).toBe(true)
 		expect(isTabPath(TABS[1], "/docs/developers/")).toBe(true)
 	})
