@@ -2,6 +2,8 @@ import type { BuiltFile } from "./built-files"
 import type { BuildFailure } from "./failures"
 import { checkHeaderTabs } from "./header-tabs"
 import { checkLandingPage } from "./landing-page"
+import { checkNotFoundPage } from "./not-found"
+import { checkPlaceholderCopy } from "./placeholder-copy"
 import { checkRedirects } from "./redirects"
 import { checkRequiredPages } from "./required-pages"
 import { checkSearchIndex } from "./search-index"
@@ -13,6 +15,7 @@ import { checkTocPlaceholder } from "./toc-placeholder"
 export function checkBuild(files: readonly BuiltFile[]): readonly BuildFailure[] {
 	return [
 		...checkRequiredPages(files),
+		...checkNotFoundPage(files),
 		...checkSearchIndex(files),
 		...checkSearchIndexPages(files),
 		...checkLandingPage(files),
@@ -20,5 +23,6 @@ export function checkBuild(files: readonly BuiltFile[]): readonly BuildFailure[]
 		...checkHeaderTabs(files),
 		...checkSidebarTitles(files),
 		...checkTocPlaceholder(files),
+		...checkPlaceholderCopy(files),
 	]
 }
