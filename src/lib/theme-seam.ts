@@ -13,7 +13,7 @@ const COLOUR_LITERAL =
 	/#[\da-f]{3,8}\b|\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|color-mix|light-dark)\s*\(/i
 const COLOUR_TOKEN = /^--color-/
 const COLOUR_PROPERTY =
-	/^(?:color|background|background-color|background-image|border|border-color|border-(?:top|right|bottom|left|block|inline)(?:-(?:start|end))?(?:-color)?|border-image|border-image-source|outline|outline-color|fill|stroke|box-shadow|text-shadow|accent-color|caret-color|text-decoration|text-decoration-color|text-emphasis|text-emphasis-color|column-rule|column-rule-color|scrollbar-color|mask|mask-image|stop-color|flood-color|lighting-color)$/i
+	/^(?:-(?:webkit|moz|ms|o)-)?(?:color|background|background-color|background-image|border|border-color|border-(?:top|right|bottom|left|block|inline)(?:-(?:start|end))?(?:-color)?|border-image|border-image-source|outline|outline-color|fill|stroke|box-shadow|text-shadow|accent-color|caret-color|text-decoration|text-decoration-color|text-emphasis|text-emphasis-color|column-rule|column-rule-color|scrollbar-color|mask|mask-border|mask-border-source|mask-image|filter|backdrop-filter|text-fill-color|text-stroke|text-stroke-color|tap-highlight-color|stop-color|flood-color|lighting-color)$/i
 /** Every CSS named colour; `transparent` and `currentColor` carry no palette and are allowed. */
 const NAMED_COLOURS = [
 	"aliceblue antiquewhite aqua aquamarine azure beige bisque black blanchedalmond blue blueviolet",
@@ -41,6 +41,7 @@ const FONT_PROPERTY = /^(?:font|font-family|--(?:default-)?font-[\w-]+)$/i
 const RADIUS_PROPERTY = /^(?:border(?:-[\w-]+)?-radius|--radius(?:-[\w-]+)?)$/i
 const LAYOUT_WIDTH_PROPERTY = /^--fd-layout-width$/i
 const GLOBAL_KEYWORD = /^(?:inherit|initial|unset|revert|revert-layer)$/i
+const IMPORTANT = /\s*!important$/i
 const URL_FUNCTION = /url\([^)]*\)/gi
 const VAR_FUNCTION = /var\([^)]*\)/gi
 
@@ -79,7 +80,8 @@ function classify(property: string, value: string): SeamRule | undefined {
 	if (LAYOUT_WIDTH_PROPERTY.test(property)) return "layout-width"
 	if (FONT_PROPERTY.test(property)) {
 		const namesAFamily = /^(?:font|font-family)$/i.test(property)
-		return namesAFamily && GLOBAL_KEYWORD.test(value.trim()) ? undefined : "font-family"
+		const keyword = value.trim().replace(IMPORTANT, "")
+		return namesAFamily && GLOBAL_KEYWORD.test(keyword) ? undefined : "font-family"
 	}
 	if (RADIUS_PROPERTY.test(property)) return "border-radius"
 	if (isColour(property, value)) return "colour"

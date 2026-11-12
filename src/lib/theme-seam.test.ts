@@ -10,6 +10,14 @@ const COLOUR_DECLARATIONS = [
 	".x { text-decoration: underline red; }",
 	".x { text-emphasis-color: red; }",
 	".x { scrollbar-color: red blue; }",
+	".x { filter: drop-shadow(0 0 2px red); }",
+	".x { backdrop-filter: drop-shadow(0 0 2px red); }",
+	".x { -webkit-text-fill-color: red; }",
+	".x { -webkit-text-stroke: 1px red; }",
+	".x { -webkit-tap-highlight-color: red; }",
+	".x { -webkit-box-shadow: 0 0 1px red; }",
+	".x { -webkit-mask: linear-gradient(red, blue); }",
+	".x { mask-border: linear-gradient(red, blue) 1; }",
 	":root { --color-fd-accent: oklch(62% 0.2 259); }",
 ] as const
 
@@ -30,6 +38,7 @@ const ALLOWED_DECLARATIONS = [
 	".x { color: inherit; }",
 	".x { font: inherit; }",
 	".x { font-family: inherit; }",
+	".x { font-family: inherit !important; }",
 	".x { border-color: var(--color-fd-border); }",
 	".x { filter: url(#add); }",
 	".x { mask: url(#mask); }",
