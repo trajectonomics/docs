@@ -38,7 +38,8 @@ const NAMED_COLOUR = new RegExp(
 	"i",
 )
 const FONT_PROPERTY = /^(?:font|font-family|--(?:default-)?font-[\w-]+)$/i
-const RADIUS_PROPERTY = /^(?:border(?:-[\w-]+)?-radius|--radius(?:-[\w-]+)?)$/i
+const RADIUS_PROPERTY =
+	/^(?:-(?:webkit|moz|ms|o)-)?(?:border(?:-[\w-]+)?-radius|border-radius-[\w-]+|--radius(?:-[\w-]+)?)$/i
 const LAYOUT_WIDTH_PROPERTY = /^--fd-layout-width$/i
 const GLOBAL_KEYWORD = /^(?:inherit|initial|unset|revert|revert-layer)$/i
 const IMPORTANT = /\s*!important$/i
@@ -48,7 +49,8 @@ const VAR_FUNCTION = /var\([^)]*\)/gi
 /*
  * Tailwind `@apply` utilities are deliberately out of scope: this rule reads
  * `name: value` declarations, and an `@apply` line carries utility names, not
- * values. The shell uses className utilities in JSX.
+ * values. The shell uses className utilities in JSX. Deprecated vendor-only
+ * spellings (e.g. `-webkit-border-before`) are out of scope too.
  */
 
 /** The declarations in one stylesheet that only the theme seam may define. */

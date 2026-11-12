@@ -30,6 +30,9 @@ const RADIUS_DECLARATIONS = [
 	".x { border-radius: 4px; }",
 	".x { border-top-left-radius: 4px; }",
 	":root { --radius: 6px; }",
+	".x { -webkit-border-radius: 4px; }",
+	".x { -webkit-border-top-left-radius: 4px; }",
+	".x { -moz-border-radius-topleft: 4px; }",
 ] as const
 
 const ALLOWED_DECLARATIONS = [
