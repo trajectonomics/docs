@@ -21,8 +21,13 @@ const LANDING_PAGE = [
 	"</main>",
 ].join("")
 
+const NOT_FOUND_PAGE = [
+	'<header id="nd-nav"><button data-search-full=""></button></header>',
+	'<div id="portal-not-found"><h1>Page not found</h1><a href="/docs/">Docs Portal</a></div>',
+].join("")
+
 const COMPLETE_BUILD: readonly BuiltFile[] = [
-	page("docs/404.html"),
+	page("docs/404.html", NOT_FOUND_PAGE),
 	page("docs/index.html", LANDING_PAGE),
 	page("docs/cli/index.html", OPERATOR_TAB_PAGE),
 	{

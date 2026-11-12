@@ -28,7 +28,7 @@ Portal name, one sentence of purpose, an entry for Operators and an entry for Bu
 
 | State | Behaviour |
 | --- | --- |
-| Empty (placeholder Tab pages) | A "This section is coming" callout. |
+| Empty | No page is empty: the content skeleton (docs#38) gave every Tab page content. `verify:build` fails a built page that still shows "This page is a placeholder". |
 | Loading | None for static pages; the search dialog keeps its Fumadocs states. |
 | Error | A failed search-index fetch shows the dialog's empty result; no custom UI. |
 | 404 | Our own body inside the shell, with search and a link to `/docs/`. |
