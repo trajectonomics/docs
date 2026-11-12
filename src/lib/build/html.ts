@@ -55,9 +55,11 @@ function contentUntilClose(html: string, start: number, tag: string): string | u
 
 /** Every `<a>` element of an HTML fragment, in source order. */
 export function anchors(html: string): readonly HtmlAnchor[] {
-	return [...html.matchAll(ANCHOR)].map((match) => ({
-		href: attribute(match[1] ?? "", "href"),
-		ariaCurrent: attribute(match[1] ?? "", "aria-current"),
-		text: textOf(match[2] ?? ""),
-	}))
+	return [...html.matchAll(ANCHOR)].map((match) =>
+		Object.freeze({
+			href: attribute(match[1] ?? "", "href"),
+			ariaCurrent: attribute(match[1] ?? "", "aria-current"),
+			text: textOf(match[2] ?? ""),
+		}),
+	)
 }

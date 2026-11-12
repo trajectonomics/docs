@@ -44,7 +44,7 @@ export async function openSearch(page: Page): Promise<void> {
 		.click()
 }
 
-/** Choose `to` in the Tab switcher: a header Tab on a desktop, the sidebar dropdown below lg. */
+/** Choose `to` in the Tab switcher. */
 export async function switchTab(page: Page, from: TabDefinition, to: TabDefinition): Promise<void> {
 	await waitForDocsIsland(page)
 	const headerTab = page.locator("#nd-subnav").getByRole("link", { name: to.title, exact: true })

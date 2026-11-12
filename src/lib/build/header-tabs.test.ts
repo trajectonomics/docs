@@ -48,11 +48,8 @@ describe("header Tabs of a built Tab page", () => {
 	})
 
 	test("a non-current Tab marked as current is reported as HEADER_TAB_OTHER_CURRENT", () => {
-		const content = `<header id="nd-subnav">${tabLink(OPERATOR, undefined)}${tabLink(BUILDER, BUILDER)}</header>`
-		expect(codesOf([{ path: OPERATOR_PAGE, content }])).toEqual([
-			"HEADER_TAB_NOT_CURRENT",
-			"HEADER_TAB_OTHER_CURRENT",
-		])
+		const content = `<header id="nd-subnav">${tabLink(OPERATOR, OPERATOR)}${tabLink(BUILDER, BUILDER)}</header>`
+		expect(codesOf([{ path: OPERATOR_PAGE, content }])).toEqual(["HEADER_TAB_OTHER_CURRENT"])
 	})
 
 	test("Tab links outside the header do not count as header Tabs", () => {

@@ -6,7 +6,7 @@ import { buildFailure } from "./failures"
 import type { HtmlAnchor } from "./html"
 import { anchors, elementContent } from "./html"
 
-/** Assets-root path of a Tab's built landing page. */
+/** Assets-root path of a Tab's built index page. */
 function tabPageFile(tab: TabDefinition): string {
 	return `docs/${tab.folder}/index.html`
 }

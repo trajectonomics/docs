@@ -9,7 +9,7 @@ const PAGE = [
 	'<main><a href="/docs/other/">Other</a></main>',
 ].join("")
 
-describe("elementContent", () => {
+describe("the element of an HTML fragment found by id", () => {
 	test("returns the content of the element with the id, without the rest of the page", () => {
 		expect(elementContent(PAGE, "nd-subnav")).toBe(
 			'<a href="/docs/cli/" aria-current="page">CLI &amp; Quickstart</a>' +
@@ -35,7 +35,7 @@ describe("elementContent", () => {
 	})
 })
 
-describe("anchors", () => {
+describe("the links of an HTML fragment", () => {
 	test("reads the href, the aria-current and the text of every link", () => {
 		expect(anchors(PAGE)).toEqual([
 			{ href: "/docs/cli/", ariaCurrent: "page", text: "CLI & Quickstart" },
