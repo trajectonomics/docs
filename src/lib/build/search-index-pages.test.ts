@@ -57,7 +57,7 @@ describe("the search index's coverage of the built content pages", () => {
 		expect(checkSearchIndexPages(files).map((failure) => failure.path)).toEqual([SEARCH_INDEX_FILE])
 	})
 
-	test("the 404 page and the root redirect page are not required in the index", () => {
+	test("the 404 page and the Landing Page are not required in the index", () => {
 		const files = [
 			...CONTENT_PAGES.map(page),
 			page("docs/404.html"),

@@ -1,0 +1,9 @@
+---
+import { Landing } from "../components/landing"
+import Layout from "../layouts/Layout.astro"
+import { PORTAL_NAME, PORTAL_PURPOSE } from "../lib/layout.shared"
+---
+
+<Layout title={PORTAL_NAME} description={PORTAL_PURPOSE}>
+	<Landing client:load pathname={Astro.url.pathname} params={Astro.params} />
+</Layout>

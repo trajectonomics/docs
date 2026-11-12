@@ -7,12 +7,24 @@ export interface TabDefinition {
 	readonly folder: string
 	readonly title: string
 	readonly audience: "Operator" | "Builder"
+	/** The Landing Page entry that sends this Tab's audience here. */
+	readonly entry: string
 }
 
-/** The two Tabs of the Docs Portal; the first one is where `/docs` lands. */
+/** The two Tabs of the Docs Portal, the Operator tab first. */
 export const TABS: readonly [TabDefinition, TabDefinition] = [
-	{ folder: "cli", title: "CLI & Quickstart", audience: "Operator" },
-	{ folder: "developers", title: "Build on Trajectonomics", audience: "Builder" },
+	{
+		folder: "cli",
+		title: "CLI & Quickstart",
+		audience: "Operator",
+		entry: "For Operators: install and run the CLI",
+	},
+	{
+		folder: "developers",
+		title: "Build on Trajectonomics",
+		audience: "Builder",
+		entry: "For Builders: build on Trajectonomics packages",
+	},
 ]
 
 /** Absolute URL path of a Tab's index page, with a trailing slash. */
@@ -24,9 +36,6 @@ export function tabUrl(tab: TabDefinition): string {
 export function isTabPath(tab: TabDefinition, pathname: string): boolean {
 	return pathname.startsWith(tabUrl(tab))
 }
-
-/** The Tab that `/docs` redirects to (the Operator tab). */
-export const DEFAULT_TAB: TabDefinition = TABS[0]
 
 /** URL path of the static search index, exported at build time (see `pages/api/search.json.ts`). */
 export const SEARCH_INDEX_PATH = `${DOCS_BASE_PATH}/api/search.json`

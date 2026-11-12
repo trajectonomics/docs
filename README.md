@@ -18,7 +18,7 @@ never published to npm.
 - Static [Astro](https://astro.build) site with [Fumadocs](https://fumadocs.dev) (React islands) and the built-in
   local static search (no external search service, no API key).
 - Two Tabs: the **Operator tab** (`/docs/cli/`, CLI and quickstart) and the **Builder tab**
-  (`/docs/developers/`, build on Trajectonomics). `/docs` redirects to the Operator tab.
+  (`/docs/developers/`, build on Trajectonomics). `/docs/` is a Landing Page with one entry for each.
 - Served by a Cloudflare Worker named `trajectonomics-docs` with Workers Static Assets
   ([`wrangler.jsonc`](./wrangler.jsonc)). Pages are authored in `src/content/docs/`.
 - Deployed by Cloudflare Workers Builds from `main`, whose build command runs `bun run check`
@@ -27,8 +27,10 @@ never published to npm.
 ### How `/docs` URLs resolve
 
 Workers Static Assets serves files by request path, so Astro builds into `dist/docs/` (`base: "/docs"`,
-`outDir: "./dist/docs"`) and the Worker serves `./dist`. A small build hook writes `dist/_redirects` so that
-`/docs` answers with a 302 to `/docs/cli/`.
+`outDir: "./dist/docs"`) and the Worker serves `./dist`. `/docs/` is the built Landing Page
+(`dist/docs/index.html`), not a redirect, and the build writes no `_redirects` file (it removes a stale one
+from an earlier build). `/docs` without the slash reaches `/docs/` through the Worker's
+`html_handling: "auto-trailing-slash"`.
 
 ---
 

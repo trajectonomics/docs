@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { DEFAULT_TAB, isTabPath, TABS, tabUrl } from "./tabs"
-import { renderWorkerRedirects } from "./worker-redirects"
+import { isTabPath, TABS, tabUrl } from "./tabs"
 
 describe("Docs Portal Tabs", () => {
 	test("there is one Operator tab and one Builder tab, in that order", () => {
@@ -11,9 +10,11 @@ describe("Docs Portal Tabs", () => {
 		expect(TABS.map(tabUrl)).toEqual(["/docs/cli/", "/docs/developers/"])
 	})
 
-	test("/docs lands on the Operator tab", () => {
-		expect(DEFAULT_TAB.audience).toBe("Operator")
-		expect(renderWorkerRedirects()).toBe("/docs /docs/cli/ 302\n/docs/ /docs/cli/ 302\n")
+	test("each Tab has a Landing Page entry naming its audience and what it is for", () => {
+		expect(TABS.map((tab) => tab.entry)).toEqual([
+			"For Operators: install and run the CLI",
+			"For Builders: build on Trajectonomics packages",
+		])
 	})
 
 	test("each Tab folder is a Fumadocs root folder titled as the Tab", async () => {
