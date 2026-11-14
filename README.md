@@ -25,7 +25,9 @@ never published to npm.
   Deployed by Cloudflare Workers Builds, whose build command runs `bun run check`
   ([ADR 0003](./docs/adr/0003-direct-route-and-workers-builds-deploy.md)): a merge to `main` updates staging
   only, and production changes when the owner moves `production` up to `main`. There is no GitHub Actions
-  deploy workflow.
+  deploy workflow. The public address is reached through the microfrontend router, which forwards `/docs` and
+  everything under it to production `docs` by a service binding
+  ([ADR 0006](./docs/adr/0006-docs-portal-through-the-microfrontend-router.md)).
 
 ### How `/docs` URLs resolve
 

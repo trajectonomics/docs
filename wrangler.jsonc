@@ -3,8 +3,8 @@
 	"name": "docs",
 	"compatibility_date": "2026-11-01",
 	"workers_dev": true,
-	// No "routes" on purpose: the public route attaches to production only and is added later
-	// (ADR 0003, ADR 0005).
+	// No "routes" and no "custom_domain" on purpose: the router reaches this Worker by a service
+	// binding, so this Worker never attaches to the apex itself (ADR 0006).
 	"assets": {
 		// astro.config.ts builds into dist/docs, so /docs/... URLs resolve under ./dist.
 		"directory": "./dist",
@@ -14,7 +14,8 @@
 	"env": {
 		"staging": {
 			"name": "docs-staging",
-			// Staging is served on its workers.dev URL only, and never inherits the public route.
+			// Staging is served on its workers.dev URL only: the explicit empty list stops any top-level
+			// route from attaching to it (ADR 0005, ADR 0006).
 			"routes": [],
 			"workers_dev": true
 		}
