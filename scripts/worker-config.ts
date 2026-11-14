@@ -15,11 +15,10 @@ function attachesHostname(value: unknown): boolean {
 	return value === true
 }
 
-/**
- * Every route a Worker config declares, at the top level and in every `env` entry, so one direct
- * route anywhere fails the guard (ADR 0006). An empty or absent value is not a route.
- */
-export function declaredRoutes(config: RouteScope & { env?: Record<string, RouteScope> }) {
+/** Every route a Worker config declares, at the top level and in every environment. */
+export function declaredRoutes(
+	config: RouteScope & { env?: Record<string, RouteScope> },
+): readonly DeclaredRoute[] {
 	const scopes: [string, RouteScope][] = [["top level", config]]
 	for (const [name, environment] of Object.entries(config.env ?? {})) {
 		scopes.push([`env.${name}`, environment])
