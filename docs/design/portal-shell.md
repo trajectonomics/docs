@@ -19,10 +19,11 @@ Primary reference: Stripe Docs. Three traits to copy, with no pixel matching:
 | Width | 1400px for the docs and the Landing Page. |
 | Table of contents | Absent on pages without headings. |
 | Look | Neutral Fumadocs preset plus the theme seam stylesheet. |
+| Home link | Header link to `/` (Site Home), relative, full document load. On a Tab page it is in the header from `lg` up and in the sidebar below that. On the Landing Page and the 404 page it is in the header from `sm` up and in the header menu below that. |
 
 ## Landing Page
 
-Portal name, one sentence of purpose, an entry for Operators and an entry for Builders (both from the Tab definitions), search in the header. Nothing else.
+Portal name, one sentence of purpose, an entry for Operators and an entry for Builders (both from the Tab definitions), and search in the header. The header also carries the Site Home link. Nothing else in the page body.
 
 ## Surface states
 

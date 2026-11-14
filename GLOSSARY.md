@@ -24,6 +24,10 @@ _Avoid_: Section, category, track
 The page at `/docs/` that names the two audiences and sends each to its Tab.
 _Avoid_: Home page, index page, front page
 
+**Site Home**:
+The page at `/` on trajectonomics.com, built and deployed by `trajectonomics/site`, outside the Docs Portal.
+_Avoid_: Landing Page (that is the page at `/docs/`)
+
 **Upstream Package**:
 A Trajectonomics repository whose releases the Docs Portal documents: `cli`, `sim-core`, `ledger-core`, `tax-core` and `design-system`.
 _Avoid_: Dependency, upstream repo
