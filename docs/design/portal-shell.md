@@ -43,4 +43,4 @@ All from `@trajectonomics/design-system-assets`: the docs pages' header shows th
 
 ## Checking a change
 
-`bun run check` runs `verify:build` against the built site. Layout at 1280, 2000 and 390px and dark mode are checked by screenshots in the pull request until [docs#9](https://github.com/trajectonomics/docs/issues/9) decides a browser test strategy.
+`bun run check` runs `verify:build` against the built site. Layout at 1280, 2000 and 390px and dark mode are checked by screenshots in the pull request until [docs#9](https://github.com/trajectonomics/docs/issues/9) decides a browser test strategy. A Surface ticket — a Spec that names a visual reference ([factory ADR 0017](https://github.com/trajectonomics/factory/blob/main/docs/adr/0017-surface-design-gate.md)) — also commits the rendered screenshots under `docs/screenshots/` on the branch, at 1280, 2000 and 390 px in light and dark, and names the reference in the pull request body; its pull request merges only on the owner's approval review or explicit yes.
