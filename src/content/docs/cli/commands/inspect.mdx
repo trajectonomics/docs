@@ -1,0 +1,19 @@
+---
+title: inspect
+description: Show the stored rows of one table, or of every table.
+---
+
+`traj inspect` shows the stored rows of one table, or of every table. Storage is one SQLite file,
+with canonical JSONL as the interchange format
+([ADR 0003](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0003-sqlite-storage-with-jsonl-interchange.md)).
+
+- `[table]` — the table to show; omit with `--all` to show every table
+- `--all` — show every table, in record order
+
+```bash
+traj inspect account  # Show every stored Account row.
+traj inspect --all    # Show every table's rows in record order.
+traj inspect --json   # Show each table's name and row count.
+```
+
+See [Commands](/docs/cli/commands/) for the global options, exit codes and error envelope.

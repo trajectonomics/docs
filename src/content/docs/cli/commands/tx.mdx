@@ -1,0 +1,104 @@
+---
+title: tx
+description: Manage ledger transactions.
+---
+
+`traj tx` manages ledger transactions. A transaction is a set of postings that sum to zero, dated
+by you — the CLI reads no clock
+([ADR 0018](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0018-no-clock-in-ledger-commands.md)).
+Corrections are new transactions: history is never edited
+([ADR 0016](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0016-three-deletion-stories.md)).
+
+## `traj tx add`
+
+Record a transaction, either from flags or from a JSON transaction document.
+
+- `--from <string>` — the source account's exact name or id; required
+- `--to <string>` — the destination account's exact name or id; required
+- `--amount <string>` — a magnitude in the accounts' currency, as a decimal string; required
+- `--date <string>` — the transaction's `YYYY-MM-DD` date; required
+- `--opening` — read `--from` as equity and `--amount` as signed
+- `--project <string>` — tag every posting with this project
+- `--memo <string>` — free text kept with the transaction; part of its duplicate identity
+- `--external-ref <string>` — an idempotency key; replaying it is a duplicate
+- `--dry-run` — report the transaction and roll the write back
+- `--postings <string>` — read a JSON transaction document from this path, or `-` for stdin
+
+```bash
+traj tx add --from Cash --to Food --amount 120.50 --date 2026-03-01               # Record a purchase from Cash.
+traj tx add --opening --from Opening --to Cash --amount -25.00 --date 2026-01-01  # Open an overdrawn asset.
+traj tx add --postings -                                                          # Read a multi-posting document from stdin.
+```
+
+## `traj tx amend <id>`
+
+Reverse a transaction and record its replacement. Takes the same flags as `tx add`, plus:
+
+- `--void-date <string>` — the reversal's `YYYY-MM-DD` date; defaults to `--date` and may not
+  precede the original's date
+- `--postings <string>` — read a JSON transaction document for the replacement from this path, or `-`
+
+```bash
+traj tx amend 0194a000-0003-7000-8000-000000000003 --from Cash --to Food --amount 100 --date 2026-03-02
+traj tx amend 0194a000-0003-7000-8000-000000000003 --postings -  # Read the replacement's postings from stdin.
+```
+
+## `traj tx import [file]`
+
+Import transactions from the one CSV template
+([ADR 0025](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0025-csv-import-is-one-template.md)).
+
+- `--template` — print the CSV template and open no data directory
+- `--dry-run` — report the import and roll every write back
+
+```bash
+traj tx import --template     # Print the one CSV template.
+traj tx import statement.csv  # Import a filled template.
+traj tx import - --dry-run    # Preview a template read from stdin.
+```
+
+## `traj tx list`
+
+List transactions by date. Date ranges are `--since` and `--until`, both inclusive
+([ADR 0022](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0022-date-ranges-are-since-and-until.md)).
+
+- `--since <string>` — the earliest transaction date, inclusive, as `YYYY-MM-DD`
+- `--until <string>` — the latest transaction date, inclusive, as `YYYY-MM-DD`
+- `--account <string>` — an account's exact name or id; a posting on either side matches
+- `--project <string>` — a project dimension value; only the postings carrying it are returned
+
+```bash
+traj tx list --json                                 # Read the whole ledger as JSON.
+traj tx list --since 2026-01-01 --until 2026-03-31  # Read one inclusive date range.
+traj tx list --account Cash --project lunch         # Transactions touching Cash, narrowed to their lunch postings.
+```
+
+## `traj tx show <id>`
+
+Show one transaction with its postings and corrections.
+
+```bash
+traj tx show 01940000-0000-7000-8000-000000000000 --json  # Show a transaction by id.
+```
+
+## `traj tx void <id>`
+
+Reverse a transaction, keeping both rows.
+
+- `--date <string>` — the reversal's `YYYY-MM-DD` date; it may not precede the original's; required
+- `--dry-run` — report the reversal and roll the write back
+
+```bash
+traj tx void 0194a000-0003-7000-8000-000000000003 --date 2026-03-02            # Reverse a transaction by id.
+traj tx void 0194a000-0003-7000-8000-000000000003 --date 2026-03-02 --dry-run  # Show the reversal without writing it.
+```
+
+## Decisions
+
+- [ADR 0016: deletion has three names, and only one is a tombstone](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0016-three-deletion-stories.md)
+- [ADR 0019: `--dry-run` executes the write and rolls it back](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0019-dry-run-executes-and-rolls-back.md)
+- [ADR 0020: a leaf may declare a document schema, and `-` reads it from stdin](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0020-a-leaf-may-declare-a-document-schema.md)
+- [ADR 0022: date ranges are `--since` and `--until`](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0022-date-ranges-are-since-and-until.md)
+- [ADR 0025: CSV import is one template, one transaction, keyed by external reference](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0025-csv-import-is-one-template.md)
+
+See [Commands](/docs/cli/commands/) for the global options, exit codes and error envelope.

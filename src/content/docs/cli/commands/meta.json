@@ -1,4 +1,18 @@
 {
 	"title": "Commands",
-	"pages": []
+	"pages": [
+		"index",
+		"account",
+		"balance",
+		"baseline",
+		"export",
+		"help",
+		"init",
+		"inspect",
+		"report",
+		"scenario",
+		"schema",
+		"tx",
+		"version"
+	]
 }

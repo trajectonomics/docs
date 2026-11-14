@@ -1,0 +1,20 @@
+---
+title: baseline
+description: Show the Baseline a Projection starts from.
+---
+
+`traj baseline` shows the Baseline a Projection starts from. The Baseline is derived on demand from
+the stored rows, holds only balance-sheet accounts, and refuses what it cannot state
+([ADR 0026](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0026-baseline-is-derived-and-balance-sheet-only.md)).
+
+## `traj baseline show`
+
+Show the Baseline a Projection starts from at a date.
+
+- `--as-of <string>` — the date the Baseline is stated at, as `YYYY-MM-DD`; required
+
+```bash
+traj baseline show --as-of 2026-03-31 --json  # The Baseline a Projection would start from at one date.
+```
+
+See [Commands](/docs/cli/commands/) for the global options, exit codes and error envelope.

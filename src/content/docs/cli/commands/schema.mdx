@@ -1,0 +1,17 @@
+---
+title: schema
+description: Describe the commands and the error registry.
+---
+
+`traj schema` describes the commands and the error registry. It is generated from the same
+definitions that validate input, so the schema and the validation cannot drift
+([ADR 0015](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0015-command-tree.md)); the
+error registry it prints is the one the JSON error envelope reads
+([ADR 0013](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0013-self-describing-error-envelope.md)).
+
+```bash
+traj schema              # List commands and every error code.
+traj schema init --json  # Show the input and output of init.
+```
+
+See [Commands](/docs/cli/commands/) for the global options, exit codes and error envelope.

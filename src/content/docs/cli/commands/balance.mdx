@@ -1,0 +1,18 @@
+---
+title: balance
+description: Show every account's balance and net worth at a date.
+---
+
+`traj balance` shows every account's balance and net worth at a date you name; the CLI reads no
+clock
+([ADR 0029](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0029-reads-take-their-date-from-the-caller.md)).
+
+- `--as-of <string>` — the date the balances are stated at, as `YYYY-MM-DD`; required
+- `--trial-balance` — add the Trial Balance and assert its debit and credit totals agree
+
+```bash
+traj balance --as-of 2026-03-31 --json           # Every account's balance and net worth at one date.
+traj balance --as-of 2026-03-31 --trial-balance  # Add the trial balance and check that debits equal credits.
+```
+
+See [Commands](/docs/cli/commands/) for the global options, exit codes and error envelope.
