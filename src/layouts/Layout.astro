@@ -1,5 +1,10 @@
 ---
 import { ClientRouter } from "astro:transitions"
+import appleTouchIcon from "@trajectonomics/design-system-assets/favicon/apple-touch-icon.png?url"
+import faviconIco from "@trajectonomics/design-system-assets/favicon/favicon.ico?url"
+import faviconSvg from "@trajectonomics/design-system-assets/favicon/favicon.svg?url"
+import icon192 from "@trajectonomics/design-system-assets/favicon/icon-192.png?url"
+import icon512 from "@trajectonomics/design-system-assets/favicon/icon-512.png?url"
 import "../styles/global.css"
 
 interface Props {
@@ -10,12 +15,19 @@ interface Props {
 const { title, description } = Astro.props
 ---
 
-<html lang="en" transition:animate="none">
+<!-- data-theme is the no-JS fallback; the theme provider (provider.tsx) sets class and
+     data-theme together before first paint, selecting the design-system Theme CSS. -->
+<html lang="en" data-theme="light" transition:animate="none">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>{title}</title>
 		{description && <meta name="description" content={description} />}
+		<link rel="icon" type="image/svg+xml" href={faviconSvg} />
+		<link rel="icon" type="image/x-icon" sizes="any" href={faviconIco} />
+		<link rel="icon" type="image/png" sizes="192x192" href={icon192} />
+		<link rel="icon" type="image/png" sizes="512x512" href={icon512} />
+		<link rel="apple-touch-icon" href={appleTouchIcon} />
 		<ClientRouter />
 	</head>
 	<body class="flex flex-col min-h-screen">

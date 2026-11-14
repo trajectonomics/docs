@@ -6,6 +6,7 @@ import type { LayoutTab } from "fumadocs-ui/layouts/shared"
 import { baseOptions } from "../lib/layout.shared"
 import { isTabPath, TABS, tabUrl } from "../lib/tabs"
 import { Provider, type ProviderProps } from "./provider"
+import { Wordmark } from "./wordmark"
 
 export interface DocsProps extends ProviderProps {
 	tree: SerializedPageTree
@@ -26,7 +27,7 @@ function headerTabs(pathname: string): LayoutTab[] {
 /** React island for a Docs Portal page; the page content is passed as children. */
 export function Docs({ tree, title, description, toc, children, ...props }: DocsProps) {
 	const data = useFumadocsLoader({ tree })
-	const options = baseOptions("notebook")
+	const options = baseOptions("notebook", { navTitle: <Wordmark /> })
 
 	return (
 		<Provider {...props}>
@@ -39,8 +40,10 @@ export function Docs({ tree, title, description, toc, children, ...props }: Docs
 				sidebar={{ className: "border-e" }}
 			>
 				<DocsPage toc={toc} tableOfContent={{ enabled: toc.length > 0 }}>
-					<DocsTitle>{title}</DocsTitle>
-					<DocsDescription>{description}</DocsDescription>
+					<DocsTitle className="text-4xl font-semibold tracking-tight md:text-5xl">
+						{title}
+					</DocsTitle>
+					<DocsDescription className="text-lg">{description}</DocsDescription>
 					{children}
 				</DocsPage>
 			</DocsLayout>

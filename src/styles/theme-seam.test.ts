@@ -73,20 +73,27 @@ describe("theme seam", () => {
 		expect(found).toEqual([])
 	})
 
-	test("the seam defines the shell's colour variables for light and dark", async () => {
+	test("the seam maps every shell colour from a design-system role on :root", async () => {
 		const css = await Bun.file(SEAM_PATH).text()
-		const expected = [...SHELL_COLOURS].sort()
-		expect(colourVariables(declarationsOf(css, ":root"))).toEqual(expected)
-		expect(colourVariables(declarationsOf(css, ".dark"))).toEqual(expected)
+		const declarations = declarationsOf(css, ":root")
+		const mapped = colourVariables(declarations).filter((name) => name !== "--color-fd-overlay")
+		expect(mapped).toEqual(SHELL_COLOURS.filter((name) => name !== "--color-fd-overlay").sort())
+		for (const name of mapped) {
+			expect(declarationValue(declarations, name)).toBe(
+				`var(${name.replace("--color-fd-", "--ds-color-")})`,
+			)
+		}
 	})
 
-	test("the dark block sets its own background, so light and dark do not share one palette", async () => {
+	test("the modal overlay has no design-system role and stays a seam literal", async () => {
 		const css = await Bun.file(SEAM_PATH).text()
-		const light = declarationValue(declarationsOf(css, ":root"), "--color-fd-background")
-		const dark = declarationValue(declarationsOf(css, ".dark"), "--color-fd-background")
-		expect(light).toBeDefined()
-		expect(dark).toBeDefined()
-		expect(dark).not.toBe(light)
+		const overlay = declarationValue(declarationsOf(css, ":root"), "--color-fd-overlay")
+		expect(overlay).toMatch(/^hsla?\(/)
+	})
+
+	test("the seam owns the font family", async () => {
+		const css = await Bun.file(SEAM_PATH).text()
+		expect(declarationsOf(css, ":root")).toMatch(/--font-sans:\s*"Inter Variable"/)
 	})
 
 	test("the seam caps the layout at 1400px once, on :root", async () => {
@@ -95,12 +102,17 @@ describe("theme seam", () => {
 		expect(declarationsOf(css, ":root")).toMatch(/--fd-layout-width:\s*1400px;/)
 	})
 
-	test("the global stylesheet imports the seam after the neutral preset", async () => {
+	test("the global stylesheet imports both design-system themes and the seam last", async () => {
 		const css = await Bun.file(GLOBAL_PATH).text()
 		const imports = [...css.matchAll(/@import\s+"([^"]+)"/g)].map((match) => match[1])
 		expect(imports).toContain("fumadocs-ui/css/neutral.css")
+		expect(imports).toContain("@trajectonomics/design-system-theme/themes/light.css")
+		expect(imports).toContain("@trajectonomics/design-system-theme/themes/dark.css")
 		expect(imports.indexOf("./theme-seam.css")).toBeGreaterThan(
 			imports.indexOf("fumadocs-ui/css/neutral.css"),
+		)
+		expect(imports.indexOf("./theme-seam.css")).toBeGreaterThan(
+			imports.indexOf("@trajectonomics/design-system-theme/themes/dark.css"),
 		)
 	})
 })

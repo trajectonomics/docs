@@ -10,6 +10,8 @@ Primary reference: Stripe Docs. Three traits to copy, with no pixel matching:
 2. A readable column with generous vertical rhythm. Fumadocs' 900px page column is the measure.
 3. Restrained neutral chrome where code blocks and one accent colour carry emphasis.
 
+Hierarchy reference: twenty.com (owner, 14 Nov 2026), for the docs pages only: a quiet header, one large tight-tracked headline, hairline borders, generous space. No product imagery, no extra sections, no palette of its own — the colours are the design-system Themes.
+
 ## Shell
 
 | Part | Decision |
@@ -18,7 +20,7 @@ Primary reference: Stripe Docs. Three traits to copy, with no pixel matching:
 | Tabs | In the header (lg and up), in the sidebar Tab dropdown below lg. The current Tab is marked `aria-current="page"`. |
 | Width | 1400px for the docs and the Landing Page. |
 | Table of contents | Absent on pages without headings. |
-| Look | Neutral Fumadocs preset plus the theme seam stylesheet. |
+| Look | The design-system light/dark Themes (`@trajectonomics/design-system-theme`), mapped onto Fumadocs' `--fd-*` variables by the theme seam and selected by `data-theme` on `<html>`. Self-hosted Inter Variable for type. Radius and shadows stay with the Fumadocs preset until the Semantic Token Contract has length roles (design-system#60). |
 | Home link | Header link to `/` (Site Home), relative, full document load. On a Tab page it is in the header from `lg` up and in the sidebar below that. On the Landing Page and the 404 page it is in the header from `sm` up and in the header menu below that. |
 
 ## Landing Page
@@ -37,7 +39,7 @@ Portal name, one sentence of purpose, an entry for Operators and an entry for Bu
 
 ## Assets
 
-All from `design-system`: wordmark and logo mark (SVG), Favicon Set, social card. docs owns none. Until they ship the header shows the text title.
+All from `@trajectonomics/design-system-assets`: the docs pages' header shows the wordmark, and Layout.astro links the Favicon Set. docs owns none. The social card is still pending (design-system#34). The Landing Page header keeps the text title.
 
 ## Checking a change
 
