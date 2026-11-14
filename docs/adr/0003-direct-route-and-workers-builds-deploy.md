@@ -1,8 +1,10 @@
 ---
-status: partially superseded by ADR 0005
+status: partially superseded by ADR 0005 and ADR 0006
 ---
 
 # The docs Worker takes a direct route and deploys through Workers Builds
+
+The direct route in the paragraph below is superseded by [ADR 0006](./0006-docs-portal-through-the-microfrontend-router.md). This body stays as the history of that decision. Workers Builds stays in force, including the rule that the build command runs `bun run check` before a deploy.
 
 The Docs Portal is a Cloudflare Worker with Static Assets, attached directly to `trajectonomics.com/docs` and `trajectonomics.com/docs/*` through `routes` in `wrangler.jsonc`. This supersedes the apex router worker with Service Bindings in point 3 of [`infra` ADR 0004](https://github.com/trajectonomics/infra/blob/main/docs/adr/0004-documentation-portal-architecture-and-sync.md): no such router exists, and building one first would block the portal on infrastructure nothing else needs yet. Adding a router later only changes how traffic reaches this Worker.
 
