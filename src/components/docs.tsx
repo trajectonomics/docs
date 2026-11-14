@@ -26,7 +26,7 @@ function headerTabs(pathname: string): LayoutTab[] {
 /** React island for a Docs Portal page; the page content is passed as children. */
 export function Docs({ tree, title, description, toc, children, ...props }: DocsProps) {
 	const data = useFumadocsLoader({ tree })
-	const options = baseOptions()
+	const options = baseOptions("notebook")
 
 	return (
 		<Provider {...props}>

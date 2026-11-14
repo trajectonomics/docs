@@ -8,7 +8,7 @@ import { Provider, type ProviderProps } from "./provider"
 export function NotFound(props: ProviderProps) {
 	return (
 		<Provider {...props}>
-			<HomeLayout {...baseOptions()}>
+			<HomeLayout {...baseOptions("home")}>
 				<div
 					id={NOT_FOUND_BODY_ID}
 					className="mx-auto flex w-full max-w-(--fd-layout-width) flex-1 flex-col items-center justify-center gap-3 px-4 py-16 text-center md:px-6"
