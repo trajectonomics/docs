@@ -32,10 +32,19 @@ traj tx add --postings -                                                        
 
 ## `traj tx amend <id>`
 
-Reverse a transaction and record its replacement. Takes the same flags as `tx add`, plus:
+Reverse a transaction and record its replacement.
 
+- `--date <string>` — the replacement's `YYYY-MM-DD` date; required
 - `--void-date <string>` — the reversal's `YYYY-MM-DD` date; defaults to `--date` and may not
   precede the original's date
+- `--from <string>` — the replacement's source account's exact name or id; required
+- `--to <string>` — the replacement's destination account's exact name or id; required
+- `--amount <string>` — a magnitude in the accounts' currency, as a decimal string; required
+- `--opening` — read `--from` as equity and `--amount` as signed
+- `--project <string>` — tag every replacement posting with this project
+- `--memo <string>` — free text kept with the replacement
+- `--external-ref <string>` — the replacement's new idempotency key; the original's is a conflict
+- `--dry-run` — report both rows and roll the write back
 - `--postings <string>` — read a JSON transaction document for the replacement from this path, or `-`
 
 ```bash

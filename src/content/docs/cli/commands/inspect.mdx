@@ -7,7 +7,8 @@ description: Show the stored rows of one table, or of every table.
 with canonical JSONL as the interchange format
 ([ADR 0003](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0003-sqlite-storage-with-jsonl-interchange.md)).
 
-- `[table]` — the table to show; omit with `--all` to show every table
+- `[table]` — one table to show: `entity`, `account`, `tx`, `posting` or `scenario`; omit with
+  `--all` to show every table
 - `--all` — show every table, in record order
 
 ```bash

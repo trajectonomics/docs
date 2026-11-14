@@ -47,7 +47,7 @@ Both install scripts accept `TRAJ_VERSION=X.Y.Z` to install a pinned release ins
 one, and `TRAJ_INSTALL_DIR` to override the install directory. npm pins with `@X.Y.Z`:
 
 ```bash
-TRAJ_VERSION=0.1.0 curl -fsSL https://github.com/trajectonomics/cli/releases/latest/download/install.sh | sh
+curl -fsSL https://github.com/trajectonomics/cli/releases/latest/download/install.sh | TRAJ_VERSION=0.1.0 sh
 npx @trajectonomics/cli@0.1.0 --version
 ```
 
