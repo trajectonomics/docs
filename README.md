@@ -16,13 +16,16 @@ The Docs Portal: public documentation for the Trajectonomics ecosystem, served a
 never published to npm.
 
 - Static [Astro](https://astro.build) site with [Fumadocs](https://fumadocs.dev) (React islands) and the built-in
-  local static search (no external search service, no API key).
+  local static search (no external search service, no API key). Pages are authored in `src/content/docs/`.
 - Two Tabs: the **Operator tab** (`/docs/cli/`, CLI and quickstart) and the **Builder tab**
   (`/docs/developers/`, build on Trajectonomics). `/docs/` is a Landing Page with one entry for each.
-- Served by a Cloudflare Worker named `trajectonomics-docs` with Workers Static Assets
-  ([`wrangler.jsonc`](./wrangler.jsonc)). Pages are authored in `src/content/docs/`.
-- Deployed by Cloudflare Workers Builds from `main`, whose build command runs `bun run check`
-  ([ADR 0003](./docs/adr/0003-direct-route-and-workers-builds-deploy.md)). There is no GitHub Actions deploy workflow.
+- Served by two Cloudflare Workers from one [`wrangler.jsonc`](./wrangler.jsonc): **staging** (`docs-staging`)
+  from `main`, and **production** (`docs`) from the `production` branch
+  ([ADR 0005](./docs/adr/0005-staging-from-main-production-from-the-production-branch.md)).
+  Deployed by Cloudflare Workers Builds, whose build command runs `bun run check`
+  ([ADR 0003](./docs/adr/0003-direct-route-and-workers-builds-deploy.md)): a merge to `main` updates staging
+  only, and production changes when the owner moves `production` up to `main`. There is no GitHub Actions
+  deploy workflow.
 
 ### How `/docs` URLs resolve
 

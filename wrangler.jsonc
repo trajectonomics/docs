@@ -1,13 +1,22 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "trajectonomics-docs",
+	"name": "docs",
 	"compatibility_date": "2026-11-01",
 	"workers_dev": true,
-	// No "routes" on purpose: the route to trajectonomics.com/docs is added later (ADR 0003).
+	// No "routes" on purpose: the public route attaches to production only and is added later
+	// (ADR 0003, ADR 0005).
 	"assets": {
 		// astro.config.ts builds into dist/docs, so /docs/... URLs resolve under ./dist.
 		"directory": "./dist",
 		"html_handling": "auto-trailing-slash",
 		"not_found_handling": "404-page"
+	},
+	"env": {
+		"staging": {
+			"name": "docs-staging",
+			// Staging is served on its workers.dev URL only, and never inherits the public route.
+			"routes": [],
+			"workers_dev": true
+		}
 	}
 }

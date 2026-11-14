@@ -4,7 +4,7 @@ import type { DraftPullRequest } from "../../src/lib/docs-sync/types"
 import type { GithubApi } from "./github-api"
 import { fieldOf, stringAt } from "./github-api"
 
-/** The base branch a proposal is opened against; the Docs Portal deploys from it. */
+/** The base branch a proposal is opened against; merging to it deploys the staging Worker only. */
 const BASE_BRANCH = "main"
 
 function pullRequestOf(body: unknown): DraftPullRequest | null {
