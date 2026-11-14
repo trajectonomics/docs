@@ -1,12 +1,15 @@
 import type { Page } from "@playwright/test"
 import { TABS, type TabDefinition } from "../src/lib/tabs"
 
-/** Wait until the page's island (Docs, or Landing) has hydrated, so its controls respond to clicks. */
-async function waitForIsland(page: Page): Promise<void> {
+/**
+ * Wait until the page's island (Docs, Landing, or NotFound) has hydrated, so its controls
+ * respond to clicks.
+ */
+export async function waitForIsland(page: Page): Promise<void> {
 	// Astro drops the `ssr` attribute when the island finishes hydrating.
 	await page
 		.locator(
-			"astro-island[component-export='Docs']:not([ssr]), astro-island[component-export='Landing']:not([ssr])",
+			"astro-island[component-export='Docs']:not([ssr]), astro-island[component-export='Landing']:not([ssr]), astro-island[component-export='NotFound']:not([ssr])",
 		)
 		.waitFor()
 }

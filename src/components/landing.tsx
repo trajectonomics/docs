@@ -7,7 +7,7 @@ import { Provider, type ProviderProps } from "./provider"
 export function Landing(props: ProviderProps) {
 	return (
 		<Provider {...props}>
-			<HomeLayout {...baseOptions()}>
+			<HomeLayout {...baseOptions("home")}>
 				<div className="mx-auto flex w-full max-w-(--fd-layout-width) flex-col gap-8 px-4 py-16 md:px-6">
 					<div className="flex flex-col gap-3">
 						<h1 className="text-3xl font-semibold tracking-tight">{PORTAL_NAME}</h1>
