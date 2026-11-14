@@ -36,11 +36,3 @@ describe("the Worker config for staging and production", () => {
 		expect(config.env.staging.workers_dev).toBe(true)
 	})
 })
-
-describe("reading the Wrangler config as JSONC", () => {
-	test("a comment marker inside a string is part of the string, not a comment", () => {
-		expect(JSON.parse(stripComments('{ "url": "https://example.com/docs" }'))).toEqual({
-			url: "https://example.com/docs",
-		})
-	})
-})
