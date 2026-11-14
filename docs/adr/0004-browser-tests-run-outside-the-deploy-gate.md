@@ -12,7 +12,7 @@ The **deploy gate** is `bun run check`, which Workers Builds runs before every d
 
 Playwright runs on Node through its own bin, a narrow exception to Bun as the test runner in [ADR 0001](./0001-core-architecture-decisions.md) and to `AGENTS.md` rule 4. Its specs use the `.e2e.ts` suffix in `e2e/`, which `bun test` never discovers, and the default `test` script is scoped to `./src ./scripts`.
 
-A push to `main` deploys whether or not the `e2e` job passes, and `main` has no branch protection yet, so `e2e` is advisory until the owner makes it a required check (`trajectonomics/infra#32`).
+A push to `main` builds staging whether or not the `e2e` job passes ([ADR 0005](./0005-staging-from-main-production-from-the-production-branch.md)), and `main` has no branch protection yet, so `e2e` is advisory until the owner makes it a required check (`trajectonomics/infra#32`). The owner can read the `e2e` result on `main` before moving `production`.
 
 ## Considered Options
 
