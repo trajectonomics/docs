@@ -1,14 +1,37 @@
 ---
 title: Configuration
-description: How the Trajectonomics CLI is configured. Not released yet.
+description: The environment variables the Trajectonomics CLI reads.
 ---
 
-The Trajectonomics CLI has not been released yet, so there is no configuration format to document.
+The CLI is configured through environment variables; there is no configuration file. A flag beats
+the environment: `--json` beats `TRAJ_FORMAT`.
 
-> **Status:** `trajectonomics/cli` has no published release. Any configuration file, flag or
-> environment variable described here would be a guess, so this page describes none.
+## TRAJ_HOME
 
-When the first release ships, this page will cover where the CLI reads configuration from, the
-options it accepts, and how those options combine with command-line flags.
+The data directory, default `~/.traj`. It holds `traj.db`, the SQLite database, and the npm
+launcher's `bin/` cache of downloaded binaries
+([ADR 0014](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0014-data-directory.md)).
+Override it to keep several ledgers apart:
+
+```bash
+TRAJ_HOME=/tmp/traj traj init --json
+```
+
+## TRAJ_FORMAT
+
+`human` (the default) or `json`
+([ADR 0010](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0010-output-contract.md)).
+`--json` takes precedence over the environment. An unrecognized value falls back to `human` and is
+reported as text with exit code 2.
+
+## TRAJ_DEBUG
+
+Set to `1` to print diagnostics for unexpected errors on stderr.
+
+## Building from source
+
+`TRAJ_BINARY_PATH` points the npm launcher at a binary you built yourself. Building the CLI from
+source is Builder work, described in the
+[repository](https://github.com/trajectonomics/cli), not here.
 
 Previous: [Installation](/docs/cli/installation/) · Next: [Commands](/docs/cli/commands/).

@@ -1,0 +1,77 @@
+---
+title: scenario
+description: Manage Scenarios, the named what-ifs.
+---
+
+`traj scenario` manages Scenarios, the named what-ifs. A Scenario's document is `sim-core`'s, and
+overrides use dotted paths with stable ids
+([ADR 0024](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0024-scenario-documents-and-overrides.md)).
+
+## `traj scenario apply <name>`
+
+Create or update a Scenario from a JSON document.
+
+- `--file <string>` — the JSON document's path, or `-` for stdin; required
+- `--dry-run` — report the row and roll the write back
+
+```bash
+traj scenario apply base --file base.json            # Create a Scenario, or update it when the document changed.
+traj scenario apply base --file - < base.json        # Read the document from stdin.
+traj scenario apply base --file base.json --dry-run  # Show the row and roll the write back.
+```
+
+## `traj scenario diff <a> <b>`
+
+Compare two Scenario documents path by path.
+
+```bash
+traj scenario diff base early  # Show what a what-if changed.
+traj scenario diff base base   # Compare a Scenario with itself.
+```
+
+## `traj scenario fork <from> <name>`
+
+Copy a Scenario under a new name.
+
+- `--set <string>` — replace one existing dotted document path with a JSON value; repeatable
+- `--dry-run` — report the row and roll the write back
+
+```bash
+traj scenario fork base early                                  # Copy a Scenario under a new name.
+traj scenario fork base early --set flows.salary.amount=50000  # Copy it with one assumption changed.
+```
+
+## `traj scenario list`
+
+List the live Scenarios by name.
+
+```bash
+traj scenario list --json  # Show the Scenarios as JSON.
+```
+
+## `traj scenario rm <scenario>`
+
+Tombstone a Scenario and free its name.
+
+- `--dry-run` — report the row and roll the write back
+
+```bash
+traj scenario rm early            # Retire a Scenario by name.
+traj scenario rm early --dry-run  # Show what rm would do.
+```
+
+## `traj scenario show <scenario>`
+
+Show one Scenario with its document.
+
+```bash
+traj scenario show base                                 # Show a Scenario by name.
+traj scenario show base --json | jq .scenario.document  # Print only the document.
+```
+
+## Decisions
+
+- [ADR 0016: deletion has three names, and only one is a tombstone](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0016-three-deletion-stories.md)
+- [ADR 0024: Scenario documents are `sim-core`'s, and Overrides use dotted paths](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0024-scenario-documents-and-overrides.md)
+
+See [Commands](/docs/cli/commands/) for the global options, exit codes and error envelope.

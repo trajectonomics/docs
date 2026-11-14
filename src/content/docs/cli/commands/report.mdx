@@ -1,0 +1,33 @@
+---
+title: report
+description: Report on the ledger over a period or at a date.
+---
+
+`traj report` reports on the ledger. Both reports take their date from you, never from the clock
+([ADR 0029](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0029-reads-take-their-date-from-the-caller.md)).
+
+## `traj report networth`
+
+Show the assets and liabilities behind net worth at a date.
+
+- `--as-of <string>` — the date the result is stated at, as `YYYY-MM-DD`; required
+
+```bash
+traj report networth --as-of 2026-03-31 --json  # The asset and liability balances that make up net worth.
+```
+
+## `traj report pnl`
+
+Report income minus expenses over a period. Date ranges are `--since` and `--until`, both inclusive
+([ADR 0022](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0022-date-ranges-are-since-and-until.md)).
+
+- `--until <string>` — the period's inclusive end date, as `YYYY-MM-DD`; required
+- `--since <string>` — the period's inclusive start date; omit to start at the ledger's beginning
+- `--project <string>` — only postings carrying this exact project dimension value
+
+```bash
+traj report pnl --until 2026-03-31 --json                                # Income minus expenses from the ledger's beginning.
+traj report pnl --since 2026-01-01 --until 2026-03-31 --project venture  # One side venture's period.
+```
+
+See [Commands](/docs/cli/commands/) for the global options, exit codes and error envelope.

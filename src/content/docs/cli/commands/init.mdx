@@ -1,0 +1,15 @@
+---
+title: init
+description: Create the data directory and an empty database.
+---
+
+`traj init` creates the data directory and an empty database. The data directory is `~/.traj` unless
+`TRAJ_HOME` overrides it, and holds `traj.db` plus the npm launcher's `bin/` cache
+([ADR 0014](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0014-data-directory.md)).
+
+```bash
+traj init                             # Create ~/.traj/traj.db if it does not exist.
+TRAJ_HOME=/tmp/traj traj init --json  # Use another directory.
+```
+
+See [Commands](/docs/cli/commands/) for the global options, exit codes and error envelope.

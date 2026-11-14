@@ -1,0 +1,57 @@
+---
+title: account
+description: Manage the chart of accounts.
+---
+
+`traj account` manages the chart of accounts. An account has one of five types — `asset`,
+`liability`, `equity`, `income`, `expense` — and a currency; `v0.1.0` supports THB only. Accounts
+nest under a parent by name or id; only leaf accounts take postings.
+
+## `traj account add <name>`
+
+Create an account in the chart.
+
+- `--type <string>` — the kind of account; required
+- `--currency <string>` — ISO 4217 currency; v1 supports THB only; required
+- `--parent <string>` — the parent account's name or id
+- `--dry-run` — report the row and roll the write back
+
+```bash
+traj account add Cash --type asset --currency THB                   # Create a top-level cash account.
+traj account add Savings --type asset --currency THB --parent Bank  # Nest it under a parent account.
+```
+
+## `traj account close <account>`
+
+Archive an account, keeping its history.
+
+- `--dry-run` — report the row and roll the write back
+
+```bash
+traj account close Cash            # Archive an account by name.
+traj account close Cash --dry-run  # Show what closing would do.
+```
+
+## `traj account list`
+
+List the chart of accounts by name.
+
+```bash
+traj account list --json  # Show the chart as JSON.
+```
+
+## `traj account show <account>`
+
+Show one account with its parent and children. The account is named by its exact name or its id.
+
+```bash
+traj account show Cash                                  # Show an account by name.
+traj account show 0194a000-0002-7000-8000-000000000002  # By id.
+```
+
+## Decisions
+
+- [ADR 0005: double-entry ledger](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0005-double-entry-ledger.md)
+- [ADR 0019: `--dry-run` executes the write and rolls it back](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0019-dry-run-executes-and-rolls-back.md)
+
+See [Commands](/docs/cli/commands/) for the global options, exit codes and error envelope.

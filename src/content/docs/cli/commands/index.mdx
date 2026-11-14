@@ -1,12 +1,70 @@
 ---
 title: Commands
-description: The Trajectonomics CLI command reference. Not released yet.
+description: The v0.1.0 command reference of the Trajectonomics CLI.
 ---
 
-The Trajectonomics CLI has not been released yet, so there are no commands to document.
+`traj` `v0.1.0` has five command groups and seven top-level commands. `traj help` lists them and
+`traj help <command>` shows one command's usage; both are generated from the same definitions that
+validate input, so the two cannot drift
+([ADR 0015](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0015-command-tree.md)).
 
-> **Status:** `trajectonomics/cli` has no published release. The command reference will be written
-> from the first release; no command names, flags or examples are published before then.
+## The command tree
 
-See [Installation](/docs/cli/installation/) for the release status, or the
-[repository](https://github.com/trajectonomics/cli) for the current source.
+| Command | What it does |
+| --- | --- |
+| [account](/docs/cli/commands/account/) | Manage the chart of accounts |
+| [balance](/docs/cli/commands/balance/) | Show every account's balance and net worth at a date |
+| [baseline](/docs/cli/commands/baseline/) | Show the Baseline a Projection starts from |
+| [export](/docs/cli/commands/export/) | Write the stored rows into a new directory |
+| [help](/docs/cli/commands/help/) | Show usage for traj or for one command |
+| [init](/docs/cli/commands/init/) | Create the data directory and an empty database |
+| [inspect](/docs/cli/commands/inspect/) | Show the stored rows of one table, or of every table |
+| [report](/docs/cli/commands/report/) | Report on the ledger over a period or at a date |
+| [scenario](/docs/cli/commands/scenario/) | Manage Scenarios, the named what-ifs |
+| [schema](/docs/cli/commands/schema/) | Describe the commands and the error registry |
+| [tx](/docs/cli/commands/tx/) | Manage ledger transactions |
+| [version](/docs/cli/commands/version/) | Print the CLI version |
+
+A bare group name prints that group's usage: `traj tx` lists the `tx` commands.
+
+## Global options
+
+Every command accepts:
+
+- `--json` — print JSON; errors become a JSON envelope on stderr.
+- `-h`, `--help` — show usage.
+- `-v`, `--version` — print the version.
+
+A bare `--` ends flag parsing: nothing after it counts as a flag.
+
+## Exit codes
+
+`0` ok, `1` unexpected, `2` invalid input, `3` domain rejection, `4` not found, `5` conflict
+([ADR 0010](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0010-output-contract.md)).
+
+## Errors
+
+In JSON mode a failure is a JSON envelope on stderr, where `code` names the failure and `exitCode`
+names its class; both come from one registry that `traj schema` prints
+([ADR 0013](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0013-self-describing-error-envelope.md)):
+
+```json
+{"error":{"code":"not_found","exitCode":4,"message":"The requested resource was not found."}}
+```
+
+Outside JSON mode the same failure is text on stderr with the same exit code. Commands never prompt.
+
+## Document input
+
+Some commands take a JSON document beside the flag form — `--postings` on `tx add` and `tx amend`,
+`--file` on `scenario apply` — named by a path, or `-` to read it from stdin
+([ADR 0020](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0020-a-leaf-may-declare-a-document-schema.md)).
+
+## Decisions
+
+- [ADR 0010: explicit output format, JSON error envelope, fixed exit codes](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0010-output-contract.md)
+- [ADR 0013: the error envelope names its own exit class](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0013-self-describing-error-envelope.md)
+- [ADR 0015: commands form a tree, flags come from the input schema](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0015-command-tree.md)
+- [ADR 0020: a leaf may declare a document schema, and `-` reads it from stdin](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0020-a-leaf-may-declare-a-document-schema.md)
+
+Source: [`trajectonomics/cli`](https://github.com/trajectonomics/cli).

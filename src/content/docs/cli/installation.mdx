@@ -1,15 +1,76 @@
 ---
 title: Installation
-description: Installing the Trajectonomics CLI. There is no install channel yet.
+description: The three install channels for the Trajectonomics CLI, release pinning, and uninstall.
 ---
 
-The Trajectonomics CLI has not been released yet, so there is no installation to document.
+The latest release of `trajectonomics/cli` is `v0.1.0`, published on 2026-11-12 with release
+binaries, both install scripts, and `@trajectonomics/cli` on npm. All three channels below end at
+the same compiled binary and the same version
+([ADR 0011](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0011-distribution.md)).
 
-> **Status:** `trajectonomics/cli` has no published release and no install channel. There is
-> nothing to install, and nothing to upgrade.
+## Linux and macOS
 
-When the first release ships, this page will state the supported install commands, the platforms
-they cover and how to check the installed version. Building the CLI from source is Builder work,
-described in the [repository](https://github.com/trajectonomics/cli), not here.
+One line; it verifies the release checksum, installs `traj` to `~/.local/bin` (or
+`$TRAJ_INSTALL_DIR`), and prints what it installed:
+
+```bash
+curl -fsSL https://github.com/trajectonomics/cli/releases/latest/download/install.sh | sh
+```
+
+## Windows
+
+One line; it installs to `%LOCALAPPDATA%\traj\bin`, adds it to the user `PATH` once, and needs a
+new shell afterwards:
+
+```powershell
+irm https://github.com/trajectonomics/cli/releases/latest/download/install.ps1 | iex
+```
+
+## npm or Bun
+
+On any machine with Node 20 or later, or with Bun (`npx` needs no Bun; the package fetches the
+release binary on first run and caches it under `~/.traj/bin`):
+
+```bash
+npx @trajectonomics/cli@latest --version
+bunx @trajectonomics/cli@latest --version
+```
+
+## Which channel
+
+Use the script for a machine that should keep `traj` on `PATH`; npm when you already have Node or
+Bun and want one command.
+
+## Pin a release
+
+Both install scripts accept `TRAJ_VERSION=X.Y.Z` to install a pinned release instead of the latest
+one, and `TRAJ_INSTALL_DIR` to override the install directory. npm pins with `@X.Y.Z`:
+
+```bash
+curl -fsSL https://github.com/trajectonomics/cli/releases/latest/download/install.sh | TRAJ_VERSION=0.1.0 sh
+npx @trajectonomics/cli@0.1.0 --version
+```
+
+## Add the agent skill
+
+After installing, add the `traj` skill to your agent:
+
+```bash
+npx skills add trajectonomics/internal-skills --skill traj
+```
+
+## Check the installed version
+
+```bash
+traj version
+```
+
+## Uninstall
+
+Delete the one file: `~/.local/bin/traj`, `%LOCALAPPDATA%\traj\bin`, `~/.traj/bin` (the download
+cache), or nothing at all for `npx`.
+
+Building the CLI from source is Builder work, described in the
+[repository](https://github.com/trajectonomics/cli), not here.
 
 Next: [Configuration](/docs/cli/configuration/).

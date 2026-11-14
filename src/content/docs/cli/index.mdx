@@ -1,18 +1,50 @@
 ---
 title: Quickstart
-description: What the Trajectonomics CLI does and where its documentation lives.
+description: Install the Trajectonomics CLI and record your first transaction.
 ---
 
-The Trajectonomics CLI is the command-line interface Operators install and run.
+The Trajectonomics CLI, `traj`, is the command-line interface Operators install and run. The latest
+release is `v0.1.0`. It keeps a double-entry ledger in one local database and answers balance,
+net-worth and report questions about it. It never reads a clock: every command takes its date from
+you ([ADR 0018](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0018-no-clock-in-ledger-commands.md),
+[ADR 0029](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0029-reads-take-their-date-from-the-caller.md)).
 
-> **Not released yet.** `trajectonomics/cli` has no published release and no install channel. This
-> Tab describes the shape of its documentation; it does not yet describe a version you can install.
+## Install
+
+[Installation](/docs/cli/installation/) lists the three install channels. On Linux or macOS, one
+line:
+
+```bash
+curl -fsSL https://github.com/trajectonomics/cli/releases/latest/download/install.sh | sh
+```
+
+## Quickstart
+
+From an empty machine to a first balance:
+
+```bash
+traj init                                                      # create ~/.traj and an empty database
+traj account add Cash --type asset --currency THB              # an asset account
+traj account add Food --type expense --currency THB            # an expense account
+traj tx add --from Cash --to Food --amount 120.50 --date 2026-03-01
+traj balance --as-of 2026-03-31                                # every account's balance and net worth
+```
+
+`--type` and `--currency` are required when adding an account, and THB is the only currency `v0.1.0`
+supports. `--as-of` is required on `balance`. Dates are `YYYY-MM-DD`.
 
 ## In this Tab
 
-- [Installation](/docs/cli/installation/): how to install the CLI once the first release ships.
-- [Configuration](/docs/cli/configuration/): how the CLI is configured.
-- [Commands](/docs/cli/commands/): the command reference.
+- [Installation](/docs/cli/installation/): the three install channels, release pinning and uninstall.
+- [Configuration](/docs/cli/configuration/): the environment variables the CLI reads.
+- [Commands](/docs/cli/commands/): the `v0.1.0` command reference.
+
+## Decisions
+
+- [ADR 0005: double-entry ledger](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0005-double-entry-ledger.md)
+- [ADR 0014: data lives in one directory at `~/.traj`](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0014-data-directory.md)
+- [ADR 0018: ledger commands take an explicit date](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0018-no-clock-in-ledger-commands.md)
+- [ADR 0029: read-only commands take their date from the caller](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0029-reads-take-their-date-from-the-caller.md)
 
 Source code and design decisions live in
 [`trajectonomics/cli`](https://github.com/trajectonomics/cli).
