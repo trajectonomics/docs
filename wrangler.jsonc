@@ -14,7 +14,8 @@
 	"env": {
 		"staging": {
 			"name": "docs-staging",
-			// Staging is served on its workers.dev URL only, and never inherits the public route.
+			// Staging is served on its workers.dev URL only: the explicit empty list stops any top-level
+			// route from attaching to it (ADR 0005, ADR 0006).
 			"routes": [],
 			"workers_dev": true
 		}
