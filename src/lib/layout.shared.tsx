@@ -1,4 +1,5 @@
 import type { BaseLayoutProps, LinkItemType } from "fumadocs-ui/layouts/shared"
+import type { ReactNode } from "react"
 import { DOCS_BASE_PATH } from "./tabs"
 
 /** The Docs Portal's name, shown in the header and as the Landing Page heading. */
@@ -55,10 +56,15 @@ function homeSiteHomeLinks(): readonly LinkItemType[] {
 	]
 }
 
+export interface BaseOptions {
+	/** The header title; the docs pages pass the design-system wordmark. */
+	readonly navTitle?: ReactNode
+}
+
 /** Layout options shared by every Docs Portal page of `layout`. */
-export function baseOptions(layout: PortalLayout): BaseLayoutProps {
+export function baseOptions(layout: PortalLayout, options?: BaseOptions): BaseLayoutProps {
 	return {
-		nav: { title: PORTAL_NAME, url: `${DOCS_BASE_PATH}/` },
+		nav: { title: options?.navTitle ?? PORTAL_NAME, url: `${DOCS_BASE_PATH}/` },
 		links: layout === "home" ? [...homeSiteHomeLinks()] : [notebookSiteHomeLink()],
 	}
 }

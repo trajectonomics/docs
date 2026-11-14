@@ -2,58 +2,42 @@
  * The theme seam: the only project stylesheet that defines a colour, a font
  * family, a border radius or the layout width.
  *
- * Values are the Fumadocs neutral preset, copied here so adopting
- * design-system's `--ds-*` Theme later changes this file only. The exceptions
- * are named where they sit.
+ * Colours come from the design system: global.css imports the prebuilt
+ * @trajectonomics/design-system-theme stylesheets, which set the `--ds-*`
+ * roles under `[data-theme="light"]` and `[data-theme="dark"]`, and this seam
+ * maps them onto Fumadocs' `--fd-*` variables. The active Theme is the
+ * `data-theme` attribute on <html> (set in Layout.astro). The status colours
+ * (`--color-fd-info`, `-warning`, `-error`, `-success`, `-idea` and `-diff-*`)
+ * stay in the Fumadocs preset: they do not vary by theme and the shell only
+ * reads them. See docs/adr/0004-docs-portal-shell.md.
  *
- * The status colours (`--color-fd-info`, `-warning`, `-error`, `-success`,
- * `-idea` and `-diff-*`) stay in the preset: they do not vary by theme and
- * the shell only reads them.
- * See docs/adr/0004-docs-portal-shell.md.
+ * The font family and the layout width stay here. Radius and shadows stay with
+ * the Fumadocs preset until the Semantic Token Contract has length roles
+ * (design-system#60).
  */
 
 :root {
 	--fd-layout-width: 1400px;
 
-	--color-fd-background: hsl(0, 0%, 96%);
-	--color-fd-foreground: hsl(0, 0%, 3.9%);
-	--color-fd-muted: hsl(0, 0%, 96.1%);
-	/*
-	 * WCAG AA needs 4.5:1 for body text, and Fumadocs' muted grey is 4.34:1 on its own light
-	 * surfaces. One step darker keeps the hierarchy and passes the accessibility spec.
-	 */
-	--color-fd-muted-foreground: #525252;
-	--color-fd-popover: hsl(0, 0%, 98%);
-	--color-fd-popover-foreground: hsl(0, 0%, 15.1%);
-	--color-fd-card: hsl(0, 0%, 94.7%);
-	--color-fd-card-foreground: hsl(0, 0%, 3.9%);
-	--color-fd-border: hsla(0, 0%, 80%, 50%);
-	--color-fd-primary: hsl(0, 0%, 9%);
-	--color-fd-primary-foreground: hsl(0, 0%, 98%);
-	--color-fd-secondary: hsl(0, 0%, 93.1%);
-	--color-fd-secondary-foreground: hsl(0, 0%, 9%);
-	--color-fd-accent: hsla(0, 0%, 82%, 50%);
-	--color-fd-accent-foreground: hsl(0, 0%, 9%);
-	--color-fd-ring: hsl(0, 0%, 63.9%);
-	--color-fd-overlay: hsla(0, 0%, 0%, 0.2);
-}
+	--font-sans:
+		"Inter Variable", ui-sans-serif, system-ui, "Segoe UI", "Leelawadee UI", Thonburi,
+		"Noto Sans Thai", sans-serif;
 
-.dark {
-	--color-fd-background: hsl(0, 0%, 7.04%);
-	--color-fd-foreground: hsl(0, 0%, 92%);
-	--color-fd-muted: hsl(0, 0%, 12.9%);
-	--color-fd-muted-foreground: hsla(0, 0%, 70%, 0.8);
-	--color-fd-popover: hsl(0, 0%, 11.6%);
-	--color-fd-popover-foreground: hsl(0, 0%, 86.9%);
-	--color-fd-card: hsl(0, 0%, 9.8%);
-	--color-fd-card-foreground: hsl(0, 0%, 98%);
-	--color-fd-border: hsla(0, 0%, 40%, 20%);
-	--color-fd-primary: hsl(0, 0%, 98%);
-	--color-fd-primary-foreground: hsl(0, 0%, 9%);
-	--color-fd-secondary: hsl(0, 0%, 12.9%);
-	--color-fd-secondary-foreground: hsl(0, 0%, 92%);
-	--color-fd-accent: hsla(0, 0%, 40.9%, 30%);
-	--color-fd-accent-foreground: hsl(0, 0%, 90%);
-	--color-fd-ring: hsl(0, 0%, 54.9%);
+	--color-fd-background: var(--ds-color-background);
+	--color-fd-foreground: var(--ds-color-foreground);
+	--color-fd-muted: var(--ds-color-muted);
+	--color-fd-muted-foreground: var(--ds-color-muted-foreground);
+	--color-fd-popover: var(--ds-color-popover);
+	--color-fd-popover-foreground: var(--ds-color-popover-foreground);
+	--color-fd-card: var(--ds-color-card);
+	--color-fd-card-foreground: var(--ds-color-card-foreground);
+	--color-fd-border: var(--ds-color-border);
+	--color-fd-primary: var(--ds-color-primary);
+	--color-fd-primary-foreground: var(--ds-color-primary-foreground);
+	--color-fd-secondary: var(--ds-color-secondary);
+	--color-fd-secondary-foreground: var(--ds-color-secondary-foreground);
+	--color-fd-accent: var(--ds-color-accent);
+	--color-fd-accent-foreground: var(--ds-color-accent-foreground);
+	--color-fd-ring: var(--ds-color-ring);
 	--color-fd-overlay: hsla(0, 0%, 0%, 0.2);
 }
