@@ -12,6 +12,9 @@ Instructions for AI coding agents in `trajectonomics/docs` (`@trajectonomics/doc
 6. This repo is a deployed site, never published: never edit `version` in `package.json`, never run `npm publish`, and keep `private: true`. Merges to `main` deploy to Cloudflare through Workers Builds, whose build command runs `bun run check` (see ADR 0003); do not add a GitHub Actions deploy workflow. PR titles are conventional commits (`feat:`, `fix:`, `docs:` ...).
 7. Pi (`pi.dev`) model restriction: When running the Pi coding agent (`pi.dev`), strictly use **DeepSeek 4.1 Flash** only (e.g., `deepseek/deepseek-v4.1-flash`, `deepseek/deepseek-v4.1-flash-fast`), whether routed via Command Code GOAT (`command-code`) or OpenCode Go (`opencode`). Do not switch to or run any other models (Claude, GPT, Gemini, etc.) in Pi sessions for this repository. This rule is mechanically enforced via `.pi/settings.json`.
 
+## Organisation goals
+
+The organisation's goals are in https://github.com/trajectonomics/goals, `GOALS.md`. Read them before proposing a new direction. Only the owner edits that file; never edit it.
 
 ## Agent skills
 
