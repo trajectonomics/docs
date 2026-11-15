@@ -59,7 +59,7 @@ function colourVariables(declarations: string): readonly string[] {
 }
 
 function declarationValue(declarations: string, property: string): string | undefined {
-	return new RegExp(`${property}\\s*:\\s*([^;]+)`).exec(declarations)?.[1]?.trim()
+	return new RegExp(`(?<![-\\w])${property}\\s*:\\s*([^;]+)`).exec(declarations)?.[1]?.trim()
 }
 
 describe("theme seam", () => {
@@ -137,6 +137,16 @@ describe("theme seam", () => {
 				"border-radius",
 			),
 		).toBe("var(--ds-radius-xl)")
+	})
+
+	test("the search trigger keeps neutral chrome on hover so the shadow is the affordance", async () => {
+		const css = await Bun.file(SEAM_PATH).text()
+		const declarations = declarationsOf(
+			css,
+			"#nd-notebook-layout #nd-subnav :is([data-search], [data-search-full]):is(:hover, :focus-visible)",
+		)
+		expect(declarationValue(declarations, "background-color")).toBe("var(--ds-color-secondary)")
+		expect(declarationValue(declarations, "color")).toBe("var(--ds-color-foreground)")
 	})
 
 	test("the docs shell control shadows compose design-system length and colour roles", async () => {

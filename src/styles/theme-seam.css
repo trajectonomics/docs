@@ -78,6 +78,12 @@
 	border-radius: var(--ds-radius-xl);
 }
 
+/* The search trigger keeps neutral chrome on hover so the control shadow is the affordance. */
+#nd-notebook-layout #nd-subnav :is([data-search], [data-search-full]):is(:hover, :focus-visible) {
+	background-color: var(--ds-color-secondary);
+	color: var(--ds-color-foreground);
+}
+
 #nd-notebook-layout :is(#nd-subnav, #nd-sidebar) :is(a, button):hover {
 	box-shadow: var(--shadow-control-hover);
 }
