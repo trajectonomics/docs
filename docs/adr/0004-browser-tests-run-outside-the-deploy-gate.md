@@ -12,7 +12,7 @@ The **deploy gate** is `bun run check`, which Workers Builds runs before every d
 
 Playwright runs on Node through its own bin, a narrow exception to Bun as the test runner in [ADR 0001](./0001-core-architecture-decisions.md) and to `AGENTS.md` rule 4. Its specs use the `.e2e.ts` suffix in `e2e/`, which `bun test` never discovers, and the default `test` script is scoped to `./src ./scripts`.
 
-A push to `main` builds staging whether or not the `e2e` job passes ([ADR 0005](./0005-staging-from-main-production-from-the-production-branch.md)), and `main` has no branch protection yet, so `e2e` is advisory until the owner makes it a required check (`trajectonomics/infra#32`). The owner can read the `e2e` result on `main` before moving `production`.
+A merge to `main` deploys production whether or not the `e2e` job passes, because the deploy build runs only `bun run check` ([ADR 0007](./0007-main-deploys-production.md)). `protect-main` requires both CI jobs on a pull request, so `e2e` gates the merge and nothing after it; with no staging Worker there is no read on a staging URL before readers see the change.
 
 ## Considered Options
 

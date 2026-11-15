@@ -10,27 +10,22 @@ function stripComments(text: string): string {
 	return text.replace(JSONC_COMMENT, (_match, string: string | undefined) => string ?? "")
 }
 
-// Workers Builds reads this file on every deploy, so its deploy shape is a rule, not a taste (ADR 0005).
+// Workers Builds reads this file on every deploy, so its deploy shape is a rule, not a taste (ADR 0007).
 const config = JSON.parse(
 	stripComments(readFileSync(join(import.meta.dir, "..", "wrangler.jsonc"), "utf8")),
 )
 
-describe("the Worker config for staging and production", () => {
-	test("production deploys the Worker named docs", () => {
+describe("the Worker config", () => {
+	test("the Worker is named docs", () => {
 		expect(config.name).toBe("docs")
 	})
 
-	test("staging deploys its own Worker named docs-staging", () => {
-		expect(config.env.staging.name).toBe("docs-staging")
-	})
-
-	test("both environments serve the same built assets", () => {
+	test("serves the built assets from ./dist", () => {
 		expect(config.assets.directory).toBe("./dist")
-		expect(config.env.staging.assets?.directory ?? config.assets.directory).toBe("./dist")
 	})
 
-	test("staging sets routes to an explicit empty list, so any route added later cannot attach to it", () => {
-		expect(config.env.staging.routes).toEqual([])
+	test("declares no Wrangler environment, so there is one Worker to deploy", () => {
+		expect(config.env).toBeUndefined()
 	})
 
 	test("a route set at the top level or in an environment is a declared route", () => {
@@ -55,9 +50,5 @@ describe("the Worker config for staging and production", () => {
 
 	test("the shipped Worker config declares no route at any level", () => {
 		expect(declaredRoutes(config)).toEqual([])
-	})
-
-	test("staging is served on its workers.dev URL", () => {
-		expect(config.env.staging.workers_dev).toBe(true)
 	})
 })
