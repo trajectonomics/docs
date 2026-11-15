@@ -73,6 +73,11 @@
 		color-mix(in oklab, var(--ds-color-foreground) 14%, transparent);
 }
 
+/* Docs shell cards take the xl corner; the Landing Page is outside this scope. */
+#nd-notebook-layout .rounded-lg.border {
+	border-radius: var(--ds-radius-xl);
+}
+
 #nd-notebook-layout :is(#nd-subnav, #nd-sidebar) :is(a, button):hover {
 	box-shadow: var(--shadow-control-hover);
 }

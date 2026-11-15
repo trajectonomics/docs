@@ -129,6 +129,16 @@ describe("theme seam", () => {
 		}
 	})
 
+	test("the docs shell cards take the xl corner from the design-system role", async () => {
+		const css = await Bun.file(SEAM_PATH).text()
+		expect(
+			declarationValue(
+				declarationsOf(css, "#nd-notebook-layout .rounded-lg.border"),
+				"border-radius",
+			),
+		).toBe("var(--ds-radius-xl)")
+	})
+
 	test("the docs shell control shadows compose design-system length and colour roles", async () => {
 		const css = await Bun.file(SEAM_PATH).text()
 		const layout = declarationsOf(css, "#nd-notebook-layout")
