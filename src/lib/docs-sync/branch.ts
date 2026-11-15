@@ -1,7 +1,7 @@
 import { DocsSyncError } from "./errors"
 import type { UpstreamPackageName } from "./types"
 
-/** The default branch, which now deploys the staging Worker only (ADR 0005); Docs Sync never writes it. */
+/** The default branch; a merge to it deploys production (ADR 0007). Docs Sync never writes it. */
 export const MAIN_BRANCH = "main"
 
 /** Every branch Docs Sync writes starts with this prefix, so one glob finds them all. */

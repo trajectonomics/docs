@@ -19,15 +19,12 @@ never published to npm.
   local static search (no external search service, no API key). Pages are authored in `src/content/docs/`.
 - Two Tabs: the **Operator tab** (`/docs/cli/`, CLI and quickstart) and the **Builder tab**
   (`/docs/developers/`, build on Trajectonomics). `/docs/` is a Landing Page with one entry for each.
-- Served by two Cloudflare Workers from one [`wrangler.jsonc`](./wrangler.jsonc): **staging** (`docs-staging`)
-  from `main`, and **production** (`docs`) from the `production` branch
-  ([ADR 0005](./docs/adr/0005-staging-from-main-production-from-the-production-branch.md)).
-  Deployed by Cloudflare Workers Builds, whose build command runs `bun run check`
-  ([ADR 0003](./docs/adr/0003-direct-route-and-workers-builds-deploy.md)): a merge to `main` updates staging
-  only, and production changes when the owner moves `production` up to `main`. There is no GitHub Actions
-  deploy workflow. The public address is reached through the microfrontend router, which forwards `/docs` and
-  everything under it to production `docs` by a service binding
-  ([ADR 0006](./docs/adr/0006-docs-portal-through-the-microfrontend-router.md)).
+- Served by one Cloudflare Worker, `docs`, from one [`wrangler.jsonc`](./wrangler.jsonc): a merge to `main` deploys
+  production ([ADR 0007](./docs/adr/0007-main-deploys-production.md)). Deployed by Cloudflare Workers Builds, whose
+  build command runs `bun run check` ([ADR 0003](./docs/adr/0003-direct-route-and-workers-builds-deploy.md)), so a
+  failing check deploys nothing. There is no staging Worker, no `production` branch, and no GitHub Actions deploy
+  workflow. The public address is reached through the microfrontend router, which forwards `/docs` and everything
+  under it to `docs` by a service binding ([ADR 0006](./docs/adr/0006-docs-portal-through-the-microfrontend-router.md)).
 
 ### How `/docs` URLs resolve
 

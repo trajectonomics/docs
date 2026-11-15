@@ -1,8 +1,10 @@
 ---
-status: accepted
+status: superseded by ADR 0007
 ---
 
 # Staging deploys from `main`; production deploys from the `production` branch
+
+Superseded on 2026-11-15: one Worker, `docs`, and a merge to `main` deploys it ([ADR 0007](./0007-main-deploys-production.md)). The body below stays as the history of the two-Worker split.
 
 A merge to `main` must not go live. The owner decided on 2026-11-13 that readers of the Docs Portal see a change only when the owner chooses. This supersedes the rule in [ADR 0003](./0003-direct-route-and-workers-builds-deploy.md) that pushes to `main` deploy. Workers Builds stays. The direct route does not: [ADR 0006](./0006-docs-portal-through-the-microfrontend-router.md) reaches the Docs Portal through the microfrontend router.
 
