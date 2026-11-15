@@ -51,25 +51,27 @@ export async function openSearch(page: Page): Promise<void> {
 		.click()
 }
 
-/** The subnav's progress circle, filled once the scroll spy has marked the active heading. */
-const SUBNAV_PROGRESS = '[data-toc-popover-trigger] [role="progressbar"]'
+/** The subnav row's table-of-contents trigger; only a docs page with headings renders it. */
+export const SUBNAV_TRIGGER = "[data-toc-popover-trigger]"
 
-/**
- * Wait until the page has settled to the state a screenshot should show: the island hydrated, the
- * scroll spy's active heading marked, and the subnav's cross-fade finished.
- */
-export async function settleDocsPage(page: Page): Promise<void> {
+/** The subnav's progress circle, filled once the scroll spy has marked the active heading. */
+const SUBNAV_PROGRESS = `${SUBNAV_TRIGGER} [role="progressbar"]`
+
+/** Wait until the page has settled to the state a screenshot should show. */
+export async function waitForSettledPage(page: Page): Promise<void> {
 	await waitForIsland(page)
+	// The scroll spy marks the active heading after hydration and the subnav cross-fades to it.
 	await page.waitForFunction((selector: string) => {
 		const progress = document.querySelector(selector)
 		return progress === null || Number(progress.getAttribute("aria-valuenow")) > 0
 	}, SUBNAV_PROGRESS)
-	await page.waitForFunction(() => {
-		const trigger = document.querySelector("[data-toc-popover-trigger]")
+	// A page without the row has no cross-fade, so any transition still running there counts.
+	await page.waitForFunction((selector: string) => {
+		const trigger = document.querySelector(selector)
 		const animations =
 			trigger === null ? document.getAnimations() : trigger.getAnimations({ subtree: true })
 		return animations.every((animation) => animation.playState !== "running")
-	})
+	}, SUBNAV_TRIGGER)
 }
 
 /** Choose `to` in the Tab switcher. */
