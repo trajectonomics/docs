@@ -51,6 +51,27 @@ export async function openSearch(page: Page): Promise<void> {
 		.click()
 }
 
+/** The subnav's progress circle, filled once the scroll spy has marked the active heading. */
+const SUBNAV_PROGRESS = '[data-toc-popover-trigger] [role="progressbar"]'
+
+/**
+ * Wait until the page has settled to the state a screenshot should show: the island hydrated, the
+ * scroll spy's active heading marked, and the subnav's cross-fade finished.
+ */
+export async function settleDocsPage(page: Page): Promise<void> {
+	await waitForIsland(page)
+	await page.waitForFunction((selector: string) => {
+		const progress = document.querySelector(selector)
+		return progress === null || Number(progress.getAttribute("aria-valuenow")) > 0
+	}, SUBNAV_PROGRESS)
+	await page.waitForFunction(() => {
+		const trigger = document.querySelector("[data-toc-popover-trigger]")
+		const animations =
+			trigger === null ? document.getAnimations() : trigger.getAnimations({ subtree: true })
+		return animations.every((animation) => animation.playState !== "running")
+	})
+}
+
 /** Choose `to` in the Tab switcher. */
 export async function switchTab(page: Page, from: TabDefinition, to: TabDefinition): Promise<void> {
 	await waitForIsland(page)

@@ -84,6 +84,15 @@
 	color: var(--ds-color-foreground);
 }
 
+/*
+ * The subnav row cross-fades the page name to the active heading by translating each label a full
+ * line. Clip the row to its 40px bar so a fading label cannot paint over the header or the
+ * hairline; the slide itself stays (docs#69).
+ */
+#nd-notebook-layout [data-toc-popover-trigger] {
+	overflow: hidden;
+}
+
 #nd-notebook-layout :is(#nd-subnav, #nd-sidebar) :is(a, button):hover {
 	box-shadow: var(--shadow-control-hover);
 }
