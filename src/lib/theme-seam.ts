@@ -1,5 +1,11 @@
 /** A declaration kind the theme seam stylesheet must own. */
-export type SeamRule = "colour" | "font-family" | "border-radius" | "layout-width"
+export type SeamRule =
+	| "colour"
+	| "font-family"
+	| "border-radius"
+	| "layout-width"
+	| "shadow"
+	| "scale"
 
 /** One declaration in a project stylesheet that belongs in the theme seam. */
 export interface SeamViolation {
@@ -41,6 +47,10 @@ const FONT_PROPERTY = /^(?:font|font-family|--(?:default-)?(?:mono-)?font-[\w-]+
 const RADIUS_PROPERTY =
 	/^(?:-(?:webkit|moz|ms|o)-)?(?:border(?:-[\w-]+)?-radius|border-radius-[\w-]+|--radius(?:-[\w-]+)?)$/i
 const LAYOUT_WIDTH_PROPERTY = /^--fd-layout-width$/i
+const SHADOW_PROPERTY =
+	/^(?:-(?:webkit|moz|ms|o)-)?(?:box-shadow|text-shadow|--(?:text-)?shadow(?:-[\w-]+)?)$/i
+const SCALE_PROPERTY = /^(?:font-size|--(?:space|spacing|text|font-size)[\w-]*)$/i
+const FONT_SIZE_PROPERTY = /^(?:font-size|--font-size[\w-]*)$/i
 const GLOBAL_KEYWORD = /^(?:inherit|initial|unset|revert|revert-layer)$/i
 const IMPORTANT = /\s*!important$/i
 const URL_FUNCTION = /url\([^)]*\)/gi
@@ -50,9 +60,10 @@ const VAR_FUNCTION = /var\([^)]*\)/gi
  * Tailwind `@apply` utilities are deliberately out of scope: this rule reads
  * `name: value` declarations, and an `@apply` line carries utility names, not
  * values. The shell uses className utilities in JSX. Deprecated vendor-only
- * spellings (e.g. `-webkit-border-before`) are out of scope too. So is a
- * `var()` reference to a font family or radius: colour references consume the
- * seam, while the seam defines no font or radius token yet.
+ * spellings (e.g. `-webkit-border-before`) are out of scope too. A `var()`
+ * reference to a colour is how another stylesheet consumes the seam, so it
+ * stays allowed; a radius, scale, font-family or shadow property is still a
+ * violation outside the seam even when its value is a custom property.
  */
 
 /** The declarations in one stylesheet that only the theme seam may define. */
@@ -82,13 +93,15 @@ function lineNumberAt(source: string, index: number): number {
 
 function classify(property: string, value: string): SeamRule | undefined {
 	if (LAYOUT_WIDTH_PROPERTY.test(property)) return "layout-width"
-	if (FONT_PROPERTY.test(property)) {
+	if (RADIUS_PROPERTY.test(property)) return "border-radius"
+	if (!FONT_SIZE_PROPERTY.test(property) && FONT_PROPERTY.test(property)) {
 		const namesAFamily = /^(?:font|font-family)$/i.test(property)
 		const keyword = value.trim().replace(IMPORTANT, "")
 		return namesAFamily && GLOBAL_KEYWORD.test(keyword) ? undefined : "font-family"
 	}
-	if (RADIUS_PROPERTY.test(property)) return "border-radius"
 	if (isColour(property, value)) return "colour"
+	if (SHADOW_PROPERTY.test(property)) return "shadow"
+	if (SCALE_PROPERTY.test(property)) return "scale"
 	return undefined
 }
 

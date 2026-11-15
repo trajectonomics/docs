@@ -1,27 +1,46 @@
 /*
  * The theme seam: the only project stylesheet that defines a colour, a font
- * family, a border radius or the layout width.
+ * family, a border radius, a shadow or the layout width.
  *
- * Colours come from the design system: global.css imports the prebuilt
+ * Colours, radius, spacing, font families and font sizes come from the design
+ * system: global.css imports the prebuilt
  * @trajectonomics/design-system-theme stylesheets, which set the `--ds-*`
  * roles under `[data-theme="light"]` and `[data-theme="dark"]`, and this seam
- * maps them onto Fumadocs' `--fd-*` variables. The active Theme is the
+ * maps them onto the variables the shell reads. The active Theme is the
  * `data-theme` attribute on <html> (set in Layout.astro). The status colours
  * (`--color-fd-info`, `-warning`, `-error`, `-success`, `-idea` and `-diff-*`)
  * stay in the Fumadocs preset: they do not vary by theme and the shell only
- * reads them. See docs/adr/0004-docs-portal-shell.md.
+ * reads them.
  *
- * The font family and the layout width stay here. Radius and shadows stay with
- * the Fumadocs preset until the Semantic Token Contract has length roles
- * (design-system#60).
+ * The seam still owns the layout width and the `--font-sans` assignment: the
+ * assets package deliberately leaves the font-family assignment to the
+ * consumer, and Inter Variable stays first in the stack. Radius roles are
+ * scoped to the docs layout so the Landing Page's `rounded-lg` surfaces keep
+ * the preset look. Contract v2 has no shadow role, so the soft hover/focus
+ * shadows on the header and sidebar controls compose its length and colour
+ * roles here.
+ * See docs/adr/0004-docs-portal-shell.md.
  */
 
 :root {
 	--fd-layout-width: 1400px;
 
-	--font-sans:
-		"Inter Variable", ui-sans-serif, system-ui, "Segoe UI", "Leelawadee UI", Thonburi,
-		"Noto Sans Thai", sans-serif;
+	/*
+	 * Tailwind v4 computes spacing from one unit; Contract v2's spacing roles
+	 * are 0.25rem multiples, so `--ds-space-1` is that unit.
+	 */
+	--spacing: var(--ds-space-1);
+
+	--font-sans: "Inter Variable", var(--ds-font-family-sans);
+	--font-mono: var(--ds-font-family-mono);
+
+	--text-xs: var(--ds-font-size-xs);
+	--text-sm: var(--ds-font-size-sm);
+	--text-base: var(--ds-font-size-base);
+	--text-lg: var(--ds-font-size-lg);
+	--text-xl: var(--ds-font-size-xl);
+	--text-2xl: var(--ds-font-size-2xl);
+	--text-3xl: var(--ds-font-size-3xl);
 
 	--color-fd-background: var(--ds-color-background);
 	--color-fd-foreground: var(--ds-color-foreground);
@@ -40,4 +59,35 @@
 	--color-fd-accent-foreground: var(--ds-color-accent-foreground);
 	--color-fd-ring: var(--ds-color-ring);
 	--color-fd-overlay: hsla(0, 0%, 0%, 0.2);
+}
+
+#nd-notebook-layout {
+	--radius-sm: var(--ds-radius-sm);
+	--radius-md: var(--ds-radius-md);
+	--radius-lg: var(--ds-radius-lg);
+	--radius-xl: var(--ds-radius-xl);
+
+	--shadow-control: 0 var(--ds-space-1) var(--ds-space-2)
+		color-mix(in oklab, var(--ds-color-foreground) 10%, transparent);
+	--shadow-control-hover: 0 var(--ds-space-2) var(--ds-space-4)
+		color-mix(in oklab, var(--ds-color-foreground) 14%, transparent);
+}
+
+/* Docs shell cards take the xl corner; the Landing Page is outside this scope. */
+#nd-notebook-layout .rounded-lg.border {
+	border-radius: var(--ds-radius-xl);
+}
+
+/* The search trigger keeps neutral chrome on hover so the control shadow is the affordance. */
+#nd-notebook-layout #nd-subnav :is([data-search], [data-search-full]):is(:hover, :focus-visible) {
+	background-color: var(--ds-color-secondary);
+	color: var(--ds-color-foreground);
+}
+
+#nd-notebook-layout :is(#nd-subnav, #nd-sidebar) :is(a, button):hover {
+	box-shadow: var(--shadow-control-hover);
+}
+
+#nd-notebook-layout :is(#nd-subnav, #nd-sidebar) :is(a, button):focus-visible {
+	box-shadow: var(--shadow-control);
 }

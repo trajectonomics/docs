@@ -20,7 +20,7 @@ Hierarchy reference: twenty.com (owner, 14 Nov 2026), for the docs pages only: a
 | Tabs | In the header (lg and up), in the sidebar Tab dropdown below lg. The current Tab is marked `aria-current="page"`. |
 | Width | 1400px for the docs and the Landing Page. |
 | Table of contents | Absent on pages without headings. |
-| Look | The design-system light/dark Themes (`@trajectonomics/design-system-theme`), mapped onto Fumadocs' `--fd-*` variables by the theme seam and selected by `data-theme` on `<html>`. Self-hosted Inter Variable for type. Radius and shadows stay with the Fumadocs preset until the Semantic Token Contract has length roles (design-system#60). |
+| Look | The design-system light/dark Themes (`@trajectonomics/design-system-theme`), mapped onto the shell's variables by the theme seam and selected by `data-theme` on `<html>`. Contract v2 radius, font-family and font-size roles drive the Tailwind variables the shell consumes, and the spacing scale's base unit drives `--spacing` (design-system#60); the docs layout scopes the radius roles so the Landing Page's `rounded-lg` surfaces keep the preset look. Inter Variable ships from the assets package's font stylesheet (design-system#61). Contract v2 has no shadow role, so the soft hover/focus shadows on the header and sidebar controls and the search trigger compose its length and colour roles. |
 | Home link | Header link to `/` (Site Home), relative, full document load. On a Tab page it is in the header from `lg` up and in the sidebar below that. On the Landing Page and the 404 page it is in the header from `sm` up and in the header menu below that. |
 
 ## Landing Page
@@ -39,7 +39,7 @@ Portal name, one sentence of purpose, an entry for Operators and an entry for Bu
 
 ## Assets
 
-All from `@trajectonomics/design-system-assets`: the docs pages' header shows the wordmark, and Layout.astro links the Favicon Set. docs owns none. The social card is still pending (design-system#34). The Landing Page header keeps the text title.
+All from `@trajectonomics/design-system-assets`: the docs pages' header shows the wordmark, Layout.astro links the Favicon Set, and the global stylesheet imports the Inter Variable font stylesheet (`fonts/inter.css`). docs owns none. The social card is still pending (design-system#34). The Landing Page header keeps the text title.
 
 ## Checking a change
 
