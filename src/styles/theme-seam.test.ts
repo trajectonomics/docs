@@ -26,6 +26,12 @@ const SHELL_COLOURS = [
 	"--color-fd-secondary-foreground",
 ]
 
+/** Radius roles the docs layout takes from the design system. */
+const SHELL_RADII = ["sm", "md", "lg", "xl"] as const
+
+/** Type-scale roles the shell takes from the design system. */
+const SHELL_TYPE_SCALE = ["xs", "sm", "base", "lg", "xl", "2xl", "3xl"] as const
+
 interface Stylesheet {
 	readonly path: string
 	readonly css: string
@@ -57,7 +63,7 @@ function declarationValue(declarations: string, property: string): string | unde
 }
 
 describe("theme seam", () => {
-	test("only the seam stylesheet defines a colour, a font family, a border radius or the layout width", async () => {
+	test("only the seam stylesheet defines a colour, a font family, a border radius, a shadow or a scale", async () => {
 		const stylesheets = await projectStylesheets()
 		const paths = stylesheets.map((stylesheet) => stylesheet.path)
 		expect(paths).toContain(GLOBAL_PATH)
@@ -91,15 +97,58 @@ describe("theme seam", () => {
 		expect(overlay).toMatch(/^hsla?\(/)
 	})
 
-	test("the seam owns the font family", async () => {
+	test("the seam keeps Inter Variable first and takes the rest of the stack from the font role", async () => {
 		const css = await Bun.file(SEAM_PATH).text()
-		expect(declarationsOf(css, ":root")).toMatch(/--font-sans:\s*"Inter Variable"/)
+		const root = declarationsOf(css, ":root")
+		const sans = declarationValue(root, "--font-sans")
+		expect(sans).toContain('"Inter Variable"')
+		expect(sans).toContain("var(--ds-font-family-sans)")
+		expect(declarationValue(root, "--font-mono")).toBe("var(--ds-font-family-mono)")
+	})
+
+	test("the seam maps the type scale from the design-system font-size roles", async () => {
+		const css = await Bun.file(SEAM_PATH).text()
+		const root = declarationsOf(css, ":root")
+		for (const role of SHELL_TYPE_SCALE) {
+			expect(declarationValue(root, `--text-${role}`)).toBe(`var(--ds-font-size-${role})`)
+		}
+	})
+
+	test("the seam maps Tailwind's spacing unit from the design-system spacing scale", async () => {
+		const css = await Bun.file(SEAM_PATH).text()
+		expect(declarationValue(declarationsOf(css, ":root"), "--spacing")).toBe("var(--ds-space-1)")
+	})
+
+	test("the docs layout takes every radius role from design-system, not the preset", async () => {
+		const css = await Bun.file(SEAM_PATH).text()
+		const root = declarationsOf(css, ":root")
+		const layout = declarationsOf(css, "#nd-notebook-layout")
+		for (const role of SHELL_RADII) {
+			expect(declarationValue(layout, `--radius-${role}`)).toBe(`var(--ds-radius-${role})`)
+			expect(declarationValue(root, `--radius-${role}`)).toBeUndefined()
+		}
+	})
+
+	test("the docs shell control shadow composes design-system length and colour roles", async () => {
+		const css = await Bun.file(SEAM_PATH).text()
+		const layout = declarationsOf(css, "#nd-notebook-layout")
+		const shadow = declarationValue(layout, "--shadow-control")
+		expect(shadow).toContain("var(--ds-space-")
+		expect(shadow).toContain("var(--ds-color-foreground)")
+		expect(shadow).not.toMatch(/\d+(?:px|rem|em)\b/)
 	})
 
 	test("the seam caps the layout at 1400px once, on :root", async () => {
 		const css = await Bun.file(SEAM_PATH).text()
 		expect(css.match(/--fd-layout-width\s*:/g) ?? []).toHaveLength(1)
 		expect(declarationsOf(css, ":root")).toMatch(/--fd-layout-width:\s*1400px;/)
+	})
+
+	test("the global stylesheet imports the assets font stylesheet and not the fontsource package", async () => {
+		const css = await Bun.file(GLOBAL_PATH).text()
+		const imports = [...css.matchAll(/@import\s+"([^"]+)"/g)].map((match) => match[1])
+		expect(imports).toContain("@trajectonomics/design-system-assets/fonts/inter.css")
+		expect(imports).not.toContain("@fontsource-variable/inter/index.css")
 	})
 
 	test("the global stylesheet imports both design-system themes and the seam last", async () => {

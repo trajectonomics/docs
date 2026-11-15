@@ -11,5 +11,5 @@ coverage/
 .wrangler/
 .dev.vars
 playwright-report/
-screenshots/
+/screenshots/
 test-results/

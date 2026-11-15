@@ -1,5 +1,11 @@
 /** A declaration kind the theme seam stylesheet must own. */
-export type SeamRule = "colour" | "font-family" | "border-radius" | "layout-width"
+export type SeamRule =
+	| "colour"
+	| "font-family"
+	| "border-radius"
+	| "layout-width"
+	| "shadow"
+	| "scale"
 
 /** One declaration in a project stylesheet that belongs in the theme seam. */
 export interface SeamViolation {
@@ -41,6 +47,9 @@ const FONT_PROPERTY = /^(?:font|font-family|--(?:default-)?(?:mono-)?font-[\w-]+
 const RADIUS_PROPERTY =
 	/^(?:-(?:webkit|moz|ms|o)-)?(?:border(?:-[\w-]+)?-radius|border-radius-[\w-]+|--radius(?:-[\w-]+)?)$/i
 const LAYOUT_WIDTH_PROPERTY = /^--fd-layout-width$/i
+const SHADOW_PROPERTY =
+	/^(?:-(?:webkit|moz|ms|o)-)?(?:box-shadow|text-shadow|--shadow(?:-[\w-]+)?)$/i
+const SCALE_PROPERTY = /^(?:font-size|--(?:space|spacing|text|font-size)[\w-]*)$/i
 const GLOBAL_KEYWORD = /^(?:inherit|initial|unset|revert|revert-layer)$/i
 const IMPORTANT = /\s*!important$/i
 const URL_FUNCTION = /url\([^)]*\)/gi
@@ -82,13 +91,15 @@ function lineNumberAt(source: string, index: number): number {
 
 function classify(property: string, value: string): SeamRule | undefined {
 	if (LAYOUT_WIDTH_PROPERTY.test(property)) return "layout-width"
+	if (RADIUS_PROPERTY.test(property)) return "border-radius"
+	if (SCALE_PROPERTY.test(property)) return "scale"
 	if (FONT_PROPERTY.test(property)) {
 		const namesAFamily = /^(?:font|font-family)$/i.test(property)
 		const keyword = value.trim().replace(IMPORTANT, "")
 		return namesAFamily && GLOBAL_KEYWORD.test(keyword) ? undefined : "font-family"
 	}
-	if (RADIUS_PROPERTY.test(property)) return "border-radius"
 	if (isColour(property, value)) return "colour"
+	if (SHADOW_PROPERTY.test(property)) return "shadow"
 	return undefined
 }
 

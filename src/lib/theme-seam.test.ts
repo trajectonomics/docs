@@ -39,6 +39,24 @@ const RADIUS_DECLARATIONS = [
 	".x { -moz-border-radius-topleft: 4px; }",
 ] as const
 
+const SHADOW_DECLARATIONS = [
+	".x { box-shadow: 0 1px 2px; }",
+	".x { -webkit-box-shadow: 0 1px 2px; }",
+	".x { text-shadow: 0 1px 2px; }",
+	":root { --shadow-card: 0 1px 2px; }",
+	".x { box-shadow: var(--shadow-control); }",
+	".x { box-shadow: 0 1px 2px var(--ds-color-border); }",
+] as const
+
+const SCALE_DECLARATIONS = [
+	".x { font-size: 14px; }",
+	":root { --space-4: 1rem; }",
+	":root { --spacing-4: 1rem; }",
+	":root { --spacing: 0.25rem; }",
+	":root { --text-base: 1rem; }",
+	":root { --font-size-base: 1rem; }",
+] as const
+
 const ALLOWED_DECLARATIONS = [
 	"/* #fff, Inter, 4px, --fd-layout-width */ .x { display: block; }",
 	".x { display: grid; gap: 1rem; margin: 0 auto; }",
@@ -78,6 +96,18 @@ describe("findSeamViolations", () => {
 		})
 	}
 
+	for (const css of SHADOW_DECLARATIONS) {
+		test(`a shadow belongs in the seam: ${css}`, () => {
+			expect(rules(css)).toEqual(["shadow"])
+		})
+	}
+
+	for (const css of SCALE_DECLARATIONS) {
+		test(`a scale variable belongs in the seam: ${css}`, () => {
+			expect(rules(css)).toEqual(["scale"])
+		})
+	}
+
 	test("the layout width belongs in the seam", () => {
 		expect(rules(":root { --fd-layout-width: 1400px; }")).toEqual(["layout-width"])
 	})
@@ -87,6 +117,10 @@ describe("findSeamViolations", () => {
 			expect(rules(css)).toEqual([])
 		})
 	}
+
+	test("a colour-bearing shadow is a colour, not a shadow", () => {
+		expect(rules(".x { box-shadow: 0 1px 2px hsla(0, 0%, 0%, 0.1); }")).toEqual(["colour"])
+	})
 
 	test("the reported line is where the declaration starts", () => {
 		expect(findSeamViolations(".x {\n\tdisplay: block;\n\tcolor: red;\n}")).toEqual([
