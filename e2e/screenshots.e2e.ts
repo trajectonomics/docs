@@ -1,6 +1,7 @@
 import { join } from "node:path"
 import { fileURLToPath } from "node:url"
 import { openPage, pageName, pagesUnderTest } from "./built-site"
+import { waitForSettledPage } from "./docs-portal"
 import { expect, test } from "./fixtures"
 import { TEST_VIEWPORT_HEIGHT_PX, TEST_WIDTHS_PX } from "./viewports"
 
@@ -14,6 +15,7 @@ for (const widthPx of TEST_WIDTHS_PX) {
 			await page.setViewportSize({ width: widthPx, height: TEST_VIEWPORT_HEIGHT_PX })
 			await openPage(page, path)
 			await expect(page.getByRole("heading", { level: 1 })).toBeVisible()
+			await waitForSettledPage(page)
 			await page.screenshot({
 				path: join(SCREENSHOTS_ROOT, String(widthPx), `${pageName(path)}.png`),
 				fullPage: true,

@@ -1,0 +1,14 @@
+/*
+ * Docs Portal shell layout that is not a theme mapping: rules that adapt Fumadocs' markup to the
+ * shell's own geometry, with no colour, radius, shadow, font or scale of their own. Token values
+ * come from the theme seam (theme-seam.css); see docs/adr/0004-docs-portal-shell.md.
+ */
+
+/*
+ * The subnav row cross-fades the page name to the active heading by translating each label a full
+ * line. Clip the row to its 40px bar so a fading label cannot paint over the header or the
+ * hairline; the slide itself stays (docs#69).
+ */
+#nd-notebook-layout [data-toc-popover-trigger] {
+	overflow: hidden;
+}
