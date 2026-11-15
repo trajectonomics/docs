@@ -73,7 +73,10 @@
 		color-mix(in oklab, var(--ds-color-foreground) 14%, transparent);
 }
 
-#nd-notebook-layout :is(#nd-subnav, #nd-sidebar) :is(a, button):hover,
-#nd-notebook-layout :is(#nd-subnav, #nd-sidebar) :is(a, button):focus-visible {
+#nd-notebook-layout :is(#nd-subnav, #nd-sidebar) :is(a, button):hover {
 	box-shadow: var(--shadow-control-hover);
+}
+
+#nd-notebook-layout :is(#nd-subnav, #nd-sidebar) :is(a, button):focus-visible {
+	box-shadow: var(--shadow-control);
 }

@@ -22,6 +22,7 @@ const COLOUR_DECLARATIONS = [
 	"@property --a { initial-value: red; }",
 	":root { --brand: red; }",
 	":root { --color-fd-accent: oklch(62% 0.2 259); }",
+	":root { --text-color: red; }",
 ] as const
 
 const FONT_DECLARATIONS = [
@@ -44,6 +45,7 @@ const SHADOW_DECLARATIONS = [
 	".x { -webkit-box-shadow: 0 1px 2px; }",
 	".x { text-shadow: 0 1px 2px; }",
 	":root { --shadow-card: 0 1px 2px; }",
+	":root { --text-shadow: 0 1px 2px; }",
 	".x { box-shadow: var(--shadow-control); }",
 	".x { box-shadow: 0 1px 2px var(--ds-color-border); }",
 ] as const

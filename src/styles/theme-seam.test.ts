@@ -129,13 +129,15 @@ describe("theme seam", () => {
 		}
 	})
 
-	test("the docs shell control shadow composes design-system length and colour roles", async () => {
+	test("the docs shell control shadows compose design-system length and colour roles", async () => {
 		const css = await Bun.file(SEAM_PATH).text()
 		const layout = declarationsOf(css, "#nd-notebook-layout")
-		const shadow = declarationValue(layout, "--shadow-control")
-		expect(shadow).toContain("var(--ds-space-")
-		expect(shadow).toContain("var(--ds-color-foreground)")
-		expect(shadow).not.toMatch(/\d+(?:px|rem|em)\b/)
+		for (const name of ["--shadow-control", "--shadow-control-hover"]) {
+			const shadow = declarationValue(layout, name)
+			expect(shadow).toContain("var(--ds-space-")
+			expect(shadow).toContain("var(--ds-color-foreground)")
+			expect(shadow).not.toMatch(/\d+(?:px|rem|em)\b/)
+		}
 	})
 
 	test("the seam caps the layout at 1400px once, on :root", async () => {
