@@ -12,3 +12,11 @@
 #nd-notebook-layout [data-toc-popover-trigger] {
 	overflow: hidden;
 }
+
+/*
+ * A code block wider than the column scrolls on its own, inside the block's scroll container, so
+ * it can never widen the page. Backstop for a fence the highlighter left as a bare `<pre>`.
+ */
+#nd-page pre {
+	overflow-x: auto;
+}
