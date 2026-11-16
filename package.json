@@ -18,6 +18,7 @@
 		"preview": "astro build && wrangler dev",
 		"test": "bun test ./src ./scripts",
 		"test:e2e": "bun run build && playwright test",
+		"screenshots:curated": "bun run build && bun scripts/screenshots.ts",
 		"typecheck": "tsc -p tsconfig.json && astro check",
 		"lint": "biome ci --error-on-warnings .",
 		"format": "biome check --write .",

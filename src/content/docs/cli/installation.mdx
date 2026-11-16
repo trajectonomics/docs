@@ -10,11 +10,13 @@ the same compiled binary and the same version
 
 ## Linux and macOS
 
-One line; it verifies the release checksum, installs `traj` to `~/.local/bin` (or
+One command; it verifies the release checksum, installs `traj` to `~/.local/bin` (or
 `$TRAJ_INSTALL_DIR`), and prints what it installed:
 
 ```bash
-curl -fsSL https://github.com/trajectonomics/cli/releases/latest/download/install.sh | sh
+curl -fsSL \
+  https://github.com/trajectonomics/cli/releases/latest/download/install.sh \
+  | sh
 ```
 
 ## Windows
