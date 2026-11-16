@@ -53,11 +53,20 @@ npx @trajectonomics/cli@0.1.0 --version
 
 ## Add the agent skill
 
-After installing, add the `traj` skill to your agent:
+After installing, give your agent the setup skill:
 
 ```bash
-npx skills add trajectonomics/internal-skills --skill traj
+npx skills add trajectonomics/skills --skill traj-onboarding -y
 ```
+
+The setup skill asks about your situation and goal, then its second step installs the `traj`
+operating skill from `trajectonomics/internal-skills`.
+
+```bash
+npx skills add trajectonomics/internal-skills --skill traj -y
+```
+
+That is the operating skill on its own, for an agent that is already set up.
 
 ## Check the installed version
 
