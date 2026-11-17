@@ -6,11 +6,13 @@ status: accepted
 
 The owner named Twenty's docs (`docs.twenty.com`) as the reference and decided the shape in
 [docs#91](https://github.com/trajectonomics/docs/issues/91): the whole layout, one header layer, the
-Tabs centred with the search in the sidebar, the Site Home at the top of the sidebar, and the light
-Theme only. This supersedes the width bullet and the `tabMode: "navbar"` half of the Tabs bullet in
+Tabs centred with the search in the sidebar, the Site Home at the top of the sidebar, and one Theme
+only. This supersedes the width bullet and the `tabMode: "navbar"` half of the Tabs bullet in
 [ADR 0004](./0004-docs-portal-shell.md), and it constrains the light/dark selection of its **look
-comes from design-system** bullet to the light Theme only, the decision
-[ADR 0004's brief](../design/portal-shell.md) records (docs#89).
+comes from design-system** bullet to a single Theme, the decision
+[ADR 0004's brief](../design/portal-shell.md) records (docs#89). The owner chose the light Theme
+first and reversed the decision to dark in the docs#89 Run thread on 17 November 2026; the bullet
+below records the reversal.
 
 - **The shell spans the page.** The notebook layout's two side gutters are zero: the sidebar sits
   flush at the left page edge, the table of contents at the right, and the reading column keeps
@@ -28,10 +30,11 @@ comes from design-system** bullet to the light Theme only, the decision
   search trigger, a hairline closes the block, and the tree follows at Twenty's rhythm. The sidebar
   is not collapsible, because the search lives in it and a collapsed sidebar would strand the
   search. Below `lg` the drawer carries the same block above the Tab dropdown.
-- **The portal is light only.** The theme provider forces `light`, the theme switch is off in both
-  layouts, and the seam declares `color-scheme: light`, so a reader without JavaScript gets light
-  too. The dark Theme CSS and its seam stay loaded and mapped: dark's return is that one value plus
-  the switch.
+- **The portal is dark only.** The theme provider forces `dark`, the theme switch is off in both
+  layouts, and the seam declares `color-scheme: dark`, so a reader without JavaScript gets dark
+  too. The light Theme CSS and its seam stay loaded and mapped: light's return is that one value
+  plus the switch. The owner chose the light Theme first and reversed it to dark on 17 November
+  2026, in the docs#89 Run thread.
 
 ## Considered Options
 

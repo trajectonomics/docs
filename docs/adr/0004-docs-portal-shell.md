@@ -44,5 +44,6 @@ The owner chose Twenty's docs as the reference and asked for the whole layout an
 this ADR's **layout is capped** bullet for the docs pages — they span the page, with the 1400px cap
 left to the home layout — and the `tabMode: "navbar"` half of its **Tabs are in the header** bullet:
 the header is one row with the Tabs centred, the search and the Site Home live at the top of a
-non-collapsible sidebar, and the light-only Theme constrains the light/dark selection the **look
-comes from design-system** bullet records.
+non-collapsible sidebar, and the one-Theme decision constrains the light/dark selection the **look
+comes from design-system** bullet records: the owner chose light first and reversed it to dark on
+17 November 2026, in the docs#89 Run thread ([ADR 0009](./0009-shell-spans-the-page-one-header-row-and-twentys-sidebar.md)).

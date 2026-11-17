@@ -16,7 +16,8 @@ const NAMED_ENTITIES: Readonly<Record<string, string>> = {
 	nbsp: " ",
 }
 
-function attribute(attributes: string, name: string): string | undefined {
+/** The value of one attribute of a start tag's attribute text, or `undefined` when it has none. */
+export function tagAttribute(attributes: string, name: string): string | undefined {
 	return new RegExp(`(?:^|\\s)${name}="([^"]*)"`).exec(attributes)?.[1]
 }
 
@@ -57,8 +58,8 @@ function contentUntilClose(html: string, start: number, tag: string): string | u
 export function anchors(html: string): readonly HtmlAnchor[] {
 	return [...html.matchAll(ANCHOR)].map((match) =>
 		Object.freeze({
-			href: attribute(match[1] ?? "", "href"),
-			ariaCurrent: attribute(match[1] ?? "", "aria-current"),
+			href: tagAttribute(match[1] ?? "", "href"),
+			ariaCurrent: tagAttribute(match[1] ?? "", "aria-current"),
 			text: textOf(match[2] ?? ""),
 		}),
 	)

@@ -2,6 +2,7 @@ import type { Page } from "@playwright/test"
 import { openPage } from "./built-site"
 import { SUBNAV_TRIGGER, waitForSettledPage } from "./docs-portal"
 import { expect, test } from "./fixtures"
+import { expectDarkTheme } from "./theme"
 import { TEST_VIEWPORT_HEIGHT_PX } from "./viewports"
 
 /** The phone width the issue names, and the width every committed 390px screenshot shows. */
@@ -45,11 +46,14 @@ for (const widthPx of WIDTHS_BELOW_XL_PX) {
 	})
 }
 
-test.describe("the dark theme", () => {
-	test.use({ colorScheme: "dark" })
+test.describe("a device set to light", () => {
+	test.use({ colorScheme: "light" })
 
-	test(`the subnav row clips its cross-fade at ${PHONE_WIDTH_PX}px`, async ({ page }) => {
+	test(`the subnav row clips its cross-fade and the page keeps the dark Theme at ${PHONE_WIDTH_PX}px`, async ({
+		page,
+	}) => {
 		await checkRowIsClipped(page, PHONE_WIDTH_PX)
+		await expectDarkTheme(page)
 	})
 })
 

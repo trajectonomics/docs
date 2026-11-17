@@ -3,6 +3,9 @@
  * `docs/screenshots/`: the built Docs Portal at 1280, 2000 and 390px in light and dark, driven
  * the way `e2e/screenshots.e2e.ts` drives it (same viewport height, full page, settled page).
  * The e2e suite's own tree stays flat and gitignored; this one is the evidence a PR carries.
+ *
+ * Both sets stay while the Docs Portal exposes one Theme (docs#89): the set captured with the
+ * device set to light renders the same dark look, so light's return needs no new evidence.
  */
 import { mkdir } from "node:fs/promises"
 import { dirname } from "node:path"
@@ -26,7 +29,8 @@ async function waitForAnimations(page: Page): Promise<void> {
 /** Capture one shot from a page already opening the built site. */
 async function capture(page: Page, shot: CuratedShot): Promise<void> {
 	await page.setViewportSize({ width: shot.widthPx, height: TEST_VIEWPORT_HEIGHT_PX })
-	// next-themes follows the system scheme until a reader picks one, so this is the theme.
+	// The shell forces the dark Theme, so the light set renders the same dark look; the device
+	// scheme is still emulated, because it is what a reader on that device actually brings.
 	await page.emulateMedia({ colorScheme: shot.theme })
 	await page.goto(`${BASE_URL}${shot.path}`)
 	await waitForSettledPage(page)

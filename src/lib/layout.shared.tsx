@@ -66,5 +66,8 @@ export function baseOptions(layout: PortalLayout, options?: BaseOptions): BaseLa
 	return {
 		nav: { title: options?.navTitle ?? PORTAL_NAME, url: `${DOCS_BASE_PATH}/` },
 		links: layout === "home" ? [...homeSiteHomeLinks()] : [notebookSiteHomeLink()],
+		// The Docs Portal exposes one Theme for now (docs#89), so no control offers the other
+		// one. Light's return flips this option and deletes the provider's forced value.
+		themeSwitch: { enabled: false },
 	}
 }

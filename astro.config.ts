@@ -21,6 +21,14 @@ export default defineConfig({
 					// scroll container); they also need the fence shape src/lib/code-fences.ts restores.
 					components: "./src/components/mdx.tsx",
 					hastPlugins: (plugins) => [restoreCodeFences(), ...plugins],
+					// GitHub's current dark palette, not the older `github-dark` Fumadocs defaults to:
+					// that theme's comment colour (#6A737D) fails WCAG AA on the dark code surface
+					// (#171717, 3.7:1), and the accessibility suite fails every page with a fence.
+					// The light palette stays the default; replace this once the design system owns
+					// syntax colours (docs#89).
+					rehypeCodeOptions: {
+						themes: { light: "github-light", dark: "github-dark-default" },
+					},
 				},
 			},
 		}),

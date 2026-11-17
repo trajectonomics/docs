@@ -115,6 +115,11 @@ describe("theme seam", () => {
 		expect(declarationValue(declarations, "color")).toBe("var(--ds-color-foreground)")
 	})
 
+	test("the seam states the dark rendering mode for a reader with JavaScript off", async () => {
+		const css = await Bun.file(SEAM_PATH).text()
+		expect(declarationValue(declarationsOf(css, ":root"), "color-scheme")).toBe("dark")
+	})
+
 	test("the seam caps the layout at 1400px once, on :root", async () => {
 		const css = await Bun.file(SEAM_PATH).text()
 		expect(css.match(/--fd-layout-width\s*:/g) ?? []).toHaveLength(1)

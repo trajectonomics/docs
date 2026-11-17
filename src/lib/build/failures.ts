@@ -20,6 +20,9 @@ export type BuildFailureCode =
 	| "SIDEBAR_TAB_TITLE_LINK"
 	| "TOC_PLACEHOLDER_PRESENT"
 	| "PLACEHOLDER_COPY_PRESENT"
+	| "THEME_NOT_DARK"
+	| "THEME_LIGHT_CLASS"
+	| "THEME_TOGGLE_PRESENT"
 
 /** One failed build check: the rule's code, the file it concerns and a line a maintainer can act on. */
 export interface BuildFailure {
