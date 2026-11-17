@@ -3,8 +3,9 @@ title: Quickstart
 description: Install the Trajectonomics CLI and record your first transaction.
 ---
 
-The Trajectonomics CLI, `traj`, is the command-line interface Operators install and run. The latest
-release is `v0.1.0`. It keeps a double-entry ledger in one local database and answers balance,
+The Trajectonomics CLI, `traj`, is the command-line interface Operators install and run, and an
+[Agent](/docs/cli/agent/) runs it: `traj` computes and the Agent judges. The latest release is
+`v0.1.0`. It keeps a double-entry ledger in one local database and answers balance,
 net-worth and report questions about it. It never reads a clock: every command takes its date from
 you ([ADR 0018](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0018-no-clock-in-ledger-commands.md),
 [ADR 0029](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0029-reads-take-their-date-from-the-caller.md)).
@@ -43,6 +44,8 @@ supports. `--as-of` is required on `balance`. Dates are `YYYY-MM-DD`.
 ## In this Tab
 
 - [Installation](/docs/cli/installation/): the three install channels, release pinning and uninstall.
+- [Agent](/docs/cli/agent/): what the Agent asks you for, where the tool stops, and what this
+  release cannot do yet.
 - [Configuration](/docs/cli/configuration/): the environment variables the CLI reads.
 - [Commands](/docs/cli/commands/): the `v0.1.0` command reference.
 
