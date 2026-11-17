@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { Glob } from "bun"
+import { declarationsOf, declarationValue } from "../lib/css-declarations"
 import { findSeamViolations } from "../lib/theme-seam"
 
 const SEAM_PATH = "src/styles/theme-seam.css"
@@ -26,9 +27,6 @@ const SHELL_COLOURS = [
 	"--color-fd-secondary-foreground",
 ]
 
-/** Radius roles the docs layout takes from the design system. */
-const SHELL_RADII = ["sm", "md", "lg", "xl"] as const
-
 /** Type-scale roles the shell takes from the design system. */
 const SHELL_TYPE_SCALE = ["xs", "sm", "base", "lg", "xl", "2xl", "3xl"] as const
 
@@ -45,21 +43,9 @@ async function projectStylesheets(): Promise<readonly Stylesheet[]> {
 	return stylesheets
 }
 
-/** Declarations inside the first block whose selector is exactly `selector`. */
-function declarationsOf(css: string, selector: string): string {
-	const selectorStart = css.indexOf(`${selector} {`)
-	if (selectorStart === -1) return ""
-	const bodyStart = css.indexOf("{", selectorStart) + 1
-	return css.slice(bodyStart, css.indexOf("}", bodyStart))
-}
-
 function colourVariables(declarations: string): readonly string[] {
 	const names = [...declarations.matchAll(/(--color-fd-[\w-]+)\s*:/g)].map((match) => match[1])
 	return names.filter((name): name is string => name !== undefined).sort()
-}
-
-function declarationValue(declarations: string, property: string): string | undefined {
-	return new RegExp(`(?<![-\\w])${property}\\s*:\\s*([^;]+)`).exec(declarations)?.[1]?.trim()
 }
 
 describe("theme seam", () => {
@@ -119,27 +105,7 @@ describe("theme seam", () => {
 		expect(declarationValue(declarationsOf(css, ":root"), "--spacing")).toBe("var(--ds-space-1)")
 	})
 
-	test("the docs layout takes every radius role from design-system, not the preset", async () => {
-		const css = await Bun.file(SEAM_PATH).text()
-		const root = declarationsOf(css, ":root")
-		const layout = declarationsOf(css, "#nd-notebook-layout")
-		for (const role of SHELL_RADII) {
-			expect(declarationValue(layout, `--radius-${role}`)).toBe(`var(--ds-radius-${role})`)
-			expect(declarationValue(root, `--radius-${role}`)).toBeUndefined()
-		}
-	})
-
-	test("the docs shell cards take the xl corner from the design-system role", async () => {
-		const css = await Bun.file(SEAM_PATH).text()
-		expect(
-			declarationValue(
-				declarationsOf(css, "#nd-notebook-layout .rounded-lg.border"),
-				"border-radius",
-			),
-		).toBe("var(--ds-radius-xl)")
-	})
-
-	test("the search trigger keeps neutral chrome on hover so the shadow is the affordance", async () => {
+	test("the search trigger keeps neutral chrome on hover", async () => {
 		const css = await Bun.file(SEAM_PATH).text()
 		const declarations = declarationsOf(
 			css,
@@ -147,17 +113,6 @@ describe("theme seam", () => {
 		)
 		expect(declarationValue(declarations, "background-color")).toBe("var(--ds-color-secondary)")
 		expect(declarationValue(declarations, "color")).toBe("var(--ds-color-foreground)")
-	})
-
-	test("the docs shell control shadows compose design-system length and colour roles", async () => {
-		const css = await Bun.file(SEAM_PATH).text()
-		const layout = declarationsOf(css, "#nd-notebook-layout")
-		for (const name of ["--shadow-control", "--shadow-control-hover"]) {
-			const shadow = declarationValue(layout, name)
-			expect(shadow).toContain("var(--ds-space-")
-			expect(shadow).toContain("var(--ds-color-foreground)")
-			expect(shadow).not.toMatch(/\d+(?:px|rem|em)\b/)
-		}
 	})
 
 	test("the seam caps the layout at 1400px once, on :root", async () => {

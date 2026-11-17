@@ -41,7 +41,7 @@ export async function openPageTitle(page: Page): Promise<string> {
 	return title.trim()
 }
 
-/** Open the Docs Portal search dialog. */
+/** Open the Docs Portal search dialog, from the trigger a desktop shows. */
 export async function openSearch(page: Page): Promise<void> {
 	await waitForIsland(page)
 	// The header control's name shows the keyboard shortcut, so match on "search".
@@ -49,6 +49,36 @@ export async function openSearch(page: Page): Promise<void> {
 		.getByRole("button", { name: /search/i })
 		.first()
 		.click()
+	await page.locator('[role="dialog"]').waitFor()
+}
+
+/** Open the search dialog from the icon button a phone shows instead of the full-width trigger. */
+export async function openPhoneSearch(page: Page): Promise<void> {
+	await waitForIsland(page)
+	await page.getByRole("button", { name: "Open Search" }).click()
+	await page.locator('[role="dialog"]').waitFor()
+}
+
+/** Open the home layout's header menu, the navigation a phone shows below the lg breakpoint. */
+export async function openPhoneMenu(page: Page): Promise<void> {
+	await waitForIsland(page)
+	await page.getByRole("button", { name: "Toggle Menu" }).click()
+	// The trigger and the panel it opens carry the open state.
+	await page.locator("#nd-nav [data-state='open']").first().waitFor()
+}
+
+/** Open the notebook layout's sidebar drawer, the sidebar a phone reaches through the header. */
+export async function openSidebarDrawer(page: Page): Promise<void> {
+	await waitForIsland(page)
+	await page.getByRole("button", { name: "Open Sidebar" }).click()
+	await page.locator('#nd-sidebar-mobile[data-state="open"]').waitFor()
+}
+
+/** Open the table-of-contents popover that stands in for the sidebar's contents on a phone. */
+export async function openTocPopover(page: Page): Promise<void> {
+	await waitForIsland(page)
+	await page.locator(SUBNAV_TRIGGER).click()
+	await page.locator(`${SUBNAV_TRIGGER}[aria-expanded="true"]`).waitFor()
 }
 
 /** The subnav row's table-of-contents trigger; only a docs page with headings renders it. */

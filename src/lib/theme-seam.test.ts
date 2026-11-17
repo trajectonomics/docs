@@ -48,6 +48,8 @@ const SHADOW_DECLARATIONS = [
 	":root { --text-shadow: 0 1px 2px; }",
 	".x { box-shadow: var(--shadow-control); }",
 	".x { box-shadow: 0 1px 2px var(--ds-color-border); }",
+	// `none` is still a shadow declaration: no stylesheet outside the seam may say it either.
+	".x { box-shadow: none; }",
 ] as const
 
 const SCALE_DECLARATIONS = [

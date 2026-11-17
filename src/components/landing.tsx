@@ -18,7 +18,7 @@ export function Landing(props: ProviderProps) {
 							<a
 								key={tab.folder}
 								href={tabUrl(tab)}
-								className="rounded-lg border bg-fd-card p-6 text-lg font-medium text-fd-card-foreground transition-colors hover:bg-fd-accent hover:text-fd-accent-foreground"
+								className="rounded-md border bg-fd-card p-6 text-lg font-medium text-fd-card-foreground transition-colors hover:bg-fd-accent hover:text-fd-accent-foreground"
 							>
 								{tab.entry}
 							</a>
