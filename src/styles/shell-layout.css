@@ -77,11 +77,12 @@
  * only took a `max-width` would be centred at its content width, and centring the article's items
  * with `align-items` stops the scroll spy marking the headings it centres (docs#91).
  *
- * The page's own content arrives through Astro's slot, which is `display: contents`: its children
- * are items of the article too, so the measure has to reach them past that slot (docs#91).
+ * The page's own content arrives through Astro's slot and two `display: contents` wrappers, so it
+ * is the prose wrapper the MDX pipeline renders (`DocsBody`, src/components/mdx.tsx) that takes the
+ * measure; a child of the article would only reach the wrappers (docs#91).
  */
 #nd-notebook-layout #nd-page > *,
-#nd-notebook-layout #nd-page > astro-slot > * {
+#nd-notebook-layout #nd-page .prose {
 	width: 100%;
 	max-width: var(--fd-reading-measure);
 	margin-inline: auto;

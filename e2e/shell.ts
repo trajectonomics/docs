@@ -32,13 +32,13 @@ export async function openDocsPage(page: Page, widthPx: number): Promise<void> {
 }
 
 /**
- * The rendered boxes of the reading column's blocks, past Astro's `display: contents` slot, so the
- * prose is measured as well as the title. A box with no width (a style or script element) is left
- * out.
+ * The rendered boxes of the reading column's blocks: the article's own children (the title, its
+ * description, the pager) and the prose wrapper the MDX pipeline renders for the rest. A box with
+ * no width (a `display: contents` wrapper, a style or script element) is left out.
  */
 export async function readingBlocks(page: Page): Promise<readonly Box[]> {
 	return page.evaluate(() =>
-		[...document.querySelectorAll("#nd-page > *, #nd-page > astro-slot > *")].flatMap((element) => {
+		[...document.querySelectorAll("#nd-page > *, #nd-page .prose")].flatMap((element) => {
 			const rect = element.getBoundingClientRect()
 			return rect.width === 0 ? [] : [{ x: rect.x, width: rect.width, height: rect.height }]
 		}),

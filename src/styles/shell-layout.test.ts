@@ -7,8 +7,8 @@ const SEAM_PATH = "src/styles/theme-seam.css"
 /** One child of the reading column: a heading, a paragraph, the content body. */
 const READING_COLUMN_CHILD = "#nd-notebook-layout #nd-page > *"
 
-/** The page's own content, which reaches the reading column through Astro's `display: contents`. */
-const READING_COLUMN_SLOTTED = "#nd-notebook-layout #nd-page > astro-slot > *"
+/** The page's own content: the prose wrapper the MDX pipeline renders for it. */
+const READING_COLUMN_PROSE = "#nd-notebook-layout #nd-page .prose"
 
 /** The sidebar's Tab dropdown, which the one-row header replaces from lg up. */
 const SIDEBAR_TABS = "#nd-sidebar [data-sidebar-tabs]"
@@ -38,7 +38,7 @@ function mediaBlock(css: string, condition: string): string {
 describe("shell layout stylesheet", () => {
 	test("caps and centres the reading column from the seam's measure, not a literal", async () => {
 		const css = await shellCss()
-		for (const selector of [READING_COLUMN_CHILD, READING_COLUMN_SLOTTED]) {
+		for (const selector of [READING_COLUMN_CHILD, READING_COLUMN_PROSE]) {
 			const child = declarationsOf(css, selector)
 			expect(declarationValue(child, "width"), selector).toBe("100%")
 			expect(declarationValue(child, "max-width"), selector).toBe("var(--fd-reading-measure)")
