@@ -1,8 +1,4 @@
-/**
- * The declaration block of the stylesheet rule whose selector list contains `selector`, without
- * its comments: what the theme seam's tests read, because the seam is a mapping of names to
- * declarations. Returns an empty string when no rule has that selector.
- */
+/** The declarations of the rule whose selector list contains `selector`, or `""` when none does. */
 export function declarationsOf(css: string, selector: string): string {
 	const source = css.replace(/\/\*[\s\S]*?\*\//g, "")
 	for (const match of source.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {

@@ -58,8 +58,8 @@ describe("theme seam shape", () => {
 		}
 	})
 
-	test("the docs shell cards keep no radius override of their own", async () => {
-		expect(await seamCss()).not.toContain(".rounded-lg.border")
+	test("the seam declares no corner of its own, only the radius roles", async () => {
+		expect(withoutComments(await seamCss())).not.toMatch(/border-radius/)
 	})
 
 	test("the seam paints no shadow and keeps no shadow role", async () => {
