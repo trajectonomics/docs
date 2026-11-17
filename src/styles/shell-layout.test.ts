@@ -66,7 +66,7 @@ describe("shell layout stylesheet", () => {
 
 	test("ships Twenty's rhythm for the sidebar's rows and the Tab dropdown's width", async () => {
 		const css = await shellCss()
-		const tree = declarationsOf(css, `${SIDEBAR_SCOPE} [data-sidebar-top-block] + div > div`)
+		const tree = declarationsOf(css, `${SIDEBAR_SCOPE} [data-radix-scroll-area-viewport]`)
 		expect(declarationValue(tree, "padding")).toBe("0.75rem")
 		const row = declarationsOf(css, `${SIDEBAR_SCOPE} :is(a, button)`)
 		expect(declarationValue(row, "min-height")).toBe("2.25rem")

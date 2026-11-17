@@ -17,16 +17,16 @@
 
 /*
  * The sidebar's tree takes Twenty's rhythm: 36px rows standing 6px apart, inset 12px, instead of
- * Fumadocs' flush 16px block (docs#91). The top block is the banner the shell renders, so its next
- * sibling is the scroll area, whose own child is the viewport that holds the rows; Fumadocs
- * already stands them 2px apart with an `!important` utility its layer outranks, and 4px more on
- * each row after the first makes the 6px.
+ * Fumadocs' flush 16px block (docs#91). The inset lands on Radix's viewport inside the sidebar's
+ * scroll area, never on the area's other children (the corner and the scrollbar). Fumadocs already
+ * stands the rows 2px apart with an `!important` utility, and an important declaration in a layer
+ * outranks this unlayered stylesheet, so the other 4px comes from each row after the first.
  */
-:where(#nd-sidebar, #nd-sidebar-mobile) [data-sidebar-top-block] + div > div {
+:where(#nd-sidebar, #nd-sidebar-mobile) [data-radix-scroll-area-viewport] {
 	padding: 0.75rem;
 }
 
-:where(#nd-sidebar, #nd-sidebar-mobile) [data-sidebar-top-block] + div > div > div > * + * {
+:where(#nd-sidebar, #nd-sidebar-mobile) [data-radix-scroll-area-viewport] > div > * + * {
 	margin-block-start: 0.25rem;
 }
 

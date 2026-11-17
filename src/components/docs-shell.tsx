@@ -70,9 +70,10 @@ export interface DocsSidebarBannerProps {
 }
 
 /**
- * The sidebar's top block: the way back to the Site Home above the search trigger, closed by the
- * hairline the tree starts under, then the Tab dropdown the header row gives up below `lg`. The
- * drawer renders the same block, with its close button beside the Site Home button (ADR 0009).
+ * The sidebar's top block: the way back to the Site Home above the search trigger, a hairline under
+ * them, then the Tab dropdown the header row gives up below `lg`. The tree follows the block; from
+ * `lg` up it follows the hairline, because the dropdown is hidden there. The drawer renders the
+ * same block, with its close button beside the Site Home button (ADR 0009).
  */
 export function DocsSidebarBanner({ tabs }: DocsSidebarBannerProps) {
 	return (
