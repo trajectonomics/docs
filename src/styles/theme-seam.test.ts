@@ -128,9 +128,9 @@ describe("theme seam", () => {
 
 	test("the drawer's tree takes the desktop sidebar's text size", async () => {
 		const css = await Bun.file(SEAM_PATH).text()
-		expect(declarationValue(declarationsOf(css, "#nd-notebook-layout #nd-sidebar-mobile"), "font-size")).toBe(
-			"var(--ds-font-size-sm)",
-		)
+		expect(
+			declarationValue(declarationsOf(css, "#nd-notebook-layout #nd-sidebar-mobile"), "font-size"),
+		).toBe("var(--ds-font-size-sm)")
 	})
 
 	test("the seam declares the reading measure once, on :root", async () => {

@@ -95,6 +95,18 @@
 }
 
 /*
+ * Fumadocs' floating panels separate from the page behind the hairline they already carry, not a
+ * shadow: the search dialog, the home layout's phone menu, the sidebar drawer and the
+ * table-of-contents popover. Tailwind's `shadow-*` utilities hold their values in `--tw-shadow`,
+ * so redefining a shadow role there would do nothing; the utility itself has to be answered.
+ */
+#nd-nav > div,
+#nd-sidebar-mobile,
+[data-toc-popover] > header,
+[role="dialog"] {
+	box-shadow: none;
+}
+/*
  * The sidebar's way back to the site is the shell's control surface: a hairline border on the
  * secondary ground, muted until the reader points at it.
  */
@@ -107,14 +119,6 @@
 #nd-notebook-layout [data-site-home]:is(:hover, :focus-visible) {
 	background-color: var(--ds-color-accent);
 	color: var(--ds-color-accent-foreground);
-}
-
-/*
- * The drawer's tree reads at the desktop sidebar's size: Fumadocs sets the drawer to 0.9375rem, so
- * the same navigation would change size when a phone opens it (docs#91).
- */
-#nd-notebook-layout #nd-sidebar-mobile {
-	font-size: var(--ds-font-size-sm);
 }
 
 /* Twenty's rhythm marks the row the reader is on with the secondary ground, not an accent tint. */
@@ -135,14 +139,9 @@
 }
 
 /*
- * Fumadocs' floating panels separate from the page behind the hairline they already carry, not a
- * shadow: the search dialog, the home layout's phone menu, the sidebar drawer and the
- * table-of-contents popover. Tailwind's `shadow-*` utilities hold their values in `--tw-shadow`,
- * so redefining a shadow role there would do nothing; the utility itself has to be answered.
+ * The drawer's tree reads at the desktop sidebar's size: Fumadocs sets the drawer to 0.9375rem, so
+ * the same navigation would change size when a phone opens it (docs#91).
  */
-#nd-nav > div,
-#nd-sidebar-mobile,
-[data-toc-popover] > header,
-[role="dialog"] {
-	box-shadow: none;
+#nd-notebook-layout #nd-sidebar-mobile {
+	font-size: var(--ds-font-size-sm);
 }
