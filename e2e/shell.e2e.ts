@@ -80,6 +80,19 @@ async function siteComesFirst(block: ReturnType<Page["locator"]>): Promise<boole
 	})
 }
 
+/**
+ * The rendered boxes of the reading column's blocks, past Astro's `display: contents` slot, so the
+ * prose is measured as well as the title. Empty boxes (a style or script element) are left out.
+ */
+async function readingBlocks(page: Page): Promise<readonly Box[]> {
+	return page.evaluate(() =>
+		[...document.querySelectorAll("#nd-page > *, #nd-page > astro-slot > *")].flatMap((element) => {
+			const rect = element.getBoundingClientRect()
+			return rect.width === 0 ? [] : [{ x: rect.x, width: rect.width, height: rect.height }]
+		}),
+	)
+}
+
 /** Open the docs page at `widthPx` and let the shell settle. */
 async function openDocsPage(page: Page, widthPx: number): Promise<void> {
 	await page.setViewportSize({ width: widthPx, height: TEST_VIEWPORT_HEIGHT_PX })
@@ -96,7 +109,7 @@ test("the shell spans the page and the header is one row", async ({ page }) => {
 	const wordmark = await box(page, "#nd-subnav [data-header-body] a")
 	const sidebar = await box(page, "#nd-sidebar")
 	const contents = await box(page, "#nd-toc")
-	const reading = await box(page, "#nd-page > *")
+	const blocks = await readingBlocks(page)
 
 	expect(header, "the header is rendered").not.toBeNull()
 	expect(header?.x, "the header starts at the page's left edge").toBe(0)
@@ -121,15 +134,19 @@ test("the shell spans the page and the header is one row", async ({ page }) => {
 	// The wordmark keeps the header's own inset, so the row starts where the page does.
 	expect(wordmark?.x, "the wordmark sits at the header's inset").toBe(HEADER_INSET_PX)
 
-	// The reading column keeps its measure, centred between the sidebar and the contents.
-	const sidebarRight = (sidebar?.x ?? 0) + (sidebar?.width ?? 0)
+	// Every block of the reading column — the title, the prose, a code block — keeps the measure.
+	const reading = blocks.find((block) => block.width === READING_MEASURE_PX)
 	const contentsLeft = contents?.x ?? 0
-	expect(reading, "the reading column is rendered").not.toBeNull()
-	expect(reading?.width, "the reading column takes the measure").toBe(READING_MEASURE_PX)
-	expect(reading?.x, "the reading column is centred in the page track").toBeCloseTo(
-		sidebarRight + (contentsLeft - sidebarRight - READING_MEASURE_PX) / 2,
-		0,
-	)
+	expect(reading, "some block of the reading column takes the measure").toBeDefined()
+	expect(
+		blocks.map((block) => block.width),
+		"every block is at most the measure",
+	).toEqual(blocks.map(() => READING_MEASURE_PX))
+	expect(
+		blocks.map((block) => Math.round(block.x)),
+		"every block starts at the measure's left edge",
+	).toEqual(blocks.map(() => Math.round(reading?.x ?? 0)))
+	expect(reading?.x).toBeLessThanOrEqual(contentsLeft)
 })
 
 test("the sidebar's tree keeps the reference's rhythm", async ({ page }) => {

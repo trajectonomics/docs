@@ -70,20 +70,21 @@ export interface DocsSidebarBannerProps {
 }
 
 /**
- * The sidebar's top block: the way back to the Site Home above the search trigger, then the Tab
- * dropdown the header row gives up below `lg`, with the drawer's close button beside the button
- * (ADR 0009). The drawer renders the same block, which is why it carries the hairline the tree
- * starts under.
+ * The sidebar's top block: the way back to the Site Home above the search trigger, closed by the
+ * hairline the tree starts under, then the Tab dropdown the header row gives up below `lg`. The
+ * drawer renders the same block, with its close button beside the Site Home button (ADR 0009).
  */
 export function DocsSidebarBanner({ tabs }: DocsSidebarBannerProps) {
 	return (
-		<div data-sidebar-top-block="" className="flex flex-col gap-2 border-b p-3">
-			<div className="flex items-start gap-2">
-				<div className="flex-1">{siteHomeButton()}</div>
-				{drawerClose()}
+		<div data-sidebar-top-block="" className="flex flex-col">
+			<div className="flex flex-col gap-2 border-b p-3">
+				<div className="flex items-start gap-2">
+					<div className="flex-1">{siteHomeButton()}</div>
+					{drawerClose()}
+				</div>
+				<FullSearchTrigger hideIfDisabled />
 			</div>
-			<FullSearchTrigger hideIfDisabled />
-			<div data-sidebar-tabs="" className="empty:hidden">
+			<div data-sidebar-tabs="" className="flex flex-col gap-2 p-3 empty:hidden">
 				<SidebarTabsDropdown options={[...tabs]} />
 			</div>
 		</div>
