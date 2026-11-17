@@ -5,64 +5,21 @@
  * The e2e suite's own tree stays flat and gitignored; this one is the evidence a PR carries.
  */
 import { mkdir } from "node:fs/promises"
-import { dirname, join } from "node:path"
+import { dirname } from "node:path"
 import { chromium, type Page } from "@playwright/test"
 import { waitForSettledPage } from "../e2e/docs-portal"
-import { TEST_VIEWPORT_HEIGHT_PX, TEST_WIDTHS_PX } from "../e2e/viewports"
+import { TEST_VIEWPORT_HEIGHT_PX } from "../e2e/viewports"
+import { type CuratedShot, curatedShots } from "./screenshot-pages"
 
 /** The port this script serves the built site on; not the e2e suite's, so both can run at once. */
 const PORT = 8788
 
 const BASE_URL = `http://127.0.0.1:${PORT}`
 
-/** Fumadocs' copy control on a code block: the "Copy Text" button in the block's figure. */
-const COPY_CONTROL = "#nd-page figure button[aria-live='polite']"
-
-/** The pages the curated set shows, each under the file name it is committed as. */
-const PAGES: readonly CuratedPage[] = [
-	{ path: "/docs/", name: "landing-page", widthsPx: TEST_WIDTHS_PX, hover: null },
-	{ path: "/docs/no-such-page/", name: "not-found", widthsPx: TEST_WIDTHS_PX, hover: null },
-	{ path: "/docs/cli/", name: "cli", widthsPx: TEST_WIDTHS_PX, hover: null },
-	{
-		path: "/docs/cli/commands/tx/",
-		name: "cli-commands-tx",
-		widthsPx: TEST_WIDTHS_PX,
-		hover: null,
-	},
-	// The copy control's hover state, which the plain grid never reaches.
-	{ path: "/docs/cli/", name: "cli-hover", widthsPx: [1280], hover: COPY_CONTROL },
-]
-
-/** A page the curated set shows, the widths it is shown at, and any hover state it needs. */
-interface CuratedPage {
-	readonly path: string
-	readonly name: string
-	readonly widthsPx: readonly number[]
-	readonly hover: string | null
-}
-
-/** One committed screenshot: the theme, width and page it shows, and the file it lands in. */
-export interface CuratedShot {
-	readonly theme: "light" | "dark"
-	readonly widthPx: number
-	readonly path: string
-	readonly hover: string | null
-	readonly file: string
-}
-
-/** Every curated screenshot, as `docs/screenshots/<theme>/<width>/<page>.png`. */
-export function curatedShots(root = "docs/screenshots"): CuratedShot[] {
-	const themes = ["light", "dark"] as const
-	return themes.flatMap((theme) =>
-		PAGES.flatMap((page) =>
-			page.widthsPx.map((widthPx) => ({
-				theme,
-				widthPx,
-				path: page.path,
-				hover: page.hover,
-				file: join(root, theme, String(widthPx), `${page.name}.png`),
-			})),
-		),
+/** Wait until no transition or animation is still running, so a shot shows the settled state. */
+async function waitForAnimations(page: Page): Promise<void> {
+	await page.waitForFunction(() =>
+		document.getAnimations().every((animation) => animation.playState !== "running"),
 	)
 }
 
@@ -73,11 +30,12 @@ async function capture(page: Page, shot: CuratedShot): Promise<void> {
 	await page.emulateMedia({ colorScheme: shot.theme })
 	await page.goto(`${BASE_URL}${shot.path}`)
 	await waitForSettledPage(page)
-	if (shot.hover !== null) {
-		await page.hover(shot.hover)
+	if (shot.drive !== null) {
+		await shot.drive(page)
+		await waitForAnimations(page)
 	}
 	await mkdir(dirname(shot.file), { recursive: true })
-	await page.screenshot({ path: shot.file, fullPage: true })
+	await page.screenshot({ path: shot.file, fullPage: shot.fullPage })
 }
 
 /** Serve the built site the way the e2e suite does, returning a stop function. */

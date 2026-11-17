@@ -25,7 +25,7 @@ export type PortalLayout = "notebook" | "home"
  * The link a reader clicks to leave the Docs Portal. A child anchor, not a normal link item,
  * because only a custom child renders as given: a full document load (`data-astro-reload`), and
  * no prefetch, which would fetch `/` on hover (a page staging does not serve). The classes are
- * the header and sidebar link treatment.
+ * the control corner and the header and sidebar link treatment.
  */
 function siteHomeAnchor() {
 	return (
@@ -33,7 +33,7 @@ function siteHomeAnchor() {
 			href={SITE_HOME_PATH}
 			data-astro-reload
 			data-astro-prefetch="false"
-			className="inline-flex items-center rounded-lg p-2 text-sm text-fd-muted-foreground transition-colors hover:text-fd-accent-foreground"
+			className="inline-flex items-center rounded-sm p-2 text-sm text-fd-muted-foreground transition-colors hover:text-fd-accent-foreground"
 		>
 			{SITE_HOME_LABEL}
 		</a>

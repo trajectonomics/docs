@@ -1,6 +1,6 @@
 /*
- * The theme seam: the only project stylesheet that defines a colour, a font
- * family, a border radius, a shadow or the layout width.
+ * The theme seam: the only project stylesheet that defines a colour, a font family, a border
+ * radius, a shadow or the layout width.
  *
  * Colours, radius, spacing, font families and font sizes come from the design
  * system: global.css imports the prebuilt
@@ -14,11 +14,10 @@
  *
  * The seam still owns the layout width and the `--font-sans` assignment: the
  * assets package deliberately leaves the font-family assignment to the
- * consumer, and Inter Variable stays first in the stack. Radius roles are
- * scoped to the docs layout so the Landing Page's `rounded-lg` surfaces keep
- * the preset look. Contract v2 has no shadow role, so the soft hover/focus
- * shadows on the header and sidebar controls compose its length and colour
- * roles here.
+ * consumer, and Inter Variable stays first in the stack. The shape is the
+ * Site's (site ADR 0007, docs#90): corners from the same design-system radius
+ * roles, nothing rounder than a card, hairlines instead of shadows, and a ring
+ * for keyboard focus.
  * See docs/adr/0004-docs-portal-shell.md.
  */
 
@@ -30,6 +29,19 @@
 	 * are 0.25rem multiples, so `--ds-space-1` is that unit.
 	 */
 	--spacing: var(--ds-space-1);
+
+	/*
+	 * 4px on controls and 6px on cards and panels: the Site's own split, and
+	 * nothing above it, so no Fumadocs dialog, drawer or code block is rounder
+	 * than a Site card. `rounded-full` is a shape rather than a corner and is
+	 * not driven by these roles, so a pill or a circle stays round.
+	 */
+	--radius-sm: var(--ds-radius-sm);
+	--radius-md: var(--ds-radius-md);
+	--radius-lg: var(--ds-radius-md);
+	--radius-xl: var(--ds-radius-md);
+	--radius-2xl: var(--ds-radius-md);
+	--radius-3xl: var(--ds-radius-md);
 
 	--font-sans: "Inter Variable", var(--ds-font-family-sans);
 	--font-mono: var(--ds-font-family-mono);
@@ -61,33 +73,31 @@
 	--color-fd-overlay: hsla(0, 0%, 0%, 0.2);
 }
 
-#nd-notebook-layout {
-	--radius-sm: var(--ds-radius-sm);
-	--radius-md: var(--ds-radius-md);
-	--radius-lg: var(--ds-radius-lg);
-	--radius-xl: var(--ds-radius-xl);
-
-	--shadow-control: 0 var(--ds-space-1) var(--ds-space-2)
-		color-mix(in oklab, var(--ds-color-foreground) 10%, transparent);
-	--shadow-control-hover: 0 var(--ds-space-2) var(--ds-space-4)
-		color-mix(in oklab, var(--ds-color-foreground) 14%, transparent);
-}
-
-/* Docs shell cards take the xl corner; the Landing Page is outside this scope. */
-#nd-notebook-layout .rounded-lg.border {
-	border-radius: var(--ds-radius-xl);
-}
-
-/* The search trigger keeps neutral chrome on hover so the control shadow is the affordance. */
+/* The search trigger keeps neutral chrome on hover; the flat fill is the affordance. */
 #nd-notebook-layout #nd-subnav :is([data-search], [data-search-full]):is(:hover, :focus-visible) {
 	background-color: var(--ds-color-secondary);
 	color: var(--ds-color-foreground);
 }
 
-#nd-notebook-layout :is(#nd-subnav, #nd-sidebar) :is(a, button):hover {
-	box-shadow: var(--shadow-control-hover);
+/*
+ * The shell draws no shadow. Keyboard focus on the header and sidebar controls is a ring on the
+ * ring role, drawn with `outline` rather than `box-shadow`, because the removed soft shadow was
+ * those links' only focus indicator.
+ */
+#nd-notebook-layout :is(#nd-subnav, #nd-sidebar) :is(a, button):focus-visible {
+	outline: 2px solid var(--ds-color-ring);
+	outline-offset: 2px;
 }
 
-#nd-notebook-layout :is(#nd-subnav, #nd-sidebar) :is(a, button):focus-visible {
-	box-shadow: var(--shadow-control);
+/*
+ * Fumadocs' floating panels separate from the page behind the hairline they already carry, not a
+ * shadow: the search dialog, the home layout's phone menu, the sidebar drawer and the
+ * table-of-contents popover. Tailwind's `shadow-*` utilities hold their values in `--tw-shadow`,
+ * so redefining a shadow role there would do nothing; the utility itself has to be answered.
+ */
+#nd-nav > div,
+#nd-sidebar-mobile,
+[data-toc-popover] > header,
+[role="dialog"] {
+	box-shadow: none;
 }
