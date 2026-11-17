@@ -213,6 +213,13 @@ test("the phone drawer opens with the site button, the search and the Tab dropdo
 	await expect(block.getByRole("button", { name: /Tab|Quickstart|Build/ }).first()).toBeVisible()
 
 	expect(await siteComesFirst(block), "the drawer keeps the block's order").toBe(true)
+
+	// The same navigation at the same size as the desktop sidebar's, so a phone reads it the same.
+	const treeSize = await page
+		.locator("#nd-sidebar-mobile a[data-active]")
+		.first()
+		.evaluate((row) => getComputedStyle(row).fontSize)
+	expect(treeSize, "the drawer's tree reads at the desktop sidebar's size").toBe("14px")
 })
 
 test("the portal renders one Theme for every reader", async ({ page }) => {

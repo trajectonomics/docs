@@ -126,6 +126,13 @@ describe("theme seam", () => {
 		expect(declarationsOf(css, ":root")).toMatch(/--fd-layout-width:\s*1400px;/)
 	})
 
+	test("the drawer's tree takes the desktop sidebar's text size", async () => {
+		const css = await Bun.file(SEAM_PATH).text()
+		expect(declarationValue(declarationsOf(css, "#nd-notebook-layout #nd-sidebar-mobile"), "font-size")).toBe(
+			"var(--ds-font-size-sm)",
+		)
+	})
+
 	test("the seam declares the reading measure once, on :root", async () => {
 		const css = await Bun.file(SEAM_PATH).text()
 		expect(css.match(/--fd-reading-measure\s*:/g) ?? []).toHaveLength(1)
