@@ -6,9 +6,10 @@ status: accepted
 
 The owner named Twenty's docs (`docs.twenty.com`) as the reference and decided the shape in
 [docs#91](https://github.com/trajectonomics/docs/issues/91): the whole layout, one header layer, the
-Tabs centred with the search in the sidebar, the way back to the Site at the top of the sidebar, and
-the light Theme only. This supersedes the width bullet and the `tabMode: "navbar"` half of the Tabs
-bullet in [ADR 0004](./0004-docs-portal-shell.md), and it delivers the light-only decision
+Tabs centred with the search in the sidebar, the Site Home at the top of the sidebar, and the light
+Theme only. This supersedes the width bullet and the `tabMode: "navbar"` half of the Tabs bullet in
+[ADR 0004](./0004-docs-portal-shell.md), and it constrains the light/dark selection of its **look
+comes from design-system** bullet to the light Theme only, the decision
 [ADR 0004's brief](../design/portal-shell.md) records (docs#89).
 
 - **The shell spans the page.** The notebook layout's two side gutters are zero: the sidebar sits
@@ -22,8 +23,8 @@ bullet in [ADR 0004](./0004-docs-portal-shell.md), and it delivers the light-onl
   dropdown, which that mode renders at every width, is hidden from `lg` up, so the Tabs appear once
   per breakpoint. The current Tab keeps `aria-current="page"` and the built-page check that reads
   the header still passes.
-- **The search and the way back to the Site live at the top of the sidebar.** A bordered
-  `trajectonomics.com ↗` button (relative `/`, full document load, no prefetch) sits above the
+- **The search and the Site Home live at the top of the sidebar.** A bordered Site Home button,
+  labelled `trajectonomics.com ↗` (relative `/`, full document load, no prefetch), sits above the
   search trigger, a hairline closes the block, and the tree follows at Twenty's rhythm. The sidebar
   is not collapsible, because the search lives in it and a collapsed sidebar would strand the
   search. Below `lg` the drawer carries the same block above the Tab dropdown.
