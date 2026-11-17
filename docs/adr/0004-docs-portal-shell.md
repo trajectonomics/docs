@@ -36,3 +36,12 @@ The change stays in the seam rather than in design-system: changing a `radius.*`
 - **Change the design system's radius roles.** Rejected: it restyles the Site against site ADR 0007.
 - **Keep the Landing Page's preset corners.** Rejected: the front door would stay the roundest page in the Portal.
 - **Keep a shadow on the search dialog and the phone menu.** Rejected: the Site's flat language is hairlines, and those panels separate from the page by their surface role.
+
+## Amendment (2026-11-17, docs#91): the page-wide shell and the one-row header
+
+The owner chose Twenty's docs as the reference and asked for the whole layout and one header layer
+(docs#91). [ADR 0009](./0009-shell-spans-the-page-one-header-row-and-twentys-sidebar.md) supersedes
+this ADR's **layout is capped** bullet for the docs pages — they span the page, with the 1400px cap
+left to the home layout — and the `tabMode: "navbar"` half of its **Tabs are in the header** bullet:
+the header is one row with the Tabs centred, the search and the way back to the Site live at the top
+of a non-collapsible sidebar, and the portal renders the light Theme only.
