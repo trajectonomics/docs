@@ -16,6 +16,10 @@ _Avoid_: User, end user, customer
 A person who builds on Trajectonomics packages or contributes to them.
 _Avoid_: Developer, consumer, contributor
 
+**Agent**:
+The model-driven program a person runs beside the CLI: it asks for the facts and reads the results, while `traj` computes them.
+_Avoid_: Bot, assistant
+
 **Tab**:
 A top-level section of the Docs Portal addressed to exactly one audience. There are two: the Operator tab (CLI and quickstart) and the Builder tab (build on Trajectonomics). Tabs are navigation in the header; a Tab's name is not repeated as a page title.
 _Avoid_: Section, category, track
