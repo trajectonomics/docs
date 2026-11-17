@@ -1,3 +1,6 @@
+import { SidebarTabsDropdown } from "fumadocs-ui/components/sidebar/tabs/dropdown"
+import { SidebarTrigger } from "fumadocs-ui/layouts/notebook/slots/sidebar"
+import type { LayoutTab } from "fumadocs-ui/layouts/shared"
 import {
 	FullSearchTrigger,
 	type FullSearchTriggerProps,
@@ -5,7 +8,6 @@ import {
 } from "fumadocs-ui/layouts/shared/slots/search-trigger"
 import type { FC } from "react"
 import { siteHomeButton } from "../lib/layout.shared"
-import { isTabPath, TABS, tabUrl } from "../lib/tabs"
 
 /** The header's Tab treatment: Fumadocs' own, carried over with its two-row Tabs (ADR 0009). */
 const TAB_CLASS =
@@ -14,20 +16,20 @@ const TAB_CLASS =
 const CURRENT_TAB_CLASS = "border-fd-primary text-fd-primary"
 
 /**
- * The two Tabs as the one header row's links. They are built from the same `TABS` helpers as the
- * sidebar's dropdown, and the current Tab is marked `aria-current="page"` for assistive technology
- * and the built-page check (ADR 0009). Below `lg` the sidebar's dropdown carries them instead, so
- * the row hides them.
+ * The Tabs as the one header row's links, built from the same Tab definitions the sidebar's
+ * dropdown offers. The current Tab keeps `aria-current="page"` for assistive technology and the
+ * built-page check (ADR 0009). Below `lg` the sidebar's dropdown carries them instead, so the row
+ * hides them.
  */
-export function HeaderTabs({ pathname }: { readonly pathname: string }) {
+export function HeaderTabs({ tabs }: { readonly tabs: readonly LayoutTab[] }) {
 	return (
 		<div data-shell-tabs="" className="hidden items-center gap-6 lg:flex">
-			{TABS.map((tab) => {
-				const current = isTabPath(tab, pathname)
+			{tabs.map((tab) => {
+				const current = tab.props?.["aria-current"] === "page"
 				return (
 					<a
-						key={tab.folder}
-						href={tabUrl(tab)}
+						key={tab.url}
+						href={tab.url}
 						data-shell-tab=""
 						aria-current={current ? "page" : undefined}
 						className={current ? `${TAB_CLASS} ${CURRENT_TAB_CLASS}` : TAB_CLASS}
@@ -53,18 +55,36 @@ export const noHeaderSearchTrigger: {
 	full: () => null,
 }
 
+/** The drawer's close button, which sits at the start of the top block on a phone. */
+function drawerClose() {
+	return (
+		<SidebarTrigger className="-me-1.5 -mt-1.5 p-2 text-fd-muted-foreground md:hidden">
+			<span aria-hidden="true">✕</span>
+		</SidebarTrigger>
+	)
+}
+
+export interface DocsSidebarBannerProps {
+	/** The Tabs the dropdown offers below `lg`, where the header row hides them. */
+	readonly tabs: readonly LayoutTab[]
+}
+
 /**
  * The sidebar's top block: the way back to the Site Home above the search trigger, then the Tab
- * dropdown Fumadocs renders below `lg` (ADR 0009). The drawer renders the same block, which is why
- * the block carries the hairline the tree starts under.
+ * dropdown the header row gives up below `lg`, with the drawer's close button beside the button
+ * (ADR 0009). The drawer renders the same block, which is why it carries the hairline the tree
+ * starts under.
  */
-export function DocsSidebarBanner({ children }: { readonly children?: React.ReactNode }) {
+export function DocsSidebarBanner({ tabs }: DocsSidebarBannerProps) {
 	return (
 		<div data-sidebar-top-block="" className="flex flex-col gap-2 border-b p-3">
-			{siteHomeButton()}
+			<div className="flex items-start gap-2">
+				<div className="flex-1">{siteHomeButton()}</div>
+				{drawerClose()}
+			</div>
 			<FullSearchTrigger hideIfDisabled />
-			<div data-sidebar-tabs="" className="flex flex-wrap items-center gap-2 empty:hidden">
-				{children}
+			<div data-sidebar-tabs="" className="empty:hidden">
+				<SidebarTabsDropdown options={[...tabs]} />
 			</div>
 		</div>
 	)

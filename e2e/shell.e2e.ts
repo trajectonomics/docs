@@ -58,6 +58,20 @@ async function visibleSidebarTabs(page: Page): Promise<number> {
 	)
 }
 
+/**
+ * Whether the block shows the way back to the site before the search above it, the order the
+ * reference puts them in.
+ */
+async function siteComesFirst(block: ReturnType<Page["locator"]>): Promise<boolean> {
+	return block.evaluate((element) => {
+		const site = element.querySelector("[data-site-home]")
+		const search = element.querySelector("[data-search-full]")
+		if (site === null || search === null) return false
+		const following = site.compareDocumentPosition(search) & Node.DOCUMENT_POSITION_FOLLOWING
+		return following !== 0
+	})
+}
+
 /** Open the docs page at `widthPx` and let the shell settle. */
 async function openDocsPage(page: Page, widthPx: number): Promise<void> {
 	await page.setViewportSize({ width: widthPx, height: TEST_VIEWPORT_HEIGHT_PX })
@@ -113,14 +127,16 @@ test("the shell spans the page and the header is one row", async ({ page }) => {
 test("the header carries the wordmark and the Tabs and nothing else", async ({ page }) => {
 	await openDocsPage(page, DESKTOP_WIDTH_PX)
 
-	expect(await page.locator("#nd-subnav [data-search], #nd-subnav [data-search-full]").count()).toBe(
-		0,
-	)
-	expect(await page.locator("#nd-subnav a[data-site-home], #nd-subnav [data-site-home]").count()).toBe(
-		0,
-	)
 	expect(
-		await page.locator("#nd-subnav button[aria-label*='heme'], #nd-subnav [data-theme-switch]").count(),
+		await page.locator("#nd-subnav [data-search], #nd-subnav [data-search-full]").count(),
+	).toBe(0)
+	expect(
+		await page.locator("#nd-subnav a[data-site-home], #nd-subnav [data-site-home]").count(),
+	).toBe(0)
+	expect(
+		await page
+			.locator("#nd-subnav button[aria-label*='heme'], #nd-subnav [data-theme-switch]")
+			.count(),
 		"the header offers no theme switch",
 	).toBe(0)
 
@@ -128,12 +144,10 @@ test("the header carries the wordmark and the Tabs and nothing else", async ({ p
 	await expect(page.locator("#nd-sidebar [data-site-home]")).toBeVisible()
 	await expect(page.locator("#nd-sidebar [data-search-full]")).toBeVisible()
 
-	const order = await page.evaluate(() =>
-		[...document.querySelectorAll("#nd-sidebar [data-sidebar-top-block] > *")].map(
-			(element) => element.getAttribute("data-site-home") === "" ? "site" : element.tagName,
-		),
-	)
-	expect(order.slice(0, 2), "the site button sits above the search").toEqual(["site", "BUTTON"])
+	expect(
+		await siteComesFirst(page.locator("#nd-sidebar [data-sidebar-top-block]")),
+		"the site button sits above the search",
+	).toBe(true)
 })
 
 for (const widthPx of TEST_WIDTHS_PX) {
@@ -145,9 +159,10 @@ for (const widthPx of TEST_WIDTHS_PX) {
 			await openSidebarDrawer(page)
 		}
 
-		expect(await visibleHeaderTabs(page), wide ? "the header carries the Tabs" : "no header Tabs").toBe(
-			wide ? 2 : 0,
-		)
+		expect(
+			await visibleHeaderTabs(page),
+			wide ? "the header carries the Tabs" : "no header Tabs",
+		).toBe(wide ? 2 : 0)
 		expect(
 			await visibleSidebarTabs(page),
 			wide ? "no sidebar Tab dropdown from lg up" : "the sidebar carries the Tabs",
@@ -165,18 +180,10 @@ test("the phone drawer opens with the site button, the search and the Tab dropdo
 	await expect(block).toBeVisible()
 	await expect(block.locator("[data-site-home]")).toBeVisible()
 	await expect(block.locator("[data-search-full]")).toBeVisible()
-	await expect(block.locator("[data-sidebar-tabs] > *")).toHaveCount(2)
+	await expect(block.locator("[data-sidebar-tabs]")).toBeVisible()
+	await expect(block.getByRole("button", { name: /Tab|Quickstart|Build/ }).first()).toBeVisible()
 
-	const order = await block.evaluate((element) =>
-		[...element.children].map((child) =>
-			child.hasAttribute("data-site-home") ? "site" : child.tagName,
-		),
-	)
-	expect(order.slice(0, 3), "the block keeps one order in the drawer").toEqual([
-		"site",
-		"BUTTON",
-		"DIV",
-	])
+	expect(await siteComesFirst(block), "the drawer keeps the block's order").toBe(true)
 })
 
 test("the portal renders one Theme for every reader", async ({ page }) => {

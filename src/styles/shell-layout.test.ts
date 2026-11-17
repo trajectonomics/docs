@@ -11,8 +11,7 @@ const READING_COLUMN_CHILD = "#nd-notebook-layout #nd-page > *"
 const SIDEBAR_TABS = "#nd-sidebar [data-sidebar-tabs]"
 
 /** The scroll area under the sidebar's top block, in the desktop sidebar and the drawer. */
-const SIDEBAR_TREE =
-	"#nd-notebook-layout :is(#nd-sidebar, #nd-sidebar-mobile) > [data-sidebar-top-block] + div"
+const SIDEBAR_SCOPE = ":where(#nd-sidebar, #nd-sidebar-mobile)"
 
 async function shellCss(): Promise<string> {
 	return Bun.file(SHELL_PATH).text()
@@ -68,12 +67,17 @@ describe("shell layout stylesheet", () => {
 
 	test("ships Twenty's rhythm for the sidebar tree", async () => {
 		const css = await shellCss()
-		const tree = declarationsOf(css, `${SIDEBAR_TREE} > div`)
+		const tree = declarationsOf(css, `${SIDEBAR_SCOPE} [data-sidebar-top-block] + div > div`)
 		expect(declarationValue(tree, "padding")).toBe("0.75rem")
-		const rows = declarationsOf(css, `${SIDEBAR_TREE} > div > div > * + *`)
+		const rows = declarationsOf(
+			css,
+			`${SIDEBAR_SCOPE} [data-sidebar-top-block] + div > div > div > * + *`,
+		)
 		expect(declarationValue(rows, "margin-block-start")).toBe("0.25rem")
-		const row = declarationsOf(css, `${SIDEBAR_TREE} > div > div :is(a, button)`)
+		const row = declarationsOf(css, `${SIDEBAR_SCOPE} :is(a, button)`)
 		expect(declarationValue(row, "min-height")).toBe("2.25rem")
+		const dropdown = declarationsOf(css, `${SIDEBAR_SCOPE} [data-sidebar-tabs] :is(a, button)`)
+		expect(declarationValue(dropdown, "width")).toBe("100%")
 	})
 
 	test("the geometry stylesheet declares no colour, radius, shadow, font or scale of its own", async () => {

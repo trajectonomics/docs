@@ -105,9 +105,7 @@ test("clicking the Site Home link loads / as a new document", async ({ page }) =
 		}
 	})
 
-	const link = page
-		.locator("#nd-sidebar")
-		.getByRole("link", { name: SITE_HOME_LABEL, exact: true })
+	const link = page.locator("#nd-sidebar").getByRole("link", { name: SITE_HOME_LABEL, exact: true })
 	await link.hover()
 	// Longer than Astro's 80ms hover prefetch debounce.
 	await page.waitForTimeout(300)

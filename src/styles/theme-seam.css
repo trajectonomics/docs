@@ -89,7 +89,7 @@
 }
 
 /* The search trigger keeps neutral chrome on hover; the flat fill is the affordance. */
-#nd-notebook-layout :is(#nd-sidebar, #nd-sidebar-mobile) :is([data-search], [data-search-full]):is(:hover, :focus-visible) {
+:where(#nd-sidebar, #nd-sidebar-mobile) [data-search-full]:is(:hover, :focus-visible) {
 	background-color: var(--ds-color-secondary);
 	color: var(--ds-color-foreground);
 }
@@ -121,7 +121,7 @@
  * ring role, drawn with `outline` rather than `box-shadow`, because the removed soft shadow was
  * those links' only focus indicator.
  */
-#nd-notebook-layout :is(#nd-subnav, #nd-sidebar) :is(a, button):focus-visible {
+#nd-notebook-layout :is(#nd-subnav, #nd-sidebar, #nd-sidebar-mobile) :is(a, button):focus-visible {
 	outline: 2px solid var(--ds-color-ring);
 	outline-offset: 2px;
 }

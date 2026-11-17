@@ -43,19 +43,20 @@ function headerTabs(pathname: string): LayoutTab[] {
 export function Docs({ tree, title, description, toc, children, ...props }: DocsProps) {
 	const data = useFumadocsLoader({ tree })
 	const options = baseOptions("notebook", { navTitle: <Wordmark /> })
+	const tabs = headerTabs(props.pathname)
 
 	return (
 		<Provider {...props}>
 			<DocsLayout
 				{...options}
-				nav={{ ...options.nav, mode: "top", children: <HeaderTabs pathname={props.pathname} /> }}
+				nav={{ ...options.nav, mode: "top", children: <HeaderTabs tabs={tabs} /> }}
 				tree={data.tree}
 				tabMode="sidebar"
-				tabs={headerTabs(props.pathname)}
+				tabs={tabs}
 				sidebar={{
 					className: "border-e",
 					collapsible: false,
-					banner: (bannerProps) => <DocsSidebarBanner {...bannerProps} />,
+					banner: () => <DocsSidebarBanner tabs={tabs} />,
 				}}
 				slots={{ searchTrigger: noHeaderSearchTrigger }}
 				containerProps={{ style: { gridTemplate: SHELL_GRID } }}

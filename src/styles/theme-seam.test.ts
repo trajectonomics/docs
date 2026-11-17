@@ -109,7 +109,7 @@ describe("theme seam", () => {
 		const css = await Bun.file(SEAM_PATH).text()
 		const declarations = declarationsOf(
 			css,
-			"#nd-notebook-layout :is(#nd-sidebar, #nd-sidebar-mobile) :is([data-search], [data-search-full]):is(:hover, :focus-visible)",
+			":where(#nd-sidebar, #nd-sidebar-mobile) [data-search-full]:is(:hover, :focus-visible)",
 		)
 		expect(declarationValue(declarations, "background-color")).toBe("var(--ds-color-secondary)")
 		expect(declarationValue(declarations, "color")).toBe("var(--ds-color-foreground)")
