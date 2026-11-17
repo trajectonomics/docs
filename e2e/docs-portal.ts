@@ -41,10 +41,10 @@ export async function openPageTitle(page: Page): Promise<string> {
 	return title.trim()
 }
 
-/** Open the Docs Portal search dialog, from the trigger a desktop shows. */
+/** Open the search dialog from its trigger at the top of the sidebar, which a desktop shows. */
 export async function openSearch(page: Page): Promise<void> {
 	await waitForIsland(page)
-	// The header control's name shows the keyboard shortcut, so match on "search".
+	// The trigger's name shows the keyboard shortcut, so match on "search".
 	await page
 		.getByRole("button", { name: /search/i })
 		.first()
@@ -52,10 +52,13 @@ export async function openSearch(page: Page): Promise<void> {
 	await page.locator('[role="dialog"]').waitFor()
 }
 
-/** Open the search dialog from the icon button a phone shows instead of the full-width trigger. */
+/**
+ * Open the search dialog on a phone, where the sidebar is a drawer and the search sits at its top:
+ * the drawer comes first, then the same trigger.
+ */
 export async function openPhoneSearch(page: Page): Promise<void> {
-	await waitForIsland(page)
-	await page.getByRole("button", { name: "Open Search" }).click()
+	await openSidebarDrawer(page)
+	await page.locator("#nd-sidebar-mobile [data-search-full]").click()
 	await page.locator('[role="dialog"]').waitFor()
 }
 

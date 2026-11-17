@@ -46,7 +46,7 @@ const NAMED_COLOUR = new RegExp(
 const FONT_PROPERTY = /^(?:font|font-family|--(?:default-)?(?:mono-)?font-[\w-]+)$/i
 const RADIUS_PROPERTY =
 	/^(?:-(?:webkit|moz|ms|o)-)?(?:border(?:-[\w-]+)?-radius|border-radius-[\w-]+|--radius(?:-[\w-]+)?)$/i
-const LAYOUT_WIDTH_PROPERTY = /^--fd-layout-width$/i
+const LAYOUT_WIDTH_PROPERTY = /^--fd-(?:layout-width|reading-measure)$/i
 const SHADOW_PROPERTY =
 	/^(?:-(?:webkit|moz|ms|o)-)?(?:box-shadow|text-shadow|--(?:text-)?shadow(?:-[\w-]+)?)$/i
 const SCALE_PROPERTY = /^(?:font-size|--(?:space|spacing|text|font-size)[\w-]*)$/i
