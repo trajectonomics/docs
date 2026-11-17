@@ -11,11 +11,12 @@ you ([ADR 0018](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0018-
 
 ## Install
 
-[Installation](/docs/cli/installation/) lists the three install channels. On Linux or macOS, one
-line:
+[Installation](/docs/cli/installation/) lists the three install channels. On Linux or macOS:
 
 ```bash
-curl -fsSL https://github.com/trajectonomics/cli/releases/latest/download/install.sh | sh
+curl -fsSL \
+  https://github.com/trajectonomics/cli/releases/latest/download/install.sh \
+  | sh
 ```
 
 ## Quickstart
@@ -23,11 +24,17 @@ curl -fsSL https://github.com/trajectonomics/cli/releases/latest/download/instal
 From an empty machine to a first balance:
 
 ```bash
-traj init                                                      # create ~/.traj and an empty database
-traj account add Cash --type asset --currency THB              # an asset account
-traj account add Food --type expense --currency THB            # an expense account
+# create ~/.traj and an empty database
+traj init
+
+# an asset account and an expense account
+traj account add Cash --type asset --currency THB
+traj account add Food --type expense --currency THB
+
 traj tx add --from Cash --to Food --amount 120.50 --date 2026-03-01
-traj balance --as-of 2026-03-31                                # every account's balance and net worth
+
+# every account's balance and net worth
+traj balance --as-of 2026-03-31
 ```
 
 `--type` and `--currency` are required when adding an account, and THB is the only currency `v0.1.0`
