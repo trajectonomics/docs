@@ -9,7 +9,7 @@ tool and the Agent supplies the judgement
 so every number it gives you is one `traj` returned, because the tool never calls a model.
 
 This page describes `traj` `v0.1.0`, the release the rest of this Tab documents. It covers the
-division of labor, the facts the Agent will ask you for, where the tool stops, and what this release
+division of labour, the facts the Agent will ask you for, where the tool stops, and what this release
 cannot do yet. [Installation](/docs/cli/installation/) has the commands.
 
 ## Who computes, who judges
@@ -72,9 +72,9 @@ naming its class, and a `hint` when there is one to give
 [`traj schema`](/docs/cli/commands/schema/) prints that registry, so the Agent reads the code
 instead of guessing what it meant.
 
-Nothing in the ledger is edited or deleted. A wrong transaction is
-[voided or amended](/docs/cli/commands/tx/), and both only add rows; an account you stop using is
-[closed](/docs/cli/commands/account/) and stays in history, reports and exports
+Nothing in the ledger is edited or deleted. A wrong transaction is corrected by
+[`traj tx void`](/docs/cli/commands/tx/) or `traj tx amend`, and both only add rows; an account you
+stop using is [closed](/docs/cli/commands/account/) and stays in history, reports and exports
 ([ADR 0016](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0016-three-deletion-stories.md)).
 
 ## What the tool does not do
@@ -90,9 +90,9 @@ computes one.
 `v0.1.0` supports THB only.
 
 The setup skill states a CLI version floor. On a `traj` below that floor it tells you which work
-this command line cannot do yet, and it installs nothing to fix it. A newer `traj` may do more than
-this page says, so [`traj schema`](/docs/cli/commands/schema/) is the authority for the version in
-your hand, and you can run it yourself.
+this command line cannot do yet, and it installs nothing to fix it.
+[`traj schema`](/docs/cli/commands/schema/) is the honest list for the version in your hand, and you
+can run it too.
 
 ## Check a number
 
