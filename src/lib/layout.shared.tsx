@@ -69,7 +69,7 @@ export function siteHomeButton() {
 			href={SITE_HOME_PATH}
 			{...SITE_HOME_LOAD}
 			data-site-home=""
-			className="inline-flex items-center justify-between gap-2 rounded-lg border p-2 text-sm transition-colors"
+			className="flex w-full items-center justify-between gap-2 rounded-lg border p-2 text-sm transition-colors"
 		>
 			{SITE_HOME_LABEL}
 			<span aria-hidden="true">↗</span>
