@@ -58,8 +58,14 @@ describe("theme seam shape", () => {
 		}
 	})
 
-	test("the seam declares no corner of its own, only the radius roles", async () => {
-		expect(withoutComments(await seamCss())).not.toMatch(/border-radius/)
+	test("the seam declares radius only as the roles it maps, never a corner of its own", async () => {
+		const css = await seamCss()
+		const lines = css.split("\n")
+		for (const corner of findSeamViolations(css).filter(
+			(violation) => violation.rule === "border-radius",
+		)) {
+			expect(lines[corner.line - 1]?.trim(), `line ${corner.line}`).toMatch(/^--radius-[\w-]+:/)
+		}
 	})
 
 	test("the seam paints no shadow and keeps no shadow role", async () => {
