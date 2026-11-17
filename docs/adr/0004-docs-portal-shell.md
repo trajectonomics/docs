@@ -1,5 +1,5 @@
 ---
-status: accepted
+status: partially superseded by ADR 0009
 ---
 
 # The Docs Portal shell: header Tabs, a Landing Page, a capped layout, themed by design-system
@@ -43,5 +43,6 @@ The owner chose Twenty's docs as the reference and asked for the whole layout an
 (docs#91). [ADR 0009](./0009-shell-spans-the-page-one-header-row-and-twentys-sidebar.md) supersedes
 this ADR's **layout is capped** bullet for the docs pages — they span the page, with the 1400px cap
 left to the home layout — and the `tabMode: "navbar"` half of its **Tabs are in the header** bullet:
-the header is one row with the Tabs centred, the search and the way back to the Site live at the top
-of a non-collapsible sidebar, and the portal renders the light Theme only.
+the header is one row with the Tabs centred, the search and the Site Home live at the top of a
+non-collapsible sidebar, and the light-only Theme constrains the light/dark selection the **look
+comes from design-system** bullet records.
