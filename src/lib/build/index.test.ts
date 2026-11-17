@@ -2,28 +2,38 @@ import { describe, expect, test } from "bun:test"
 import type { BuiltFile } from "./built-files"
 import { checkBuild } from "./index"
 
-function page(path: string, content = "<!doctype html><title>A page</title>"): BuiltFile {
+/** A built page around `content`, carrying the one Theme the Docs Portal ships. */
+function page(
+	path: string,
+	content = '<!doctype html><html data-theme="dark"><title>A page</title></html>',
+): BuiltFile {
 	return { path, content }
 }
 
 const OPERATOR_TAB_PAGE = [
+	'<html data-theme="dark">',
 	'<header id="nd-subnav">',
 	'<a href="/docs/cli/" aria-current="page">CLI &amp; Quickstart</a>',
 	'<a href="/docs/developers/">Build on Trajectonomics</a>',
 	"</header>",
 	'<aside id="nd-sidebar"><a href="/docs/cli/">Quickstart</a></aside>',
+	"</html>",
 ].join("")
 
 const LANDING_PAGE = [
+	'<html data-theme="dark">',
 	"<main>",
 	'<a href="/docs/cli/">For Operators: install and run the CLI</a>',
 	'<a href="/docs/developers/">For Builders: build on Trajectonomics packages</a>',
 	"</main>",
+	"</html>",
 ].join("")
 
 const NOT_FOUND_PAGE = [
+	'<html data-theme="dark">',
 	'<header id="nd-nav"><button data-search-full=""></button></header>',
 	'<div id="portal-not-found"><h1>Page not found</h1><a href="/docs/">Docs Portal</a></div>',
+	"</html>",
 ].join("")
 
 const COMPLETE_BUILD: readonly BuiltFile[] = [

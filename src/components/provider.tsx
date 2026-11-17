@@ -21,7 +21,18 @@ export function Provider({ pathname, params, children }: ProviderProps) {
 			search={{ SearchDialog }}
 			// next-themes emits both attributes, so the design-system Theme CSS
 			// (scoped to [data-theme]) follows the same toggle as Fumadocs' .dark class.
-			theme={{ attribute: ["class", "data-theme"] }}
+			// The Docs Portal exposes the dark Theme only while the organisation ships one look
+			// (the owner reversed the light-only decision on 17 Nov 2026, docs#89): `forcedTheme`
+			// is applied before the stored preference and the device's scheme are read, so both
+			// lose, and `hotKey` off leaves no shortcut that flips nothing. The light Theme CSS
+			// stays loaded: light's return deletes these three values and re-enables the switch
+			// in lib/layout.shared.tsx.
+			theme={{
+				attribute: ["class", "data-theme"],
+				forcedTheme: "dark",
+				enableSystem: false,
+				hotKey: false,
+			}}
 		>
 			{children}
 		</RootProvider>

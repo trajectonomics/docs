@@ -22,6 +22,15 @@
  */
 
 :root {
+	/*
+	 * The Docs Portal exposes the design-system dark Theme only while the organisation ships
+	 * one look (the owner reversed the light-only decision on 17 Nov 2026, docs#89). next-themes
+	 * writes this rendering mode when it runs; stating it here is what gives a reader with
+	 * JavaScript off the dark rendering mode for scrollbars and form controls. Light's return
+	 * deletes this declaration.
+	 */
+	color-scheme: dark;
+
 	--fd-layout-width: 1400px;
 
 	/*

@@ -9,6 +9,7 @@ import { checkRequiredPages } from "./required-pages"
 import { checkSearchIndex } from "./search-index"
 import { checkSearchIndexPages } from "./search-index-pages"
 import { checkSidebarTitles } from "./sidebar-titles"
+import { checkTheme } from "./theme"
 import { checkTocPlaceholder } from "./toc-placeholder"
 
 /** Every rule the built Docs Portal fails, so one run names all of them instead of the first. */
@@ -24,5 +25,6 @@ export function checkBuild(files: readonly BuiltFile[]): readonly BuildFailure[]
 		...checkSidebarTitles(files),
 		...checkTocPlaceholder(files),
 		...checkPlaceholderCopy(files),
+		...checkTheme(files),
 	]
 }

@@ -91,4 +91,8 @@ describe("theme seam shape", () => {
 			expect(declarationValue(declarationsOf(css, panel), "box-shadow"), panel).toBe("none")
 		}
 	})
+	test("the shell declares the dark rendering mode for a reader with JavaScript off", async () => {
+		const css = await seamCss()
+		expect(declarationValue(declarationsOf(css, ":root"), "color-scheme")).toBe("dark")
+	})
 })
