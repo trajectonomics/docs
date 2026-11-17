@@ -17,6 +17,15 @@ const LG_BREAKPOINT_PX = 1024
 /** The header's own inset (`md:px-6`), which the wordmark opens the row from. */
 const HEADER_INSET_PX = 24
 
+/**
+ * The reading column's width at each width the shell is looked at: the 900px measure where the page
+ * track can hold it, and the track's own content box where it cannot (docs#101).
+ */
+const READING_WIDTH_PX: Readonly<Record<number, number>> = { 390: 358, 1280: 680, 2000: 900 }
+
+/** The table of contents column's width, from `xl` up. */
+const CONTENTS_WIDTH_PX = 268
+
 /** Twenty's sidebar rhythm: a 36px row standing 6px below the one above it, inset 12px. */
 const SIDEBAR_ROW_HEIGHT_PX = 36
 const SIDEBAR_ROW_PITCH_PX = 42
@@ -197,6 +206,36 @@ test("the header carries the wordmark and the Tabs and nothing else", async ({ p
 })
 
 for (const widthPx of TEST_WIDTHS_PX) {
+	test(`the reading column and the contents hold their widths at ${widthPx}px`, async ({
+		page,
+	}) => {
+		await openDocsPage(page, widthPx)
+		const blocks = await readingBlocks(page)
+		expect(blocks.length, "the page renders its reading column").toBeGreaterThan(0)
+		expect(
+			blocks.map((block) => block.width),
+			"every block of the column keeps its width",
+		).toEqual(blocks.map(() => READING_WIDTH_PX[widthPx]))
+		expect(
+			blocks.map((block) => Math.round(block.x)),
+			"every block of the column keeps its left edge",
+		).toEqual(blocks.map(() => Math.round(blocks[0]?.x ?? 0)))
+
+		// From xl up the contents column sits at the page's right edge; a phone shows none.
+		const contents = await box(page, "#nd-toc")
+		expect(contents?.width, "the contents column's width").toBe(
+			widthPx >= DESKTOP_WIDTH_PX ? CONTENTS_WIDTH_PX : 0,
+		)
+		if (widthPx >= DESKTOP_WIDTH_PX) {
+			expect(
+				(contents?.x ?? 0) + (contents?.width ?? 0),
+				"the contents end at the page's right edge",
+			).toBe(widthPx)
+		} else {
+			expect((await box(page, "#nd-page"))?.width, "the page column takes the phone").toBe(widthPx)
+		}
+	})
+
 	test(`the Tabs appear in exactly one place at ${widthPx}px`, async ({ page }) => {
 		await openDocsPage(page, widthPx)
 		const wide = widthPx >= LG_BREAKPOINT_PX
