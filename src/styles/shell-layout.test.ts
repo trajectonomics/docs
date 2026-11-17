@@ -18,7 +18,7 @@ async function shellCss(): Promise<string> {
 }
 
 /** The declarations of the first `@media` block whose condition is `condition`. */
-export function mediaBlock(css: string, condition: string): string {
+function mediaBlock(css: string, condition: string): string {
 	const start = css.indexOf(`@media ${condition}`)
 	if (start === -1) return ""
 	let depth = 0
@@ -43,20 +43,14 @@ describe("shell layout stylesheet", () => {
 
 	test("takes the reading measure from the seam and never restates it", async () => {
 		const shell = await shellCss()
-		const seam = await Bun.file(SEAM_PATH).text()
 		expect(shell).not.toMatch(/\b900px\b/)
 		expect(shell).toContain("var(--fd-reading-measure)")
-		expect(seam.match(/--fd-reading-measure\s*:/g) ?? []).toHaveLength(1)
+		expect(await Bun.file(SEAM_PATH).text()).toMatch(/--fd-reading-measure:\s*900px;/)
 	})
 
-	test("centres the header Tabs on the page", async () => {
+	test("keeps the sidebar's column flush at the page edge", async () => {
 		const css = await shellCss()
-		const body = declarationsOf(css, "#nd-subnav [data-header-body]")
-		expect(declarationValue(body, "position")).toBe("relative")
-		const tabs = declarationsOf(css, "#nd-subnav [data-shell-tabs]")
-		expect(declarationValue(tabs, "position")).toBe("absolute")
-		expect(declarationValue(tabs, "inset-inline-start")).toBe("50%")
-		expect(declarationValue(tabs, "translate")).toBe("-50% 0")
+		expect(declarationValue(declarationsOf(css, "#nd-sidebar"), "align-items")).toBe("start")
 	})
 
 	test("hides the sidebar's Tab dropdown from lg up, where the header carries the Tabs", async () => {
@@ -65,15 +59,10 @@ describe("shell layout stylesheet", () => {
 		expect(declarationValue(declarations, "display")).toBe("none")
 	})
 
-	test("ships Twenty's rhythm for the sidebar tree", async () => {
+	test("ships Twenty's rhythm for the sidebar's rows and the Tab dropdown's width", async () => {
 		const css = await shellCss()
 		const tree = declarationsOf(css, `${SIDEBAR_SCOPE} [data-sidebar-top-block] + div > div`)
 		expect(declarationValue(tree, "padding")).toBe("0.75rem")
-		const rows = declarationsOf(
-			css,
-			`${SIDEBAR_SCOPE} [data-sidebar-top-block] + div > div > div > * + *`,
-		)
-		expect(declarationValue(rows, "margin-block-start")).toBe("0.25rem")
 		const row = declarationsOf(css, `${SIDEBAR_SCOPE} :is(a, button)`)
 		expect(declarationValue(row, "min-height")).toBe("2.25rem")
 		const dropdown = declarationsOf(css, `${SIDEBAR_SCOPE} [data-sidebar-tabs] :is(a, button)`)
@@ -81,8 +70,7 @@ describe("shell layout stylesheet", () => {
 	})
 
 	test("the geometry stylesheet declares no colour, radius, shadow, font or scale of its own", async () => {
-		const css = await shellCss()
 		const { findSeamViolations } = await import("../lib/theme-seam")
-		expect(findSeamViolations(css).map((violation) => violation.rule)).toEqual([])
+		expect(findSeamViolations(await shellCss()).map((violation) => violation.rule)).toEqual([])
 	})
 })

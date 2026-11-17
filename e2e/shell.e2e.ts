@@ -14,6 +14,14 @@ const READING_MEASURE_PX = 900
 /** Fumadocs' `lg` breakpoint, where the header carries the Tabs and the sidebar drops them. */
 const LG_BREAKPOINT_PX = 1024
 
+/** The header's own inset (`md:px-6`), which the wordmark opens the row from. */
+const HEADER_INSET_PX = 24
+
+/** Twenty's sidebar rhythm: a 36px row standing 6px below the one above it, inset 12px. */
+const SIDEBAR_ROW_HEIGHT_PX = 36
+const SIDEBAR_ROW_PITCH_PX = 42
+const SIDEBAR_INSET_PX = 12
+
 /** A docs page with headings, so the table of contents is in the shell as well. */
 const DOCS_PAGE = `${DOCS_BASE_PATH}/cli/`
 
@@ -85,7 +93,7 @@ test("the shell spans the page and the header is one row", async ({ page }) => {
 
 	const header = await box(page, "#nd-subnav")
 	const tabs = await box(page, "[data-shell-tabs]")
-	const wordmark = await box(page, "#nd-subnav [data-header-body] span")
+	const wordmark = await box(page, "#nd-subnav [data-header-body] a")
 	const sidebar = await box(page, "#nd-sidebar")
 	const contents = await box(page, "#nd-toc")
 	const reading = await box(page, "#nd-page > *")
@@ -111,7 +119,7 @@ test("the shell spans the page and the header is one row", async ({ page }) => {
 	const tabsCentre = (tabs?.x ?? 0) + (tabs?.width ?? 0) / 2
 	expect(Math.abs(tabsCentre - viewport.width / 2)).toBeLessThanOrEqual(1)
 	// The wordmark keeps the header's own inset, so the row starts where the page does.
-	expect(wordmark?.x).toBe(24)
+	expect(wordmark?.x, "the wordmark sits at the header's inset").toBe(HEADER_INSET_PX)
 
 	// The reading column keeps its measure, centred between the sidebar and the contents.
 	const sidebarRight = (sidebar?.x ?? 0) + (sidebar?.width ?? 0)
@@ -122,6 +130,27 @@ test("the shell spans the page and the header is one row", async ({ page }) => {
 		sidebarRight + (contentsLeft - sidebarRight - READING_MEASURE_PX) / 2,
 		0,
 	)
+})
+
+test("the sidebar's tree keeps the reference's rhythm", async ({ page }) => {
+	await openDocsPage(page, WIDE_WIDTH_PX)
+
+	// The tree's rows carry `data-active`; the top block's controls do not.
+	const rows = await page.evaluate(() =>
+		[...document.querySelectorAll("#nd-sidebar a[data-active]")].slice(0, 3).map((row) => {
+			const rect = row.getBoundingClientRect()
+			return { top: rect.top, left: rect.left, height: rect.height }
+		}),
+	)
+
+	expect(rows, "the sidebar renders its tree rows").toHaveLength(3)
+	for (const row of rows) {
+		expect(row.height, "a tree row is 36px tall").toBe(SIDEBAR_ROW_HEIGHT_PX)
+		expect(row.left, "the tree is inset 12px from the page edge").toBe(SIDEBAR_INSET_PX)
+	}
+	const [first, second] = rows
+	const pitch = (second?.top ?? 0) - (first?.top ?? 0)
+	expect(pitch, "the rows stand 6px apart").toBe(SIDEBAR_ROW_PITCH_PX)
 })
 
 test("the header carries the wordmark and the Tabs and nothing else", async ({ page }) => {

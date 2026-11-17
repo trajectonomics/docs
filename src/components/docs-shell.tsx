@@ -9,7 +9,7 @@ import {
 import type { FC } from "react"
 import { siteHomeButton } from "../lib/layout.shared"
 
-/** The header's Tab treatment: Fumadocs' own, carried over with its two-row Tabs (ADR 0009). */
+/** The header's Tab treatment: Fumadocs' own, carried over from the row this change removes. */
 const TAB_CLASS =
 	"inline-flex items-center gap-2 border-b-2 border-transparent pb-1.5 text-sm font-medium text-fd-muted-foreground text-nowrap transition-colors hover:text-fd-accent-foreground"
 
@@ -55,7 +55,7 @@ export const noHeaderSearchTrigger: {
 	full: () => null,
 }
 
-/** The drawer's close button, which sits at the start of the top block on a phone. */
+/** The drawer's close button, at the inline end of the top block's first row on a phone. */
 function drawerClose() {
 	return (
 		<SidebarTrigger className="-me-1.5 -mt-1.5 p-2 text-fd-muted-foreground md:hidden">
