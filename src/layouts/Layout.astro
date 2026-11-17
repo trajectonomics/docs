@@ -29,6 +29,17 @@ const { title, description } = Astro.props
 		<link rel="icon" type="image/png" sizes="512x512" href={icon512} />
 		<link rel="apple-touch-icon" href={appleTouchIcon} />
 		<ClientRouter />
+		{/*
+			One pageview per page the reader opens, posted from the page itself: the Portal loads no
+			third-party script ([ADR 0008](./docs/adr/0008-analytics-from-the-page-itself.md)). The script
+			decides for itself whether the host and the reader's opt-out signals allow it, and it measures
+			the pages the Client Router swaps in as well as the first one.
+		*/}
+		<script>
+			import { startAnalytics } from "../lib/analytics/client"
+
+			startAnalytics()
+		</script>
 	</head>
 	<body class="flex flex-col min-h-screen">
 		<slot />
