@@ -3,6 +3,7 @@ import type { BuildFailure } from "./failures"
 import { checkHeaderMark } from "./header-mark"
 import { checkHeaderTabs } from "./header-tabs"
 import { checkImportTemplate } from "./import-template"
+import { checkInstallationPage } from "./installation-page"
 import { checkLandingPage } from "./landing-page"
 import { checkNotFoundPage } from "./not-found"
 import { checkPlaceholderCopy } from "./placeholder-copy"
@@ -32,6 +33,7 @@ export function checkBuild(
 		...checkHeaderMark(files),
 		...checkSidebarTitles(files),
 		...checkTocPlaceholder(files),
+		...checkInstallationPage(files),
 		...checkPlaceholderCopy(files),
 		...checkImportTemplate(files),
 		...checkTheme(files),

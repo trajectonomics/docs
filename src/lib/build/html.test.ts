@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { anchors, elementContent, linkName } from "./html"
+import { anchors, elementContent, linkName, visibleText } from "./html"
 
 const PAGE = [
 	'<header id="nd-subnav" class="x">',
@@ -8,6 +8,18 @@ const PAGE = [
 	"</header>",
 	'<main><a href="/docs/other/">Other</a></main>',
 ].join("")
+
+describe("the visible text of an HTML fragment", () => {
+	test("drops the tags and decodes the entities a highlighted code block carries", () => {
+		expect(visibleText("<span>PATH</span><span>=</span><span>&quot;$HOME</span>")).toBe(
+			'PATH = "$HOME',
+		)
+	})
+
+	test("collapses the whitespace the dropped tags leave behind", () => {
+		expect(visibleText("<span> a </span>\n<span> b </span>")).toBe("a b")
+	})
+})
 
 describe("the element of an HTML fragment found by id", () => {
 	test("returns the content of the element with the id, without the rest of the page", () => {
