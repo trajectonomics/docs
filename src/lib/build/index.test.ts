@@ -21,12 +21,15 @@ const OPERATOR_TAB_PAGE = [
 	"</html>",
 ].join("")
 
+const RELEASE_LINE = "Docs synced from traj v0.2.0"
+
 const LANDING_PAGE = [
 	'<html data-theme="dark">',
 	'<header id="nd-nav"><a href="/docs/" aria-label="Trajectonomics Docs"><svg></svg></a></header>',
 	"<main>",
 	'<a href="/docs/cli/">For Operators: install and run the CLI</a>',
 	'<a href="/docs/developers/">For Builders: build on Trajectonomics packages</a>',
+	`<p>${RELEASE_LINE}</p>`,
 	"</main>",
 	"</html>",
 ].join("")
@@ -67,13 +70,13 @@ const COMPLETE_BUILD: readonly BuiltFile[] = [
 
 describe("the check of the built Docs Portal", () => {
 	test("a complete build reports no failure", () => {
-		expect(checkBuild(COMPLETE_BUILD)).toEqual([])
+		expect(checkBuild(COMPLETE_BUILD, RELEASE_LINE)).toEqual([])
 	})
 
 	test("a build that breaks several rules reports every failed rule, not only the first", () => {
 		const stale: BuiltFile = { path: "_redirects", content: "/docs /docs/cli/ 302\n" }
 
-		expect(checkBuild([stale]).map((failure) => failure.code)).toEqual([
+		expect(checkBuild([stale], RELEASE_LINE).map((failure) => failure.code)).toEqual([
 			"NOT_FOUND_PAGE_MISSING",
 			"LANDING_PAGE_MISSING",
 			"OPERATOR_TAB_PAGE_MISSING",

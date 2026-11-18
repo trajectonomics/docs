@@ -9,6 +9,8 @@ export interface TabDefinition {
 	readonly audience: "Operator" | "Builder"
 	/** The Landing Page entry that sends this Tab's audience here. */
 	readonly entry: string
+	/** The Landing Page line under the entry saying what the reader gets and where it starts. */
+	readonly description: string
 }
 
 /** The two Tabs of the Docs Portal, the Operator tab first. */
@@ -18,12 +20,14 @@ export const TABS: readonly [TabDefinition, TabDefinition] = [
 		title: "CLI & Quickstart",
 		audience: "Operator",
 		entry: "For Operators: install and run the CLI",
+		description: "Install traj, then record your first transaction and read your balance.",
 	},
 	{
 		folder: "developers",
 		title: "Build on Trajectonomics",
 		audience: "Builder",
 		entry: "For Builders: build on Trajectonomics packages",
+		description: "What each package computes, and how to adopt one without the others.",
 	},
 ]
 
