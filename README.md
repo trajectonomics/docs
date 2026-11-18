@@ -34,6 +34,14 @@ Workers Static Assets serves files by request path, so Astro builds into `dist/d
 from an earlier build). `/docs` without the slash reaches `/docs/` through the Worker's
 `html_handling: "auto-trailing-slash"`.
 
+### The agent-readable form
+
+Every page also exists as Markdown: `/docs/cli/commands/tx.md` beside `/docs/cli/commands/tx/`, and `/docs/index.md` for the
+Landing Page. `/docs/llms.txt` is the index that lists them all, and a page URL answers `Accept: text/markdown` with its
+twin, served by the Worker (`Vary: Accept` on both forms). The twin is the authored page with its links made absolute;
+`verify:build` fails a built site where a page, its twin or its index entry is missing
+([ADR 0010](./docs/adr/0010-the-portal-serves-markdown-by-request.md)).
+
 ---
 
 ## Development
