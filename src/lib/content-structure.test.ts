@@ -4,17 +4,7 @@ import {
 	type ContentStructureRule,
 	checkContentStructure,
 } from "./content-structure"
-
-const CONTENT_ROOT = "src/content/docs"
-
-async function readContentTree(): Promise<ContentFile[]> {
-	const files: ContentFile[] = []
-	const glob = new Bun.Glob("**/*.{md,mdx,json}")
-	for await (const path of glob.scan({ cwd: CONTENT_ROOT })) {
-		files.push({ path, content: await Bun.file(`${CONTENT_ROOT}/${path}`).text() })
-	}
-	return files.sort((left, right) => left.path.localeCompare(right.path))
-}
+import { readContentTree } from "./content-tree-support"
 
 const tree = await readContentTree()
 

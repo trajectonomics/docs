@@ -14,4 +14,52 @@ traj balance --as-of 2026-03-31 --json           # Every account's balance and n
 traj balance --as-of 2026-03-31 --trial-balance  # Add the trial balance and check that debits equal credits.
 ```
 
+The total is `netWorth`, one entry per currency — the same figure
+[`report networth`](/docs/cli/commands/report/) prints as `totals`.
+
+A sample `--json` output, pretty-printed here because `--json` prints one line, from a ledger with
+Cash (asset), Loan (liability) and Opening Equity (equity) and one 1,000 THB opening transaction on
+2026-01-01, read at 2026-03-31:
+
+```json
+{
+  "asOf": "2026-03-31",
+  "rows": [
+    {
+      "account": {
+        "id": "01a1ef67-3b44-7415-9e90-6716503a9d1c",
+        "name": "Cash"
+      },
+      "type": "asset",
+      "amount": "1000.00",
+      "currency": "THB"
+    },
+    {
+      "account": {
+        "id": "01a1ef67-40f6-75b7-939b-e27cccd05d01",
+        "name": "Loan"
+      },
+      "type": "liability",
+      "amount": "0.00",
+      "currency": "THB"
+    },
+    {
+      "account": {
+        "id": "01a1ef67-4483-7231-8cec-8ad91ad6a3a6",
+        "name": "Opening Equity"
+      },
+      "type": "equity",
+      "amount": "-1000.00",
+      "currency": "THB"
+    }
+  ],
+  "netWorth": [
+    {
+      "currency": "THB",
+      "amount": "1000.00"
+    }
+  ]
+}
+```
+
 See [Commands](/docs/cli/commands/) for the global options, exit codes and error envelope.

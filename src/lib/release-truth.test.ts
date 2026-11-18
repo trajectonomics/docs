@@ -1,19 +1,9 @@
 import { describe, expect, test } from "bun:test"
-import type { ContentFile } from "./content-pages"
+import { readContentTree } from "./content-tree-support"
 import { parseSyncManifest } from "./docs-sync/manifest"
 import { checkReleaseTruth } from "./release-truth"
 
-const CONTENT_ROOT = "src/content/docs"
 const MANIFEST_PATH = "docs-sync-manifest.json"
-
-async function readContentTree(): Promise<ContentFile[]> {
-	const files: ContentFile[] = []
-	const glob = new Bun.Glob("**/*.{md,mdx,json}")
-	for await (const path of glob.scan({ cwd: CONTENT_ROOT })) {
-		files.push({ path, content: await Bun.file(`${CONTENT_ROOT}/${path}`).text() })
-	}
-	return files.sort((left, right) => left.path.localeCompare(right.path))
-}
 
 const tree = await readContentTree()
 const manifest = parseSyncManifest(await Bun.file(MANIFEST_PATH).text())
