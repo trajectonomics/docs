@@ -1,8 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import { type ContentExamplesRule, checkContentExamples } from "./content-examples"
-import type { ContentFile } from "./content-pages"
+import { CONTENT_ROOT, type ContentFile } from "./content-pages"
 
-const CONTENT_ROOT = "src/content/docs"
 const SCENARIO_PAGE = "cli/commands/scenario.mdx"
 const SIM_CORE_PAGE = "developers/sim-core/index.mdx"
 
@@ -76,6 +75,14 @@ describe("the Scenario document", () => {
 		expect(rulesOf(scenarioPage(dangling))).toEqual(["scenario-document-dangling-account"])
 	})
 
+	test("is reported when surplus routes to an Account the document does not declare", () => {
+		const dangling = {
+			...DOCUMENT,
+			cashflow: { ...DOCUMENT.cashflow, surplus: [{ account: "brokerage" }] },
+		}
+		expect(rulesOf(scenarioPage(dangling))).toEqual(["scenario-document-dangling-account"])
+	})
+
 	test("is reported when a contribution targets an Account the document does not declare", () => {
 		const dangling = {
 			...DOCUMENT,
@@ -111,6 +118,11 @@ describe("the Builder example", () => {
 
 	test("is accepted when every argument is an inline literal", () => {
 		const program = "const result = project({ schemaVersion: 1 }, { schemaVersion: 1 }, {})"
+		expect(rulesOf(builderPage(program))).toEqual([])
+	})
+
+	test("is accepted when an inline literal holds a comma inside a string", () => {
+		const program = 'const result = project({ currency: "THB", schemaVersion: 1 }, {}, {})'
 		expect(rulesOf(builderPage(program))).toEqual([])
 	})
 

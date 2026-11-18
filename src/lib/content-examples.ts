@@ -1,7 +1,12 @@
-import { codeFences } from "./content-fences"
 import type { ContentFile } from "./content-pages"
+import { codeFences } from "./markdown-fences"
 import { undefinedProjectArguments } from "./project-example"
-import { accountReferences, declaredAccounts, scenarioDocument } from "./scenario-document"
+import {
+	accountReferences,
+	declaredAccounts,
+	SCENARIO_DOCUMENT_KEYS,
+	scenarioDocument,
+} from "./scenario-document"
 
 /** One rule of the example check; one value per way a published example can be incomplete. */
 export type ContentExamplesRule =
@@ -26,15 +31,13 @@ const BUILDER_TAB = "developers/"
 const PROGRAM_LANGUAGES = ["ts", "typescript"]
 
 function scenarioProblems(file: ContentFile): readonly ContentExamplesProblem[] {
-	const document = scenarioDocument(file.content)
+	const { document, missing } = scenarioDocument(file.content)
 	if (document === undefined) {
-		return [
-			{
-				rule: "scenario-document-missing",
-				file: file.path,
-				detail: "no json fence carries schemaVersion, currency, economy, accounts, flows, cashflow",
-			},
-		]
+		const detail =
+			missing.length === SCENARIO_DOCUMENT_KEYS.length
+				? `no json fence is a Scenario document; it needs ${missing.join(", ")}`
+				: `the Scenario document omits ${missing.join(", ")}`
+		return [{ rule: "scenario-document-missing", file: file.path, detail }]
 	}
 	const declared = declaredAccounts(document)
 	return accountReferences(document).flatMap(({ path, account }) =>

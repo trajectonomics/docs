@@ -1,4 +1,4 @@
-import { codeFences } from "./content-fences"
+import { codeFences } from "./markdown-fences"
 
 /** One Account id a Scenario documents names at a path, for the check that `accounts` declares it. */
 export interface ScenarioAccountReference {
@@ -6,8 +6,14 @@ export interface ScenarioAccountReference {
 	readonly account: string
 }
 
+/** What a page publishes as a Scenario document, and the required keys its best json fence omits. */
+export interface ScenarioDocumentLookup {
+	readonly document: Record<string, unknown> | undefined
+	readonly missing: readonly string[]
+}
+
 /** The keys every Scenario document the CLI accepts carries. */
-const DOCUMENT_KEYS = [
+export const SCENARIO_DOCUMENT_KEYS = [
 	"schemaVersion",
 	"currency",
 	"economy",
@@ -20,20 +26,21 @@ function isObject(value: unknown): value is Record<string, unknown> {
 	return typeof value === "object" && value !== null && !Array.isArray(value)
 }
 
-function object(value: unknown): Record<string, unknown> {
+function objectOrEmpty(value: unknown): Record<string, unknown> {
 	return isObject(value) ? value : {}
 }
 
-function list(value: unknown): readonly unknown[] {
+function arrayOrEmpty(value: unknown): readonly unknown[] {
 	return Array.isArray(value) ? value : []
 }
 
 function strings(value: unknown): readonly string[] {
-	return list(value).filter((item): item is string => typeof item === "string")
+	return arrayOrEmpty(value).filter((item): item is string => typeof item === "string")
 }
 
-/** The Scenario document `content` publishes: its first json fence carrying every required key. */
-export function scenarioDocument(content: string): Record<string, unknown> | undefined {
+/** The Scenario document `content` publishes, or the required keys its best json fence omits. */
+export function scenarioDocument(content: string): ScenarioDocumentLookup {
+	let incomplete: readonly string[] | undefined
 	for (const fence of codeFences(content)) {
 		if (fence.language !== "json") continue
 		let parsed: unknown
@@ -42,15 +49,18 @@ export function scenarioDocument(content: string): Record<string, unknown> | und
 		} catch {
 			continue
 		}
-		if (isObject(parsed) && DOCUMENT_KEYS.every((key) => key in parsed)) return parsed
+		if (!isObject(parsed)) continue
+		const missing = SCENARIO_DOCUMENT_KEYS.filter((key) => !(key in parsed))
+		if (missing.length === 0) return { document: parsed, missing: [] }
+		incomplete ??= missing
 	}
-	return undefined
+	return { document: undefined, missing: incomplete ?? SCENARIO_DOCUMENT_KEYS }
 }
 
 /** The Account ids `document`'s `accounts` declares. */
 export function declaredAccounts(document: Record<string, unknown>): ReadonlySet<string> {
-	const ids = list(document["accounts"]).flatMap((account) => {
-		const id = object(account)["id"]
+	const ids = arrayOrEmpty(document["accounts"]).flatMap((account) => {
+		const id = objectOrEmpty(account)["id"]
 		return typeof id === "string" ? [id] : []
 	})
 	return new Set(ids)
@@ -60,9 +70,9 @@ export function declaredAccounts(document: Record<string, unknown>): ReadonlySet
 export function accountReferences(
 	document: Record<string, unknown>,
 ): readonly ScenarioAccountReference[] {
-	const cashflow = object(document["cashflow"])
-	const steps = list(cashflow["surplus"]).flatMap((step, index) => {
-		const account = object(step)["account"]
+	const cashflow = objectOrEmpty(document["cashflow"])
+	const steps = arrayOrEmpty(cashflow["surplus"]).flatMap((step, index) => {
+		const account = objectOrEmpty(step)["account"]
 		const path = `cashflow.surplus[${index}].account`
 		return typeof account === "string" ? [{ path, account }] : []
 	})
@@ -72,8 +82,8 @@ export function accountReferences(
 			account,
 		})),
 	)
-	const targets = list(document["flows"]).flatMap((flow, index) => {
-		const account = object(flow)["target"]
+	const targets = arrayOrEmpty(document["flows"]).flatMap((flow, index) => {
+		const account = objectOrEmpty(flow)["target"]
 		const path = `flows[${index}].target`
 		return typeof account === "string" ? [{ path, account }] : []
 	})

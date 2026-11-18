@@ -18,15 +18,15 @@ function depthChange(char: string): number {
 	return char === ")" || char === "]" || char === "}" ? -1 : 0
 }
 
-/** The index of the quote closing the string that starts at `start`, `undefined` if unterminated. */
-function closingQuote(text: string, start: number): number | undefined {
+/** The index after the quote closing the string that starts at `start`, or the text's end. */
+function closingQuote(text: string, start: number): number {
 	const quote = text[start]
 	for (let index = start + 1; index < text.length; index += 1) {
 		const char = text[index]
 		if (char === "\\") index += 1
 		else if (char === quote) return index
 	}
-	return undefined
+	return text.length
 }
 
 /** The names `program` declares with `const`, `let` or `var`. */
@@ -34,40 +34,39 @@ function declaredNames(program: string): ReadonlySet<string> {
 	return new Set([...program.matchAll(DECLARATION)].flatMap((match) => match[1] ?? []))
 }
 
-/** The index of the `)` closing the call opened just before `start`, `undefined` if unclosed. */
-function closingParen(program: string, start: number): number | undefined {
+/** Where a call's text ends, and the offsets of the commas at its top level. */
+interface CallScan {
+	readonly close: number | undefined
+	readonly commas: readonly number[]
+}
+
+function scanCall(program: string, start: number): CallScan {
+	const commas: number[] = []
 	let depth = 0
 	for (let index = start; index < program.length; index += 1) {
 		const char = program[index] ?? ""
 		if (isQuote(char)) {
-			index = closingQuote(program, index) ?? program.length
-		} else if (char === ")" && depth === 0) {
-			return index
-		} else {
-			depth += depthChange(char)
+			index = closingQuote(program, index)
+			continue
 		}
+		const before = depth
+		depth += depthChange(char)
+		if (before !== 0) continue
+		if (char === ")") return { close: index, commas }
+		if (char === ",") commas.push(index)
 	}
-	return undefined
+	return { close: undefined, commas }
 }
 
-/** The top-level arguments of a call, from the text between its parentheses. */
-function splitArguments(call: string): readonly string[] {
-	const args: string[] = []
-	let depth = 0
-	let opening = 0
-	for (let index = 0; index < call.length; index += 1) {
-		const char = call[index] ?? ""
-		if (isQuote(char)) {
-			index = closingQuote(call, index) ?? call.length
-		} else if (char === "," && depth === 0) {
-			args.push(call.slice(opening, index).trim())
-			opening = index + 1
-		} else {
-			depth += depthChange(char)
-		}
-	}
-	const last = call.slice(opening).trim()
-	return last === "" ? args : [...args, last]
+/** The top-level arguments of the call whose `(` ends just before `start`, `undefined` if unclosed. */
+function callArguments(program: string, start: number): readonly string[] | undefined {
+	const { close, commas } = scanCall(program, start)
+	if (close === undefined) return undefined
+	const starts = [start, ...commas.map((comma) => comma + 1)]
+	const ends = [...commas, close]
+	return starts
+		.map((from, index) => program.slice(from, ends[index] ?? close).trim())
+		.filter((argument) => argument !== "")
 }
 
 /** Whether `argument` is an inline literal or an identifier the fence declares. */
@@ -80,10 +79,9 @@ function isDefined(argument: string, declared: ReadonlySet<string>): boolean {
 export function undefinedProjectArguments(program: string): readonly UndefinedProjectArgument[] {
 	const declared = declaredNames(program)
 	return [...program.matchAll(CALL)].flatMap((match, call) => {
-		const start = (match.index ?? 0) + match[0].length
-		const close = closingParen(program, start)
-		if (close === undefined) return []
-		return splitArguments(program.slice(start, close)).flatMap((source, index) =>
+		const args = callArguments(program, (match.index ?? 0) + match[0].length)
+		if (args === undefined) return []
+		return args.flatMap((source, index) =>
 			isDefined(source, declared) ? [] : [{ call, index, source }],
 		)
 	})
