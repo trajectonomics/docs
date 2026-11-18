@@ -42,11 +42,12 @@ fails instead of being fetched mid-run. An exact version is what keeps the run d
 This is a different shape from the two checks next to it, and deliberately so. A page bound to an
 upstream **wire contract** is kept by a copied constant compared against the built page in
 `verify:build` ([ADR 0010](./0010-a-page-bound-to-an-upstream-wire-contract-is-checked.md)). A check
-that reads the registry **live** leaves the gate for a job of its own (docs#93), the way the browser
-tests did ([ADR 0004](./0004-browser-tests-run-outside-the-deploy-gate.md)). This one is neither: it
-needs the published package present to run the program, and it must run at the source seam, because
-the program a reader copies is the source, not the highlighted HTML — and reading a program back out
-of highlighted markup is lossy. The built page's code blocks stay covered by
+that reads the registry **live** leaves the gate for a job of its own
+([ADR 0011](./0011-command-reference-drift-is-checked-by-a-workflow.md), docs#93), the way the
+browser tests did ([ADR 0004](./0004-browser-tests-run-outside-the-deploy-gate.md)). This one is
+neither: it needs the published package present to run the program, and it must run at the source
+seam, because the program a reader copies is the source, not the highlighted HTML — and reading a
+program back out of highlighted markup is lossy. The built page's code blocks stay covered by
 `e2e/code-blocks.e2e.ts`.
 
 ## Considered Options
