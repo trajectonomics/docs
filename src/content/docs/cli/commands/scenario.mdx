@@ -6,23 +6,74 @@ description: Manage Scenarios, the named what-ifs.
 `traj scenario` manages Scenarios, the named what-ifs. A Scenario's document is `sim-core`'s, and
 overrides use dotted paths with stable ids
 ([ADR 0024](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0024-scenario-documents-and-overrides.md)).
+A leaf with a document form may print one template: `traj scenario apply --template` prints a
+document the pinned `sim-core` accepts
+([ADR 0033](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0033-a-document-leaf-prints-a-template-the-core-accepts.md)).
 A Scenario can also carry a tax Levy, which its Projection applies.
 
 ## `traj scenario apply <name>`
 
 Create or update a Scenario from a JSON document.
 
-- `--file <string>` — the JSON document's path, or `-` for stdin; required
-- `--template` — print a minimal document to start from instead, opening no data directory; takes
-  no name
+- `--file <string>` — the JSON document's path, or `-` for stdin; required unless `--template`
+- `--template` — print a complete document to start from and open no Data directory; takes no name
 - `--dry-run` — report the row and roll the write back
 
 ```bash
-traj scenario apply --template                       # Print a minimal document to start from.
+traj scenario apply --template > base.json           # Print the document to start from.
 traj scenario apply base --file base.json            # Create a Scenario, or update it when the document changed.
 traj scenario apply base --file - < base.json        # Read the document from stdin.
 traj scenario apply base --file base.json --dry-run  # Show the row and roll the write back.
 ```
+
+`traj scenario apply --template` prints a complete document to start from: print it, edit it, then
+apply it. At `@trajectonomics/cli@0.2.0`, the release the Docs Portal documents, it prints:
+
+```json
+{
+  "schemaVersion": 4,
+  "currency": "THB",
+  "economy": {
+    "inflation": 0
+  },
+  "accounts": [
+    {
+      "id": "cash",
+      "kind": "asset",
+      "rate": 0
+    }
+  ],
+  "flows": [
+    {
+      "id": "salary",
+      "kind": "income",
+      "earned": true,
+      "amount": 100000,
+      "frequency": "monthly",
+      "start": "2026-01-01",
+      "growth": "inflation"
+    }
+  ],
+  "cashflow": {
+    "surplus": [
+      {
+        "account": "cash"
+      }
+    ],
+    "contribute": [],
+    "withdraw": []
+  }
+}
+```
+
+`traj schema scenario apply` names the document version the installed CLI accepts, so print the
+template rather than copying this one into a newer CLI.
+
+Amounts are integer minor units (cents or satang, depending on the currency), rates and inflation
+are integer basis points, and dates are `YYYY-MM-DD`. `growth` is `"inflation"` or
+`{ "bps": <integer> }`. `cashflow.surplus` is the order surplus fills Accounts,
+`cashflow.contribute` is the funding priority for contributions, and `cashflow.withdraw` is the
+withdrawal order.
 
 ## `traj scenario diff <a> <b>`
 
@@ -101,5 +152,6 @@ traj scenario tax base --none                                                   
 - [ADR 0016: deletion has three names, and only one is a tombstone](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0016-three-deletion-stories.md)
 - [ADR 0024: Scenario documents are `sim-core`'s, and Overrides use dotted paths](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0024-scenario-documents-and-overrides.md)
 - [ADR 0032: tax is the Scenario's Levy](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0032-tax-is-the-scenarios-levy.md)
+- [ADR 0033: a document leaf prints one template its core accepts](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0033-a-document-leaf-prints-a-template-the-core-accepts.md)
 
 See [Commands](/docs/cli/commands/) for the global options, exit codes and error envelope.
