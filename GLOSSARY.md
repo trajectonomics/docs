@@ -40,6 +40,10 @@ _Avoid_: Version line, version footer, latest release
 The page at `/` on trajectonomics.com, built and deployed by `trajectonomics/site`, outside the Docs Portal.
 _Avoid_: Landing Page (that is the page at `/docs/`)
 
+**Sitemap**:
+The machine-readable list of the Docs Portal's pages, served at `/docs/sitemap.xml` and generated at build time from the same content collection the search index reads. It is not the Site's sitemap at `/sitemap.xml`, which lists the Site's two language homes.
+_Avoid_: page list, XML index, page index
+
 **Upstream Package**:
 A Trajectonomics repository whose releases the Docs Portal documents: `cli`, `sim-core`, `ledger-core`, `tax-core` and `design-system`.
 _Avoid_: Dependency, upstream repo
