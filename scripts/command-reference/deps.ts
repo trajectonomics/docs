@@ -1,25 +1,5 @@
 import type { ContentFile } from "../../src/lib/command-reference"
 
-/** One code per way the check can refuse to give a verdict; every one exits 2. */
-export type CommandReferenceErrorCode =
-	| "USAGE_INVALID"
-	| "RELEASE_UNREADABLE"
-	| "RELEASE_MALFORMED"
-	| "PAGES_UNREADABLE"
-	| "BASELINE_UNREADABLE"
-
-/** A failure that makes the check exit 2: the release or the pages cannot be read. */
-export class UnreadableError extends Error {
-	readonly code: CommandReferenceErrorCode
-
-	constructor(code: CommandReferenceErrorCode, message: string) {
-		super(message)
-		this.name = "UnreadableError"
-		this.code = code
-		Object.freeze(this)
-	}
-}
-
 /** The milliseconds the check waits for npm to serve a release it already announced. */
 export const RELEASE_WAIT_MS = 600_000
 

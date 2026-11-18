@@ -7,12 +7,16 @@ export const GLOBALS = ["--json", "-h", "--help", "-v", "--version"] as const
 
 /** A release of the shape the runner builds, carrying the fixture global flags. */
 export function release(leaves: readonly ReleaseLeaf[]): ReleaseSnapshot {
-	return { version: "0.2.0", leaves, globalFlags: GLOBALS }
+	return Object.freeze({
+		version: "0.2.0",
+		leaves: Object.freeze([...leaves]),
+		globalFlags: GLOBALS,
+	})
 }
 
 /** A command-reference page at its path in the content tree. */
 export function page(name: string, content: string): ContentFile {
-	return { path: `${COMMAND_REFERENCE_ROOT}/${name}`, content }
+	return Object.freeze({ path: `${COMMAND_REFERENCE_ROOT}/${name}`, content })
 }
 
 /** The index page, whose `Global options` section documents every fixture global flag. */

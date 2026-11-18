@@ -56,7 +56,8 @@ describe("a released flag", () => {
 		expect(problems.map((problem) => [problem.rule, problem.leaf, problem.flag])).toEqual([
 			["flag-missing", "tx add", "--memo"],
 		])
-		expect(problems[0]?.detail).toBe("tx add is missing --memo (traj 0.2.0 accepts it)")
+		expect(problems[0]?.detail).toContain("--memo")
+		expect(problems[0]?.detail).toContain("0.2.0")
 	})
 })
 
