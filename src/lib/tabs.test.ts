@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { isTabPath, TABS, tabUrl } from "./tabs"
+import { isTabPath, TAB_ALIASES, TABS, tabUrl } from "./tabs"
 
 describe("Docs Portal Tabs", () => {
 	test("there is one Operator tab and one Builder tab, in that order", () => {
@@ -48,5 +48,20 @@ describe("the Tab a pathname belongs to", () => {
 
 	test("a path that only starts with a Tab's name is another page", () => {
 		expect(isTabPath(TABS[0], "/docs/cli-reference/")).toBe(false)
+	})
+})
+
+describe("the audience names a Tab answers to", () => {
+	test("each alias sends its audience name to that Tab's index page", () => {
+		expect(TAB_ALIASES.map((alias) => [alias.path, tabUrl(alias.tab)])).toEqual([
+			["/operators", "/docs/cli/"],
+			["/builders", "/docs/developers/"],
+		])
+	})
+
+	test("an alias is not a Tab path of its own", () => {
+		for (const alias of TAB_ALIASES) {
+			expect(TABS.some((tab) => isTabPath(tab, alias.path))).toBe(false)
+		}
 	})
 })

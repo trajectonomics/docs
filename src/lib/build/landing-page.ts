@@ -4,18 +4,17 @@ import { fileAt } from "./built-files"
 import type { BuildFailure } from "./failures"
 import { buildFailure } from "./failures"
 import { anchors } from "./html"
+import { isRedirectPage } from "./redirect-page"
 import { indexedPageIds, parseSearchIndex, SEARCH_INDEX_FILE } from "./search-index"
 
 /** Assets-root path of the built Landing Page. */
 export const LANDING_PAGE_FILE = `${DOCS_BASE_PATH.slice(1)}/index.html`
 
-const META_REFRESH = /<meta\b[^>]*http-equiv="refresh"/i
-
 /** The page ids the search index must not answer with: the Landing Page, with or without a slash. */
 const LANDING_PAGE_IDS: readonly string[] = [DOCS_BASE_PATH, `${DOCS_BASE_PATH}/`]
 
 function pageFailures(page: BuiltFile): readonly BuildFailure[] {
-	if (META_REFRESH.test(page.content)) {
+	if (isRedirectPage(page.content)) {
 		return [buildFailure("LANDING_PAGE_REDIRECT", page.path, "the Landing Page is a meta refresh")]
 	}
 	const links = anchors(page.content)

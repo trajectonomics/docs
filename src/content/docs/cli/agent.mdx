@@ -1,59 +1,60 @@
 ---
 title: Agent
-description: What the Agent asks you for, where the tool stops, and what this release cannot do yet.
+description: What the Agent asks you for, where the tool stops, and what this release does.
 ---
 
 An Operator rarely types every `traj` command alone: an Agent runs them. `traj` is the deterministic
 tool and the Agent supplies the judgement
-([ADR 0001](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0001-agent-first-no-llm.md)),
+([ADR 0001](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0001-agent-first-no-llm.md)),
 so every number it gives you is one `traj` returned, because the tool never calls a model.
 
-This page describes `traj` `v0.1.0`, the release the rest of this Tab documents. It covers the
+This page describes `traj` `v0.2.0`, the release the rest of these pages document. It covers the
 division of labour, the facts the Agent will ask you for, where the tool stops, and what this release
-cannot do yet. [Installation](/docs/cli/installation/) has the commands.
+does. [Installation](/docs/cli/installation/) has the commands.
 
 ## Who computes, who judges
 
 `traj` is deterministic and never calls a model, so it supplies arithmetic and no opinions
-([ADR 0001](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0001-agent-first-no-llm.md)).
+([ADR 0001](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0001-agent-first-no-llm.md)).
 The Agent supplies the judgement: it asks you for the facts the tool needs, decides what to run, and
 reads the result back to you in your words.
 
 The Agent passes `--json` on every call. The output format is never inferred from a terminal, so a
 pipe and a terminal cannot disagree by accident
-([ADR 0010](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0010-output-contract.md)).
+([ADR 0010](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0010-output-contract.md)).
 
 Two skills make this work. `traj-onboarding` is the front door, and `traj` is the operating skill
-the Agent follows afterwards; [Installation](/docs/cli/installation/) carries the commands for both,
-so the command you run stays the current one.
+the Agent follows afterwards; both publish from `trajectonomics/skills`, and
+[Installation](/docs/cli/installation/) carries the commands for both, so the command you run stays
+the current one.
 
 ## What your Agent will ask you for
 
-`traj` has no clock and no opinions, so every fact it uses is one you state. Expect these questions
-before the first answer:
+`traj` has no opinions, and the date a command acts on is always one you pass, so every fact it
+uses is one you state. Expect these questions before the first answer:
 
 - **Dates.** Every date is `YYYY-MM-DD`, including every as-of date, and none is read off your
   machine: "today" is a date you give
-  ([ADR 0018](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0018-no-clock-in-ledger-commands.md),
-  [ADR 0029](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0029-reads-take-their-date-from-the-caller.md)).
+  ([ADR 0018](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0018-no-clock-in-ledger-commands.md),
+  [ADR 0029](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0029-reads-take-their-date-from-the-caller.md)).
   A date in a source can be a Buddhist Era year, which is the same day under a different year
   number: the Agent converts it, and asks you which calendar the source uses when the source does
   not say.
 - **Account names.** Every account is a name, exact and case-sensitive. The Agent reads your chart
   of accounts first, and an account you have not created comes back as a question rather than a
   guess
-  ([ADR 0018](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0018-no-clock-in-ledger-commands.md)).
+  ([ADR 0018](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0018-no-clock-in-ledger-commands.md)).
 - **Amounts in your unit.** A command-line amount is a decimal string in the accounts' currency,
-  such as `"120.50"`. A Scenario document's amounts are integers of minor units instead, so
-  `"120.50"` is `12050` satang there. The Agent keeps the unit right, because an amount restated in
-  another unit is a second number you never gave it.
+  such as `"120.50"`. A Scenario document's amounts are whole numbers of the currency's smallest
+  unit instead, so 120.50 baht is `12050` there. The Agent keeps the unit right, because an amount
+  restated in another unit is a second number you never gave it.
 - **The missing fact.** When a fact is missing, or two readings of what you said both fit, you get a
   question, not a filled-in guess.
 
 ## Where the tool stops
 
 Commands never prompt
-([ADR 0010](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0010-output-contract.md)). A
+([ADR 0010](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0010-output-contract.md)). A
 refusal is the tool working, and the Agent's job is to turn it into a question for you.
 [Commands](/docs/cli/commands/) has the classes as the CLI defines them; in your words they are:
 
@@ -68,26 +69,29 @@ refusal is the tool working, and the Agent's job is to turn it into a question f
 
 In JSON mode a failure is an envelope on stderr with a `code` naming the failure, an `exitCode`
 naming its class, and a `hint` when there is one to give
-([ADR 0013](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0013-self-describing-error-envelope.md)).
+([ADR 0013](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0013-self-describing-error-envelope.md)).
 [`traj schema`](/docs/cli/commands/schema/) prints that registry, so the Agent reads the code
 instead of guessing what it meant.
 
 Nothing in the ledger is edited or deleted. A wrong transaction is corrected by
 [`traj tx void`](/docs/cli/commands/tx/) or `traj tx amend`, and both only add rows; an account you
 stop using is [closed](/docs/cli/commands/account/) and stays in history, reports and exports
-([ADR 0016](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0016-three-deletion-stories.md)).
+([ADR 0016](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0016-three-deletion-stories.md)).
 
-## What the tool does not do
+## What this release does
 
-`v0.1.0` applies no tax. Every figure it prints is before tax, so a tax figure an Agent gives you on
-this release is the Agent's own estimate: the operating skill forbids it, and you can refuse it.
+This release projects. [`traj projection run`](/docs/cli/commands/projection/) rolls net worth up year
+by year, nominal and real, and [`traj projection compare`](/docs/cli/commands/projection/) puts two
+Scenarios side by side, or one against a what-if, with the deltas in FI date, net worth at the ages
+you name and run-out year. [`traj fi`](/docs/cli/commands/fi/) answers the financial-independence
+question, with the 25× rule of thumb as a labelled reference.
 
-`v0.1.0` cannot project or give you a financial-independence date.
-[`traj baseline show`](/docs/cli/commands/baseline/) shows the Baseline a Projection would start
-from, and [`traj scenario`](/docs/cli/commands/scenario/) manages the named what-ifs, but no command
-computes one.
+Tax is the Scenario's. [`traj scenario tax`](/docs/cli/commands/scenario/) writes Thailand's 2026
+personal income tax into a Scenario and classifies the income Flows it applies to. A Scenario
+without that Levy is projected before tax, and every result says which it is
+([ADR 0032](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0032-tax-is-the-scenarios-levy.md)).
 
-`v0.1.0` supports THB only.
+This release supports THB only.
 
 The setup skill states a CLI version floor. On a `traj` below that floor it tells you which work
 this command line cannot do yet, and it installs nothing to fix it.
@@ -97,11 +101,11 @@ can run it too.
 ## Check a number
 
 Every figure states the as-of date it was read at, so a number without a date is one to ask about
-([ADR 0029](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0029-reads-take-their-date-from-the-caller.md)).
+([ADR 0029](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0029-reads-take-their-date-from-the-caller.md)).
 
 Ask the Agent which command produced a number, then run it again: the same arguments give the same
 answer, and where the Agent and the tool disagree, the tool is right. You can read the rows yourself
 with [`traj inspect`](/docs/cli/commands/inspect/) and
 [`traj export`](/docs/cli/commands/export/).
 
-Previous: [Installation](/docs/cli/installation/) · Next: [Configuration](/docs/cli/configuration/).
+Previous: [Your data](/docs/cli/data/) · Next: [Configuration](/docs/cli/configuration/).

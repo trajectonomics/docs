@@ -1,0 +1,77 @@
+---
+title: Your data
+description: Where the Trajectonomics CLI keeps the ledger, what is safe to delete, and how to back it up.
+---
+
+`traj` is a local tool. It keeps one SQLite database on your machine, uploads nothing, and has no
+account to cancel. This page says where that database is, what else lives beside it, and which of
+the two is safe to delete.
+
+## The data directory
+
+All state is one directory, `~/.traj` on every platform, or the value of `TRAJ_HOME` when that is
+set ([ADR 0014](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0014-data-directory.md)).
+`traj init` creates it:
+
+```bash
+traj init
+```
+
+Two children matter:
+
+| Path | What it is | Safe to delete? |
+| --- | --- | --- |
+| `traj.db` | The ledger: every account, transaction, correction, Scenario and tax Levy, in one SQLite file. | No. It is the only copy. |
+| `bin/` | The npm launcher's cache of downloaded release binaries, about 100 MB per version. | Yes. The next `npx` run downloads again. |
+
+The install scripts do not use `bin/`: they put the binary where the platform expects it, and the
+directory then holds the ledger alone.
+
+## Back it up
+
+Before you delete anything, take the copy you would keep:
+
+```bash
+traj export --out ~/traj-backup
+```
+
+The export writes the stored rows into a directory that must not already exist, as JSONL by
+default ([ADR 0017](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0017-syncable-roots-and-lossless-export.md),
+[ADR 0028](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0028-export-writes-a-new-directory.md)).
+
+## Remove traj, keep the ledger
+
+Delete the program and the caches. [Installation](/docs/cli/installation/) lists each path. The
+ledger stays where it is, and a later install opens the same books.
+
+## Remove the ledger too
+
+Delete the whole data directory:
+
+```bash
+rm -rf ~/.traj
+```
+
+Use `"$TRAJ_HOME"` instead when you set it:
+
+```bash
+rm -rf "$TRAJ_HOME"
+```
+
+That deletes the database, and there is no copy anywhere else unless you made one above. No `traj`
+command removes the data directory: `traj scenario rm` tombstones one Scenario, and nothing deletes
+accounts or transactions, so deleting the directory is the only way to start clean.
+
+## Keep several ledgers apart
+
+Point `TRAJ_HOME` at another directory to keep two sets of books on one machine:
+
+```bash
+TRAJ_HOME=~/money/work traj init
+TRAJ_HOME=~/money/work traj balance --as-of 2026-03-31
+```
+
+Each directory is complete on its own: its own `traj.db`, its own `bin/` cache, and nothing shared
+with the default `~/.traj`.
+
+Previous: [Installation](/docs/cli/installation/) · Next: [Agent](/docs/cli/agent/).

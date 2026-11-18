@@ -2,6 +2,7 @@ import type { BuiltFile } from "./built-files"
 import type { BuildFailure } from "./failures"
 import { buildFailure } from "./failures"
 import { tagAttribute } from "./html"
+import { isRedirectPage } from "./redirect-page"
 
 /** The one Theme the Docs Portal exposes while the organisation ships one look (docs#89). */
 export const DARK_THEME = "dark"
@@ -54,5 +55,7 @@ function pageFailures(page: BuiltFile): readonly BuildFailure[] {
 
 /** Failures for every built page whose `<html>` is not dark or that still offers a theme toggle. */
 export function checkTheme(files: readonly BuiltFile[]): readonly BuildFailure[] {
-	return files.filter((file) => file.path.endsWith(".html")).flatMap(pageFailures)
+	return files
+		.filter((file) => file.path.endsWith(".html") && !isRedirectPage(file.content))
+		.flatMap(pageFailures)
 }

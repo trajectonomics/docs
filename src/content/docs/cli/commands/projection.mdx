@@ -1,0 +1,54 @@
+---
+title: projection
+description: Project the future under a Scenario, and compare two of them.
+---
+
+`traj projection` runs the Baseline through a Scenario and compares the result. A Projection is
+deterministic: the same rows, the same Scenario and the same dates give the same answer
+([ADR 0007](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0007-deterministic-projections.md)).
+Every result states its As-of, the engine version, the Scenario's hashes, the Overrides it applied
+and its tax status
+([ADR 0030](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0030-projection-inputs-and-echo.md)).
+
+## `traj projection run`
+
+Project the Baseline through a Scenario, year by year, nominal and real.
+
+- `--as-of <string>` — the date the Projection starts at, as `YYYY-MM-DD`; required
+- `--horizon <string>` — the date the Projection ends at, as `YYYY-MM-DD`; required
+- `--scenario <string>` — the Scenario's exact name or its id; required
+- `--set <string>` — replace one existing dotted document path with a JSON value; repeatable
+- `--carry-in <string>` — read what each Levy's period already tallied and prepaid from this JSON
+  path, or `-` for stdin
+- `--monthly` — also report the monthly rows
+
+```bash
+traj projection run --scenario base --as-of 2026-03-31 --horizon 2027-03-30 --json                                     # The annual roll-up of one Scenario.
+traj projection run --scenario base --as-of 2026-03-31 --horizon 2027-03-30 --set flows.salary.amount=90000 --monthly  # Try a raise without forking, and read the monthly rows.
+```
+
+## `traj projection compare <a> [b]`
+
+Compare two Projections, or one against a what-if, and report the deltas in FI date, net worth at
+the ages you name and run-out year.
+
+- `--as-of <string>` — the date the Projection starts at, as `YYYY-MM-DD`; required
+- `--horizon <string>` — the date the Projection ends at, as `YYYY-MM-DD`; required
+- `--set <string>` — replace one existing dotted document path with a JSON value; repeatable
+- `--carry-in <string>` — read what each Levy's period already tallied and prepaid from this JSON
+  path, or `-` for stdin
+- `--birth-date <string>` — the birth date the ages count from, as `YYYY-MM-DD`; needed with `--age`
+- `--age <number>` — report net worth at this age; repeatable
+
+```bash
+traj projection compare base early --as-of 2026-03-31 --horizon 2027-03-30 --json                                                               # How two Scenarios differ in FI date, net worth and run-out.
+traj projection compare base --as-of 2026-03-31 --horizon 2027-03-30 --set flows.salary.amount=90000 --birth-date 1985-06-15 --age 45 --age 50  # A what-if against the base, with net worth at two ages.
+```
+
+## Decisions
+
+- [ADR 0007: Projections are deterministic](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0007-deterministic-projections.md)
+- [ADR 0030: a Projection echoes its inputs](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0030-projection-inputs-and-echo.md)
+- [ADR 0032: tax is the Scenario's Levy](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0032-tax-is-the-scenarios-levy.md)
+
+See [Commands](/docs/cli/commands/) for the global options, exit codes and error envelope.

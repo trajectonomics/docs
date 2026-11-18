@@ -32,6 +32,22 @@ export function tabUrl(tab: TabDefinition): string {
 	return `${DOCS_BASE_PATH}/${tab.folder}/`
 }
 
+/** An audience name a reader may type as a URL, and the Tab it leads to. */
+export interface TabAlias {
+	/** The path below the Docs Portal base, without a trailing slash. */
+	readonly path: string
+	readonly tab: TabDefinition
+}
+
+/**
+ * The audience names a reader may type, and the Tab each one means. They are not a front-door
+ * redirect: `/docs/` stays on the Landing Page, which sends each audience to its own Tab.
+ */
+export const TAB_ALIASES: readonly [TabAlias, TabAlias] = [
+	{ path: "/operators", tab: TABS[0] },
+	{ path: "/builders", tab: TABS[1] },
+]
+
 /** Whether `pathname` is a page of the Tab `tab`, its index page included. */
 export function isTabPath(tab: TabDefinition, pathname: string): boolean {
 	return pathname.startsWith(tabUrl(tab))

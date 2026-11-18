@@ -5,7 +5,8 @@ description: Manage Scenarios, the named what-ifs.
 
 `traj scenario` manages Scenarios, the named what-ifs. A Scenario's document is `sim-core`'s, and
 overrides use dotted paths with stable ids
-([ADR 0024](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0024-scenario-documents-and-overrides.md)).
+([ADR 0024](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0024-scenario-documents-and-overrides.md)).
+A Scenario can also carry a tax Levy, which its Projection applies.
 
 ## `traj scenario apply <name>`
 
@@ -69,9 +70,33 @@ traj scenario show base                                 # Show a Scenario by nam
 traj scenario show base --json | jq .scenario.document  # Print only the document.
 ```
 
+## `traj scenario tax <scenario>`
+
+Write or remove the tax Levy a Scenario's labelled Flows are taxed under
+([ADR 0032](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0032-tax-is-the-scenarios-levy.md)).
+A Levy tallies labels and never guesses them, so `--label` says which Section 40 class each income
+Flow belongs to.
+
+- `--tax <string>` — write the Levy for this jurisdiction: `th-2026`, Thailand's 2026 income tax
+- `--filing-status <string>` — the taxpayer's filing status; needs `--tax`, defaults to `single`
+- `--children <number>` — children counted for the child allowance; needs `--tax`, defaults to 0
+- `--children-at-higher-rate <number>` — children born 2018 or later, allowed at the higher rate; a
+  subset of `--children`, needs `--tax`
+- `--label <string>` — classify one Flow for tax as `<flow>=<label>`, such as
+  `salary=income.section40_1`; repeatable, needs `--tax`
+- `--none` — remove the tax Levy instead of writing one
+- `--dry-run` — report the row and roll the write back
+
+```bash
+traj scenario tax base --tax th-2026 --label salary=income.section40_1                                             # Charge Thailand's 2026 income tax on the salary this Scenario declares.
+traj scenario tax base --tax th-2026 --filing-status married_joint --children 1 --label salary=income.section40_1  # The same Levy under a married-joint profile with one child.
+traj scenario tax base --none                                                                                      # Take the tax Levy out, so the figures are pre-tax again.
+```
+
 ## Decisions
 
-- [ADR 0016: deletion has three names, and only one is a tombstone](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0016-three-deletion-stories.md)
-- [ADR 0024: Scenario documents are `sim-core`'s, and Overrides use dotted paths](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0024-scenario-documents-and-overrides.md)
+- [ADR 0016: deletion has three names, and only one is a tombstone](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0016-three-deletion-stories.md)
+- [ADR 0024: Scenario documents are `sim-core`'s, and Overrides use dotted paths](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0024-scenario-documents-and-overrides.md)
+- [ADR 0032: tax is the Scenario's Levy](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0032-tax-is-the-scenarios-levy.md)
 
 See [Commands](/docs/cli/commands/) for the global options, exit codes and error envelope.

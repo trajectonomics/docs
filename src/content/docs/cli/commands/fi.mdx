@@ -1,0 +1,25 @@
+---
+title: fi
+description: Report the financial independence date under a Scenario.
+---
+
+`traj fi` reports the survival financial-independence date under a Scenario, beside the 25× rule of
+thumb as a labelled reference
+([ADR 0008](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0008-fi-survival-method.md)).
+The result states its As-of, the engine version, the Scenario's hashes, the Overrides it applied and
+its tax status
+([ADR 0030](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0030-projection-inputs-and-echo.md)).
+
+- `--as-of <string>` — the date the Projection starts at, as `YYYY-MM-DD`; required
+- `--horizon <string>` — the date the Projection ends at, as `YYYY-MM-DD`; required
+- `--scenario <string>` — the Scenario's exact name or its id; required
+- `--set <string>` — replace one existing dotted document path with a JSON value; repeatable
+- `--carry-in <string>` — read what each Levy's period already tallied and prepaid from this JSON
+  path, or `-` for stdin
+
+```bash
+traj fi --scenario base --as-of 2026-03-31 --horizon 2027-03-30 --json                           # The survival FI date, with the 25x figure as a labelled reference.
+traj fi --scenario base --as-of 2026-03-31 --horizon 2027-03-30 --set flows.salary.amount=90000  # The same date under one changed assumption.
+```
+
+See [Commands](/docs/cli/commands/) for the global options, exit codes and error envelope.
