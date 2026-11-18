@@ -111,6 +111,11 @@ test("the phone drawer opens with the site button, the search and the Tab dropdo
 	await expect(block.locator("[data-sidebar-tabs]")).toBeVisible()
 	expect(await siteComesFirst(block), "the drawer keeps the block's order").toBe(true)
 
+	// The drawer's own close button is the library's, rendered through the block, not one the shell
+	// drew: it closes the drawer (docs#91).
+	await block.getByRole("button", { name: "Close Sidebar" }).click()
+	await expect(page.locator('#nd-sidebar-mobile[data-state="open"]')).toHaveCount(0)
+
 	// The same navigation at the same size as the desktop sidebar's, so a phone reads it the same.
 	const treeSize = await page
 		.locator("#nd-sidebar-mobile a[data-active]")

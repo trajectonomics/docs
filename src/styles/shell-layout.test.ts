@@ -70,7 +70,7 @@ describe("shell layout stylesheet", () => {
 		expect(declarationValue(tree, "padding")).toBe("0.75rem")
 		const row = declarationsOf(css, `${SIDEBAR_SCOPE} :is(a, button)`)
 		expect(declarationValue(row, "min-height")).toBe("2.25rem")
-		const dropdown = declarationsOf(css, `${SIDEBAR_SCOPE} [data-sidebar-tabs] :is(a, button)`)
+		const dropdown = declarationsOf(css, `${SIDEBAR_SCOPE} [data-sidebar-tabs] [data-state]`)
 		expect(declarationValue(dropdown, "width")).toBe("100%")
 	})
 

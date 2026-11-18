@@ -10,8 +10,12 @@
 	gap: 0.375rem;
 }
 
-/* The Tab dropdown is a full-width row of the top block, as the site button and the search are. */
-:where(#nd-sidebar, #nd-sidebar-mobile) [data-sidebar-tabs] :is(a, button) {
+/*
+ * The Tab dropdown is a full-width row of the top block, as the site button and the search are. The
+ * drawer's close button sits beside it and keeps its own size, so the rule names the dropdown's
+ * trigger by its popover state rather than every control in the block.
+ */
+:where(#nd-sidebar, #nd-sidebar-mobile) [data-sidebar-tabs] [data-state] {
 	width: 100%;
 }
 

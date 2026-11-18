@@ -1,12 +1,10 @@
-import { SidebarTabsDropdown } from "fumadocs-ui/components/sidebar/tabs/dropdown"
-import { SidebarTrigger } from "fumadocs-ui/layouts/notebook/slots/sidebar"
 import type { LayoutTab } from "fumadocs-ui/layouts/shared"
 import {
 	FullSearchTrigger,
 	type FullSearchTriggerProps,
 	type SearchTriggerProps,
 } from "fumadocs-ui/layouts/shared/slots/search-trigger"
-import type { FC } from "react"
+import type { FC, ReactNode } from "react"
 import { siteHomeButton } from "../lib/layout.shared"
 
 /** The header's Tab treatment: Fumadocs' own, carried over from the row this change removes. */
@@ -55,38 +53,30 @@ export const noHeaderSearchTrigger: {
 	full: () => null,
 }
 
-/** The drawer's close button, at the inline end of the top block's first row on a phone. */
-function drawerClose() {
-	return (
-		<SidebarTrigger className="-me-1.5 -mt-1.5 p-2 text-fd-muted-foreground md:hidden">
-			<span aria-hidden="true">✕</span>
-		</SidebarTrigger>
-	)
-}
-
 export interface DocsSidebarBannerProps {
-	/** The Tabs the dropdown offers below `lg`, where the header row hides them. */
-	readonly tabs: readonly LayoutTab[]
+	/**
+	 * What Fumadocs draws in a sidebar header: the Tab dropdown at every width, and in the drawer the
+	 * close button beside it. The block places them below its hairline rather than re-creating them.
+	 */
+	readonly children?: ReactNode
 }
 
 /**
  * The sidebar's top block: the way back to the Site Home above the search trigger, a hairline under
- * them, then the Tab dropdown the header row gives up below `lg`. The tree follows the block; from
- * `lg` up it follows the hairline, because the dropdown is hidden there. The drawer renders the
- * same block, with its close button beside the Site Home button (ADR 0009).
+ * them, then the Tab dropdown the header row gives up below `lg`. The block renders Fumadocs' own
+ * header children, so the drawer keeps the library's close button and nothing here is a control the
+ * library would not have drawn. The tree follows the block; from `lg` up it follows the hairline,
+ * because the dropdown is hidden there (ADR 0009).
  */
-export function DocsSidebarBanner({ tabs }: DocsSidebarBannerProps) {
+export function DocsSidebarBanner({ children }: DocsSidebarBannerProps) {
 	return (
 		<div data-sidebar-top-block="" className="flex flex-col">
 			<div className="flex flex-col gap-2 border-b p-3">
-				<div className="flex items-start gap-2">
-					<div className="flex-1">{siteHomeButton()}</div>
-					{drawerClose()}
-				</div>
+				{siteHomeButton()}
 				<FullSearchTrigger hideIfDisabled />
 			</div>
-			<div data-sidebar-tabs="" className="flex flex-col gap-2 p-3 empty:hidden">
-				<SidebarTabsDropdown options={[...tabs]} />
+			<div data-sidebar-tabs="" className="flex items-center gap-2 p-3 empty:hidden">
+				{children}
 			</div>
 		</div>
 	)

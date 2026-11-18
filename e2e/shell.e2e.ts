@@ -96,11 +96,10 @@ test(`the reading column keeps its width and its place on the ${DOCS_PAGE_PATH} 
 			`every block keeps its left edge at ${widthPx}px`,
 		).toEqual(blocks.map(() => Math.round(blocks[0]?.x ?? 0)))
 
-		// The one header row spans the page at every width, the phone's included.
-		expect(
-			(await box(page, "#nd-subnav"))?.width,
-			`the header spans the page at ${widthPx}px`,
-		).toBe(widthPx)
+		// The one header row spans the page at every width, the phone's included, and stays one row.
+		const header = await box(page, "#nd-subnav")
+		expect(header?.width, `the header spans the page at ${widthPx}px`).toBe(widthPx)
+		expect(header?.height, `the header is one 56px row at ${widthPx}px`).toBe(HEADER_HEIGHT_PX)
 
 		// From xl up the contents column sits at the page's right edge; a phone shows none.
 		const contents = await box(page, "#nd-toc")

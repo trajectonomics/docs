@@ -56,7 +56,7 @@ export function Docs({ tree, title, description, toc, children, ...props }: Docs
 				sidebar={{
 					className: "border-e",
 					collapsible: false,
-					banner: () => <DocsSidebarBanner tabs={tabs} />,
+					banner: (bannerProps) => <DocsSidebarBanner {...bannerProps} />,
 				}}
 				slots={{ searchTrigger: noHeaderSearchTrigger }}
 				containerProps={{ style: { gridTemplate: SHELL_GRID } }}
