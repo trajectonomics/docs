@@ -55,3 +55,11 @@ _Avoid_: Auto-update, docs bot
 **Backfill**:
 The first authored pages for an Upstream Package, written by hand from its latest release. Docs Sync only proposes edits to them afterwards.
 _Avoid_: Import, mirror, migration
+
+**Markdown twin**:
+The Markdown form of a page, served at the page's path with `.md` in place of its trailing slash (and at `/docs/index.md` for the Landing Page). It is the authored page, not a second copy: the same words with their links made absolute.
+_Avoid_: Markdown export, plain-text version
+
+**Docs index**:
+The file at `/docs/llms.txt` that names every page of the Docs Portal and its Markdown twin, in the order the Tabs present them. An Agent reads it first.
+_Avoid_: Sitemap, index file

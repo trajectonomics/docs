@@ -56,3 +56,7 @@ package's `logo/mark.svg` on a tile painted from the Theme's primary roles, 32 p
 `/docs/` under the accessible name "Trajectonomics Docs" on every page of the Portal. The row keeps
 its 56px height and the Tabs their centring; only the mark changes, and the shared layout options
 carry it so no page can pick another.
+
+## Amendment (2026-11-18, docs#77): the agent line in the top block
+
+The Portal publishes an Agent-readable form of every page, and each page says so ([ADR 0010](./0010-the-portal-serves-markdown-by-request.md)). One muted line, "For AI agents: this page as Markdown · the Docs index", joins the page's top utility area: at the top of the docs pages' sidebar block, above the Site Home button, and in the Landing Page's header link row beside Site Home — never in the Landing Page's body, which this ADR's home layout keeps to the Landing Page's own parts. The line is text with two links named "Markdown" and "Docs index"; it adds no control, no banner and no colour role, and the Site Home button stays above the search inside the block.
