@@ -15,13 +15,16 @@ import { checkTheme } from "./theme"
 import { checkTocPlaceholder } from "./toc-placeholder"
 
 /** Every rule the built Docs Portal fails, so one run names all of them instead of the first. */
-export function checkBuild(files: readonly BuiltFile[]): readonly BuildFailure[] {
+export function checkBuild(
+	files: readonly BuiltFile[],
+	releaseLine: string,
+): readonly BuildFailure[] {
 	return [
 		...checkRequiredPages(files),
 		...checkNotFoundPage(files),
 		...checkSearchIndex(files),
 		...checkSearchIndexPages(files),
-		...checkLandingPage(files),
+		...checkLandingPage(files, releaseLine),
 		...checkRedirects(files),
 		...checkTabAliases(files),
 		...checkHeaderTabs(files),
