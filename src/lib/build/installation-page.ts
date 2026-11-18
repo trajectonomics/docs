@@ -16,20 +16,15 @@ const PATH_ASSIGNMENT = "PATH="
 /** The directory the Unix install script writes `traj` into, or the variable that overrides it. */
 const INSTALL_DIRECTORY = /\.local\/bin|TRAJ_INSTALL_DIR/
 
-/**
- * Whether one code block's visible text carries both the assignment and the directory. The
- * highlighter splits a line into tokens, so the check reads the code as one string with no
- * whitespace: rewording, quoting or reordering the tokens never hides the line from it.
- */
+/** Whether one code block's visible text carries both the assignment and the directory. */
 function putsDirectoryOnPath(block: string): boolean {
+	// The highlighter splits a line into tokens, so drop the whitespace its tags leave behind:
+	// rewording, quoting or reordering the tokens never hides the line from the check.
 	const code = visibleText(block).replace(/\s+/g, "")
 	return code.includes(PATH_ASSIGNMENT) && INSTALL_DIRECTORY.test(code)
 }
 
-/**
- * Failures for an Installation page that never shows the reader how to put the install directory on
- * `PATH`. The Unix install script does not edit the shell profile, so the page has to.
- */
+/** Failures for an Installation page that never shows how to put the install directory on `PATH`. */
 export function checkInstallationPage(files: readonly BuiltFile[]): readonly BuildFailure[] {
 	const page = fileAt(files, INSTALLATION_PAGE_FILE)
 	if (page === undefined) return []
