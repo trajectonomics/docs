@@ -1,5 +1,5 @@
-/** One `traj` command line a page shows: its group and leaf, its positionals and its flags. */
-export interface ContentCommand {
+/** One `traj <group> <leaf>` line a page shows: its two words, its positionals and its flags. */
+export interface ContentSubcommand {
 	readonly group: string
 	readonly leaf: string
 	readonly positionals: readonly string[]
@@ -41,11 +41,12 @@ function argumentsOf(words: readonly string[]): {
 	return { positionals, flags }
 }
 
-/** The `traj` command a line states, or `undefined` when the line is not one the rule can read. */
-function parse(line: string): ContentCommand | undefined {
+/** The subcommand a line states, or `undefined` when it is not a `traj <group> <leaf>` line. */
+function parse(line: string): ContentSubcommand | undefined {
 	if (line.trimEnd().endsWith("\\")) return undefined
 	const [program, group, leaf, ...rest] = words(line)
 	if (program !== "traj" || group === undefined || leaf === undefined) return undefined
+	if (group.startsWith("--") || leaf.startsWith("--")) return undefined
 	return { group, leaf, ...argumentsOf(rest) }
 }
 
@@ -60,12 +61,12 @@ function fencedLines(content: string): readonly string[] {
 	return lines
 }
 
-/** Every `traj` command line in the page's fenced code blocks, in source order. */
-export function commandsIn(content: string): readonly ContentCommand[] {
-	const commands: ContentCommand[] = []
+/** Every `traj <group> <leaf>` line in the page's fenced code blocks, in source order. */
+export function subcommandsIn(content: string): readonly ContentSubcommand[] {
+	const subcommands: ContentSubcommand[] = []
 	for (const line of fencedLines(content)) {
-		const command = parse(line)
-		if (command !== undefined) commands.push(command)
+		const subcommand = parse(line)
+		if (subcommand !== undefined) subcommands.push(subcommand)
 	}
-	return commands
+	return subcommands
 }
