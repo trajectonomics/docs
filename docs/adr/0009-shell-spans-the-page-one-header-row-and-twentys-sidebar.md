@@ -48,3 +48,11 @@ below records the reversal.
 - **A custom header component.** Rejected for now: keeping Fumadocs' header keeps the sticky
   offsets, the mobile trigger and the header-height variable the library's, and the shell
   stylesheet can centre the Tabs.
+
+## Amendment (2026-11-18, docs#75): the mark at the left of the row
+
+The header bullet's "the wordmark at the left" is the Site's glyph tile (docs#75): the assets
+package's `logo/mark.svg` on a tile painted from the Theme's primary roles, 32 px, linking to
+`/docs/` under the accessible name "Trajectonomics Docs" on every page of the Portal. The row keeps
+its 56px height and the Tabs their centring; only the mark changes, and the shared layout options
+carry it so no page can pick another.

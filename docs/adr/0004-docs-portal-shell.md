@@ -47,3 +47,12 @@ the header is one row with the Tabs centred, the search and the Site Home live a
 non-collapsible sidebar, and the one-Theme decision constrains the light/dark selection the **look
 comes from design-system** bullet records: the owner chose light first and reversed it to dark on
 17 November 2026, in the docs#89 Run thread ([ADR 0009](./0009-shell-spans-the-page-one-header-row-and-twentys-sidebar.md)).
+
+## Amendment (2026-11-18, docs#75): one header mark, the Site's glyph tile
+
+The owner decided that every page of the Portal carries the same header mark (docs#75), so this
+ADR's **look comes from design-system** bullet no longer ends on the wordmark for the docs pages
+alone. Each page's header shows the Site's glyph tile — the assets package's `logo/mark.svg` on a
+tile painted from the Theme's primary roles — and its link to `/docs/` names itself "Trajectonomics
+Docs"; the Landing Page and the 404 page carry it too, in place of the text title. The mark is one
+component and one default in the shared layout options, so changing it later is a one-line swap.

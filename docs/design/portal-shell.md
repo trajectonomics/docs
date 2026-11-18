@@ -45,7 +45,7 @@ Portal name, one sentence of purpose, a release line, an entry for Operators and
 
 ## Assets
 
-All from `@trajectonomics/design-system-assets`: the docs pages' header shows the wordmark, Layout.astro links the Favicon Set, and the global stylesheet imports the Inter Variable font stylesheet (`fonts/inter.css`). docs owns none. The social card is still pending (design-system#34). The Landing Page header keeps the text title.
+All from `@trajectonomics/design-system-assets`: every page's header shows the Site's glyph tile — the package's `logo/mark.svg`, 32 px on a tile painted from the Theme's primary roles, naming itself "Trajectonomics Docs" — Layout.astro links the Favicon Set, and the global stylesheet imports the Inter Variable font stylesheet (`fonts/inter.css`). docs owns none. The social card is still pending (design-system#34).
 
 ## Checking a change
 
