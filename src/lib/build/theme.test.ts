@@ -54,3 +54,16 @@ describe("the Theme of a built page", () => {
 		expect(failures.map((failure) => failure.path)).toEqual([PAGE, PAGE])
 	})
 })
+
+describe("a built redirect stub", () => {
+	const STUB = "docs/operators/index.html"
+
+	test("is not a page, so it carries no Theme and is not reported", () => {
+		const stub: BuiltFile = {
+			path: STUB,
+			content:
+				'<!doctype html><title>Redirecting to: /docs/cli/</title><meta http-equiv="refresh" content="0;url=/docs/cli/">',
+		}
+		expect(checkTheme([stub])).toEqual([])
+	})
+})

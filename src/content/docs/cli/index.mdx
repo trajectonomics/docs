@@ -3,16 +3,13 @@ title: Quickstart
 description: Install the Trajectonomics CLI and record your first transaction.
 ---
 
-The Trajectonomics CLI, `traj`, is the command-line interface Operators install and run, and an
-[Agent](/docs/cli/agent/) runs it: `traj` computes and the Agent judges. The latest release is
-`v0.1.0`. It keeps a double-entry ledger in one local database and answers balance,
-net-worth and report questions about it. It never reads a clock: every command takes its date from
-you ([ADR 0018](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0018-no-clock-in-ledger-commands.md),
-[ADR 0029](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0029-reads-take-their-date-from-the-caller.md)).
+`traj` is a command-line tool for your own money. It keeps a double-entry ledger in one file on your
+machine and answers questions about balances, net worth and what comes next. It computes; the Agent
+that runs it supplies the judgement.
 
 ## Install
 
-[Installation](/docs/cli/installation/) lists the three install channels. On Linux or macOS:
+[Installation](/docs/cli/installation/) lists the three channels. On Linux or macOS:
 
 ```bash
 curl -fsSL \
@@ -20,9 +17,7 @@ curl -fsSL \
   | sh
 ```
 
-## Quickstart
-
-From an empty machine to a first balance:
+## From an empty machine to a first balance
 
 ```bash
 # create ~/.traj and an empty database
@@ -38,23 +33,25 @@ traj tx add --from Cash --to Food --amount 120.50 --date 2026-03-01
 traj balance --as-of 2026-03-31
 ```
 
-`--type` and `--currency` are required when adding an account, and THB is the only currency `v0.1.0`
-supports. `--as-of` is required on `balance`. Dates are `YYYY-MM-DD`.
+`--type` and `--currency` are required when adding an account, and THB is the only currency this
+release supports. `--as-of` is required on `balance`. Every date is `YYYY-MM-DD`, and the date a
+command acts on is always one you pass.
 
-## In this Tab
+## Where your data lives
 
-- [Installation](/docs/cli/installation/): the three install channels, release pinning and uninstall.
-- [Agent](/docs/cli/agent/): what the Agent asks you for, where the tool stops, and what this
-  release cannot do yet.
+`traj init` writes `~/.traj/traj.db`, or `$TRAJ_HOME/traj.db` when `TRAJ_HOME` is set. That one file
+is the ledger. [Your data](/docs/cli/data/) says what else is in the directory, what is safe to
+delete, and how to back it up.
+
+## What next
+
+- [Installation](/docs/cli/installation/): the three install channels, the agent skill, release
+  pinning and uninstall.
+- [Your data](/docs/cli/data/): the data directory, backups and a clean removal.
+- [Agent](/docs/cli/agent/): what the Agent asks you for, where the tool stops, and what this release
+  does.
 - [Configuration](/docs/cli/configuration/): the environment variables the CLI reads.
-- [Commands](/docs/cli/commands/): the `v0.1.0` command reference.
-
-## Decisions
-
-- [ADR 0005: double-entry ledger](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0005-double-entry-ledger.md)
-- [ADR 0014: data lives in one directory at `~/.traj`](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0014-data-directory.md)
-- [ADR 0018: ledger commands take an explicit date](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0018-no-clock-in-ledger-commands.md)
-- [ADR 0029: read-only commands take their date from the caller](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0029-reads-take-their-date-from-the-caller.md)
+- [Commands](/docs/cli/commands/): the command reference.
 
 Source code and design decisions live in
 [`trajectonomics/cli`](https://github.com/trajectonomics/cli).

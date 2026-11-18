@@ -4,7 +4,7 @@ description: Manage the chart of accounts.
 ---
 
 `traj account` manages the chart of accounts. An account has one of five types — `asset`,
-`liability`, `equity`, `income`, `expense` — and a currency; `v0.1.0` supports THB only. Accounts
+`liability`, `equity`, `income`, `expense` — and a currency; this release supports THB only. Accounts
 nest under a parent by name or id; only leaf accounts take postings.
 
 ## `traj account add <name>`
@@ -51,7 +51,7 @@ traj account show 0194a000-0002-7000-8000-000000000002  # By id.
 
 ## Decisions
 
-- [ADR 0005: double-entry ledger](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0005-double-entry-ledger.md)
-- [ADR 0019: `--dry-run` executes the write and rolls it back](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0019-dry-run-executes-and-rolls-back.md)
+- [ADR 0005: double-entry ledger](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0005-double-entry-ledger.md)
+- [ADR 0019: `--dry-run` executes the write and rolls it back](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0019-dry-run-executes-and-rolls-back.md)
 
 See [Commands](/docs/cli/commands/) for the global options, exit codes and error envelope.

@@ -5,9 +5,9 @@ description: Manage ledger transactions.
 
 `traj tx` manages ledger transactions. A transaction is a set of postings that sum to zero, dated
 by you — the CLI reads no clock
-([ADR 0018](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0018-no-clock-in-ledger-commands.md)).
+([ADR 0018](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0018-no-clock-in-ledger-commands.md)).
 Corrections are new transactions: history is never edited
-([ADR 0016](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0016-three-deletion-stories.md)).
+([ADR 0016](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0016-three-deletion-stories.md)).
 
 ## `traj tx add`
 
@@ -55,7 +55,7 @@ traj tx amend 0194a000-0003-7000-8000-000000000003 --postings -  # Read the repl
 ## `traj tx import [file]`
 
 Import transactions from the one CSV template
-([ADR 0025](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0025-csv-import-is-one-template.md)).
+([ADR 0025](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0025-csv-import-is-one-template.md)).
 
 - `--template` — print the CSV template and open no data directory
 - `--dry-run` — report the import and roll every write back
@@ -69,7 +69,7 @@ traj tx import - --dry-run    # Preview a template read from stdin.
 ## `traj tx list`
 
 List transactions by date. Date ranges are `--since` and `--until`, both inclusive
-([ADR 0022](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0022-date-ranges-are-since-and-until.md)).
+([ADR 0022](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0022-date-ranges-are-since-and-until.md)).
 
 - `--since <string>` — the earliest transaction date, inclusive, as `YYYY-MM-DD`
 - `--until <string>` — the latest transaction date, inclusive, as `YYYY-MM-DD`
@@ -104,10 +104,10 @@ traj tx void 0194a000-0003-7000-8000-000000000003 --date 2026-03-02 --dry-run  #
 
 ## Decisions
 
-- [ADR 0016: deletion has three names, and only one is a tombstone](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0016-three-deletion-stories.md)
-- [ADR 0019: `--dry-run` executes the write and rolls it back](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0019-dry-run-executes-and-rolls-back.md)
-- [ADR 0020: a leaf may declare a document schema, and `-` reads it from stdin](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0020-a-leaf-may-declare-a-document-schema.md)
-- [ADR 0022: date ranges are `--since` and `--until`](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0022-date-ranges-are-since-and-until.md)
-- [ADR 0025: CSV import is one template, one transaction, keyed by external reference](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0025-csv-import-is-one-template.md)
+- [ADR 0016: deletion has three names, and only one is a tombstone](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0016-three-deletion-stories.md)
+- [ADR 0019: `--dry-run` executes the write and rolls it back](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0019-dry-run-executes-and-rolls-back.md)
+- [ADR 0020: a leaf may declare a document schema, and `-` reads it from stdin](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0020-a-leaf-may-declare-a-document-schema.md)
+- [ADR 0022: date ranges are `--since` and `--until`](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0022-date-ranges-are-since-and-until.md)
+- [ADR 0025: CSV import is one template, one transaction, keyed by external reference](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0025-csv-import-is-one-template.md)
 
 See [Commands](/docs/cli/commands/) for the global options, exit codes and error envelope.

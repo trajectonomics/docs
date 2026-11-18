@@ -20,6 +20,10 @@ _Avoid_: Developer, consumer, contributor
 The model-driven program a person runs beside the CLI: it asks for the facts and reads the results, while `traj` computes them.
 _Avoid_: Bot, assistant
 
+**Data directory**:
+The one directory `traj` keeps on a machine, `~/.traj` or `$TRAJ_HOME`: the ledger in `traj.db` and the npm launcher's `bin/` cache.
+_Avoid_: Data folder, state directory
+
 **Tab**:
 A top-level section of the Docs Portal addressed to exactly one audience. There are two: the Operator tab (CLI and quickstart) and the Builder tab (build on Trajectonomics). Tabs are navigation in the header; a Tab's name is not repeated as a page title.
 _Avoid_: Section, category, track

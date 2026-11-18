@@ -15,3 +15,11 @@ The portal documents only the latest release of each Upstream Package, with no v
 - **Pull upstream docs at build time.** No drift, but the content is only as good as contributor-facing upstream text, and it removes human review of what the public reads.
 - **Generate reference pages from upstream at each release, author guides by hand.** The best long-term fit for API reference, deferred until Upstream Packages have stable public exports. Compatible with this decision.
 - **Versioned docs.** Deferred; it multiplies content and sync cost before there is demand.
+
+## Amendment (2026-11-18, docs#113): one release per Tab, and `bun run check` says so
+
+Each Tab names only the release of its Upstream Package that `docs-sync-manifest.json` records:
+the tag in an upstream link, a pinned `@trajectonomics/cli` version, and every release stated in
+the Operator tab. `src/lib/release-truth.ts` fails the test suite for a page that names another,
+so the manifest stays the one place a new tag is chosen and the pages cannot drift from it one at
+a time (the drift that left the Operator tab on `v0.1.0` after `v0.2.0` shipped).

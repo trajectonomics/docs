@@ -4,7 +4,7 @@ description: Report on the ledger over a period or at a date.
 ---
 
 `traj report` reports on the ledger. Both reports take their date from you, never from the clock
-([ADR 0029](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0029-reads-take-their-date-from-the-caller.md)).
+([ADR 0029](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0029-reads-take-their-date-from-the-caller.md)).
 
 ## `traj report networth`
 
@@ -19,7 +19,7 @@ traj report networth --as-of 2026-03-31 --json  # The asset and liability balanc
 ## `traj report pnl`
 
 Report income minus expenses over a period. Date ranges are `--since` and `--until`, both inclusive
-([ADR 0022](https://github.com/trajectonomics/cli/blob/v0.1.0/docs/adr/0022-date-ranges-are-since-and-until.md)).
+([ADR 0022](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0022-date-ranges-are-since-and-until.md)).
 
 - `--until <string>` — the period's inclusive end date, as `YYYY-MM-DD`; required
 - `--since <string>` — the period's inclusive start date; omit to start at the ledger's beginning

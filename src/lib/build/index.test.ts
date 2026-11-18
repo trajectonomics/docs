@@ -36,8 +36,18 @@ const NOT_FOUND_PAGE = [
 	"</html>",
 ].join("")
 
+/** A built redirect stub that sends the reader to `target`. */
+function alias(path: string, target: string): BuiltFile {
+	return {
+		path,
+		content: `<html><meta http-equiv="refresh" content="0;url=${target}"></html>`,
+	}
+}
+
 const COMPLETE_BUILD: readonly BuiltFile[] = [
 	page("docs/404.html", NOT_FOUND_PAGE),
+	alias("docs/operators/index.html", "/docs/cli/"),
+	alias("docs/builders/index.html", "/docs/developers/"),
 	page("docs/index.html", LANDING_PAGE),
 	page("docs/cli/index.html", OPERATOR_TAB_PAGE),
 	{
@@ -64,6 +74,8 @@ describe("the check of the built Docs Portal", () => {
 			"OPERATOR_TAB_PAGE_MISSING",
 			"SEARCH_INDEX_MISSING",
 			"REDIRECT_TO_OPERATOR_TAB",
+			"TAB_ALIAS_MISSING",
+			"TAB_ALIAS_MISSING",
 		])
 	})
 })

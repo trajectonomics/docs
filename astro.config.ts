@@ -3,6 +3,7 @@ import tailwindcss from "@tailwindcss/vite"
 import { defineConfig } from "astro/config"
 import { restoreCodeFences } from "./src/lib/code-fences"
 import { staleRedirects } from "./src/lib/stale-redirects"
+import { TAB_ALIASES, tabUrl } from "./src/lib/tabs"
 
 // The Docs Portal is served under /docs. Workers Static Assets resolves files by
 // request path, so the build lands in dist/docs and the Worker serves ./dist.
@@ -12,6 +13,9 @@ export default defineConfig({
 	output: "static",
 	outDir: "./dist/docs",
 	trailingSlash: "always",
+	// The audience names in the Landing Page's entries are URLs a reader may type: /docs/operators/
+	// and /docs/builders/ reach the Tab they name instead of the 404 page (docs#113).
+	redirects: Object.fromEntries(TAB_ALIASES.map((alias) => [alias.path, tabUrl(alias.tab)])),
 	integrations: [
 		fumadocs({
 			collections: {
