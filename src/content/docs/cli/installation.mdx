@@ -19,6 +19,18 @@ curl -fsSL \
   | sh
 ```
 
+The script does not change your `PATH`. On a machine where `~/.local/bin` is not already on it,
+`traj` is not a command yet; this line adds the directory in the current shell, so `traj` works
+straight away:
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+To keep it in new shells, add the same line to your shell's startup file — `~/.zshrc` for zsh,
+`~/.bashrc` for bash — using your `TRAJ_INSTALL_DIR` directory in place of `~/.local/bin` when you
+set it, and that edit needs a new shell afterwards.
+
 ## Windows
 
 One line; it installs to `%LOCALAPPDATA%\traj\bin`, adds it to the user `PATH` once, and needs a
@@ -40,8 +52,9 @@ bunx @trajectonomics/cli@latest --version
 
 ## Which channel
 
-Use the script for a machine that should keep `traj` on `PATH`; npm when you already have Node or
-Bun and want one command.
+Use the script for a machine where `traj` should stay on `PATH`: on Linux and macOS it installs into
+a directory you put on `PATH` yourself, and on Windows it adds that directory for you. Use npm when
+you already have Node or Bun and want one command.
 
 ## Pin a release
 

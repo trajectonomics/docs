@@ -27,7 +27,7 @@ function decodeEntities(text: string): string {
 }
 
 /** The visible text of an HTML fragment, with its tags and surrounding whitespace gone. */
-function textOf(html: string): string {
+export function visibleText(html: string): string {
 	return decodeEntities(html.replace(TAG, " ")).replace(WHITESPACE, " ").trim()
 }
 
@@ -62,7 +62,7 @@ export function anchors(html: string): readonly HtmlAnchor[] {
 			href: tagAttribute(match[1] ?? "", "href"),
 			ariaCurrent: tagAttribute(match[1] ?? "", "aria-current"),
 			ariaLabel: tagAttribute(match[1] ?? "", "aria-label"),
-			text: textOf(match[2] ?? ""),
+			text: visibleText(match[2] ?? ""),
 		}),
 	)
 }
