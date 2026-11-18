@@ -58,7 +58,7 @@ function problemsOf(files: readonly ContentFile[]): readonly ContentExamplesProb
 }
 
 function detailsOf(files: readonly ContentFile[]): readonly string[] {
-	return checkContentExamples(files).map((problem) => problem.detail)
+	return problemsOf(files).map((problem) => problem.detail)
 }
 
 describe("the authored content's examples", () => {
@@ -72,11 +72,24 @@ describe("the Scenario document", () => {
 		const page: ContentFile[] = [{ path: SCENARIO_PAGE, content: "# scenario\n" }]
 		expect(rulesOf(page)).toEqual(["scenario-document-missing"])
 		expect(detailsOf(page)).toEqual([
-			"no json fence is a Scenario document; it needs schemaVersion, currency, economy, accounts, flows, cashflow",
+			"no json fence qualifies as a Scenario document; it needs schemaVersion, currency, economy, accounts, flows, cashflow",
 		])
 	})
 
-	test("is reported as absent when a json fence carries none of the required keys", () => {
+	test("is reported as absent when no json fence parses as an object", () => {
+		const page: ContentFile[] = [
+			{
+				path: SCENARIO_PAGE,
+				content: "# scenario\n\n```json\n[]\n```\n\n```json\nnot json\n```\n",
+			},
+		]
+		expect(rulesOf(page)).toEqual(["scenario-document-missing"])
+		expect(detailsOf(page)).toEqual([
+			"no json fence qualifies as a Scenario document; it needs schemaVersion, currency, economy, accounts, flows, cashflow",
+		])
+	})
+
+	test("is reported as incomplete when a json fence carries none of the required keys", () => {
 		const page = scenarioPage({})
 		expect(rulesOf(page)).toEqual(["scenario-document-missing"])
 		expect(detailsOf(page)).toEqual([

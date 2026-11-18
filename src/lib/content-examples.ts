@@ -35,7 +35,7 @@ function scenarioProblems(file: ContentFile): readonly ContentExamplesProblem[] 
 	if (lookup.kind !== "document") {
 		const detail =
 			lookup.kind === "absent"
-				? `no json fence is a Scenario document; it needs ${SCENARIO_DOCUMENT_KEYS.join(", ")}`
+				? `no json fence qualifies as a Scenario document; it needs ${SCENARIO_DOCUMENT_KEYS.join(", ")}`
 				: `the Scenario document omits ${lookup.missing.join(", ")}`
 		return [{ rule: "scenario-document-missing", file: file.path, detail }]
 	}

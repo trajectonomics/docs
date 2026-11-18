@@ -38,7 +38,11 @@ function strings(value: unknown): readonly string[] {
 	return arrayOrEmpty(value).filter((item): item is string => typeof item === "string")
 }
 
-/** The Scenario document `content` publishes, or the required keys its best json fence omits. */
+/**
+ * The Scenario document `content` publishes, else why no json fence qualifies as one. A fence that
+ * parses as an object missing required keys is `incomplete`, and the first such fence names the
+ * keys the page is asked for.
+ */
 export function scenarioDocument(content: string): ScenarioDocumentLookup {
 	let incomplete: readonly string[] | undefined
 	for (const fence of codeFences(content)) {
