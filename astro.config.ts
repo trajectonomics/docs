@@ -2,13 +2,14 @@ import fumadocs from "@fumadocs/astro"
 import tailwindcss from "@tailwindcss/vite"
 import { defineConfig } from "astro/config"
 import { restoreCodeFences } from "./src/lib/code-fences"
+import { SITE_ORIGIN } from "./src/lib/site"
 import { staleRedirects } from "./src/lib/stale-redirects"
 import { TAB_ALIASES, tabUrl } from "./src/lib/tabs"
 
 // The Docs Portal is served under /docs. Workers Static Assets resolves files by
 // request path, so the build lands in dist/docs and the Worker serves ./dist.
 export default defineConfig({
-	site: "https://trajectonomics.com",
+	site: SITE_ORIGIN,
 	base: "/docs",
 	output: "static",
 	outDir: "./dist/docs",

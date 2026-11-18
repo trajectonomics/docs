@@ -6,6 +6,8 @@
  * write events, so it is public by design and is committed here.
  */
 
+import { SITE_ORIGIN } from "../site"
+
 /** The PostHog project's ingestion key: write-only, and the same key the Site uses. */
 export const POSTHOG_KEY = "phc_o5LAcajRLpXxdxbUKg4f4veqqdM9xwQ954aQ92vCNvsF"
 
@@ -13,7 +15,7 @@ export const POSTHOG_KEY = "phc_o5LAcajRLpXxdxbUKg4f4veqqdM9xwQ954aQ92vCNvsF"
 export const POSTHOG_CAPTURE_URL = "https://eu.i.posthog.com/i/v0/e/"
 
 /** The only host whose pages are measured: a `workers.dev` or `localhost` page would pollute the project. */
-export const MEASURED_HOSTNAME = "trajectonomics.com"
+export const MEASURED_HOSTNAME = new URL(SITE_ORIGIN).hostname
 
 /** The name this Surface writes into every event, so one project can tell the surfaces apart. */
 export const SURFACE = "docs"
