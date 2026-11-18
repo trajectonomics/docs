@@ -1,0 +1,185 @@
+import { describe, expect, test } from "bun:test"
+import { readFileSync } from "node:fs"
+import type { ContentFile } from "../src/lib/command-reference"
+import { COMMAND_REFERENCE_ROOT } from "../src/lib/command-reference"
+import { main } from "./check-command-reference"
+import type { CommandReferenceDeps } from "./command-reference/deps"
+
+const GLOBALS = ["--json", "-h", "--help", "-v", "--version"]
+
+const INDEX = page(
+	"index.mdx",
+	[
+		"## Global options",
+		"",
+		...GLOBALS.map((flag) => `- \`${flag}\` — accepted by every command.`),
+	].join("\n"),
+)
+
+const TX = page(
+	"tx.mdx",
+	"## `traj tx add <id>`\n\n- `--from <string>` — source.\n- `--dry-run` — roll back.\n",
+)
+
+const FI = page("fi.mdx", "- `--scenario <string>` — the Scenario.\n")
+
+/** The schemas a fake `bunx` answers with, keyed by the leaf path the call names. */
+const SCHEMAS: Readonly<Record<string, unknown>> = {
+	"tx add": {
+		name: "tx add",
+		positionals: ["id"],
+		input: { properties: { id: {}, dryRun: {}, from: {} } },
+	},
+	fi: { name: "fi", positionals: [], input: { properties: { scenario: {} } } },
+}
+
+const HELP = [
+	"Usage: traj tx add [options] <id>",
+	"",
+	"Global options:",
+	"  --json         Print JSON",
+	"  -h, --help     Show usage",
+	"  -v, --version  Print the version",
+	"",
+	"Examples:",
+].join("\n")
+
+function page(name: string, content: string): ContentFile {
+	return { path: `${COMMAND_REFERENCE_ROOT}/${name}`, content }
+}
+
+interface FakeOptions {
+	readonly latest?: string | undefined
+	readonly pages?: readonly ContentFile[] | undefined
+	readonly baselinePages?: readonly ContentFile[] | undefined
+	readonly help?: string
+}
+
+interface Fake {
+	readonly deps: CommandReferenceDeps
+	readonly lines: string[]
+	readonly sleeps: number[]
+}
+
+/** The check over a fake registry, a fake `bunx` and in-memory pages. */
+function fakeDeps(options: FakeOptions = {}): Fake {
+	const lines: string[] = []
+	const sleeps: number[] = []
+	const deps: CommandReferenceDeps = {
+		now: () => sleeps.reduce((total, ms) => total + ms, 0),
+		sleep: async (ms: number) => {
+			sleeps.push(ms)
+		},
+		print: (line: string) => {
+			lines.push(line)
+		},
+		latestVersion: async () => ("latest" in options ? options.latest : "0.2.0"),
+		cliJson: async (_version: string, args: readonly string[]) => {
+			if (args[0] !== "schema") return undefined
+			const path = args.slice(1, -1).join(" ")
+			if (path === "") return { commands: [{ name: "tx add" }, { name: "fi" }] }
+			return SCHEMAS[path]
+		},
+		cliText: async () => options.help ?? HELP,
+		pages: async () => ("pages" in options ? options.pages : [INDEX, TX, FI]),
+		pagesAt: async () => options.baselinePages,
+	}
+	return { deps, lines, sleeps }
+}
+
+describe("a command reference that agrees with the published CLI", () => {
+	test("exits 0 and names the release it compared against", async () => {
+		const fake = fakeDeps()
+		expect(await main([], fake.deps)).toBe(0)
+		expect(fake.lines).toEqual(["check:command-reference: no problems against traj 0.2.0"])
+	})
+})
+
+describe("a page that drifts from the published CLI", () => {
+	test("exits 1 and names the page, the leaf and the flag", async () => {
+		const fake = fakeDeps({ pages: [INDEX, TX, page("fi.mdx", "")] })
+		expect(await main([], fake.deps)).toBe(1)
+		expect(fake.lines).toContain(
+			`${COMMAND_REFERENCE_ROOT}/fi.mdx: fi is missing --scenario (traj 0.2.0 accepts it)`,
+		)
+	})
+})
+
+describe("a release that cannot be read", () => {
+	test("exits 2 after the bounded wait, naming the failure", async () => {
+		const fake = fakeDeps({ latest: undefined })
+		expect(await main([], fake.deps)).toBe(2)
+		expect(fake.lines.join("\n")).toContain("did not become readable within 10 minutes")
+		expect(fake.sleeps.length).toBeGreaterThan(0)
+	})
+
+	test("exits 2 when the help output has no `Global options:` block", async () => {
+		const fake = fakeDeps({ help: "Usage: traj [options]\n" })
+		expect(await main([], fake.deps)).toBe(2)
+		expect(fake.lines.join("\n")).toContain("Global options:")
+	})
+})
+
+describe("pages that cannot be read", () => {
+	test("exits 2 rather than passing", async () => {
+		const fake = fakeDeps({ pages: undefined })
+		expect(await main([], fake.deps)).toBe(2)
+		expect(fake.lines.join("\n")).toContain("could not be read")
+	})
+
+	test("exits 2 when the baseline ref cannot be read", async () => {
+		const fake = fakeDeps({ baselinePages: undefined })
+		expect(await main(["--baseline", "origin/main"], fake.deps)).toBe(2)
+	})
+})
+
+describe("a pull request that compares against a baseline", () => {
+	test("fails only on the drift the baseline does not already have", async () => {
+		const baseline = [
+			INDEX,
+			page("tx.mdx", "## `traj tx add <id>`\n"),
+			page("fi.mdx", "- `--scenario <string>` — the Scenario.\n"),
+		]
+		const current = [INDEX, page("tx.mdx", "## `traj tx add <id>`\n"), page("fi.mdx", "")]
+		const fake = fakeDeps({ pages: current, baselinePages: baseline })
+		expect(await main(["--baseline", "origin/main"], fake.deps)).toBe(1)
+		expect(fake.lines).toContain(
+			`${COMMAND_REFERENCE_ROOT}/tx.mdx: tx add is missing --from (traj 0.2.0 accepts it) — already drifted on origin/main (not failing)`,
+		)
+		expect(fake.lines).toContain(
+			`${COMMAND_REFERENCE_ROOT}/fi.mdx: fi is missing --scenario (traj 0.2.0 accepts it)`,
+		)
+		expect(fake.lines.at(-1)).toContain("1 new problem against traj 0.2.0")
+	})
+
+	test("passes when every problem was already on the baseline", async () => {
+		const fake = fakeDeps({
+			pages: [INDEX, TX, page("fi.mdx", "")],
+			baselinePages: [INDEX, TX, page("fi.mdx", "")],
+		})
+		expect(await main(["--baseline", "abc123"], fake.deps)).toBe(0)
+		expect(fake.lines.at(-1)).toBe(
+			"check:command-reference: no new problems against traj 0.2.0 (1 problem already drifted)",
+		)
+	})
+})
+
+describe("the check's arguments", () => {
+	test("an unknown argument exits 2 with the usage line", async () => {
+		const fake = fakeDeps()
+		expect(await main(["--pages", "somewhere"], fake.deps)).toBe(2)
+		expect(fake.lines.join("\n")).toContain("usage: bun run check:command-reference")
+	})
+})
+
+describe("the offline deploy gate", () => {
+	test("`bun run check` does not run the command-reference check", () => {
+		const manifest: unknown = JSON.parse(readFileSync("package.json", "utf8"))
+		const scripts =
+			typeof manifest === "object" && manifest !== null
+				? (manifest as Record<string, Record<string, string>>)["scripts"]
+				: undefined
+		expect(scripts?.["check"]).not.toContain("check:command-reference")
+		expect(scripts?.["check:command-reference"]).toBe("bun scripts/check-command-reference.ts")
+	})
+})

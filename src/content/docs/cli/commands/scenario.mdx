@@ -13,9 +13,12 @@ A Scenario can also carry a tax Levy, which its Projection applies.
 Create or update a Scenario from a JSON document.
 
 - `--file <string>` — the JSON document's path, or `-` for stdin; required
+- `--template` — print a minimal document to start from instead, opening no data directory; takes
+  no name
 - `--dry-run` — report the row and roll the write back
 
 ```bash
+traj scenario apply --template                       # Print a minimal document to start from.
 traj scenario apply base --file base.json            # Create a Scenario, or update it when the document changed.
 traj scenario apply base --file - < base.json        # Read the document from stdin.
 traj scenario apply base --file base.json --dry-run  # Show the row and roll the write back.

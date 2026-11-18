@@ -71,6 +71,9 @@ bun run preview
 # Run the unit tests (no build needed)
 bun run test
 
+# Compare the command reference with the published CLI (needs the network; not part of bun run check)
+bun run check:command-reference
+
 # Code formatting & lint
 bun run format
 bun run lint
