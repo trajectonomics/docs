@@ -7,7 +7,9 @@ export type PageWordsErrorCode = "TITLE_MISSING"
 /** A page whose frontmatter carries no title, so it has no Markdown twin or Docs index entry. */
 export class PageWordsError extends PageRefusalError<PageWordsErrorCode> {
 	constructor(code: PageWordsErrorCode, message: string, field: string) {
-		super("PageWordsError", code, message, field)
+		super(code, message, field)
+		this.name = "PageWordsError"
+		Object.freeze(this)
 	}
 }
 

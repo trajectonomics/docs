@@ -8,7 +8,9 @@ export type MarkdownTwinErrorCode = "JSX_BODY"
 /** A page whose authored body carries content no Markdown twin can hold. */
 export class MarkdownTwinError extends PageRefusalError<MarkdownTwinErrorCode> {
 	constructor(code: MarkdownTwinErrorCode, message: string, field: string) {
-		super("MarkdownTwinError", code, message, field)
+		super(code, message, field)
+		this.name = "MarkdownTwinError"
+		Object.freeze(this)
 	}
 }
 
