@@ -1,5 +1,9 @@
 import { describe, expect, test } from "bun:test"
-import { type ContentExamplesRule, checkContentExamples } from "./content-examples"
+import {
+	type ContentExamplesProblem,
+	type ContentExamplesRule,
+	checkContentExamples,
+} from "./content-examples"
 import { CONTENT_ROOT, type ContentFile } from "./content-pages"
 
 const SCENARIO_PAGE = "cli/commands/scenario.mdx"
@@ -49,6 +53,14 @@ function rulesOf(files: readonly ContentFile[]): readonly ContentExamplesRule[] 
 	return checkContentExamples(files).map((problem) => problem.rule)
 }
 
+function problemsOf(files: readonly ContentFile[]): readonly ContentExamplesProblem[] {
+	return checkContentExamples(files)
+}
+
+function detailsOf(files: readonly ContentFile[]): readonly string[] {
+	return checkContentExamples(files).map((problem) => problem.detail)
+}
+
 describe("the authored content's examples", () => {
 	test("the Scenario page's document and the Builder example are both complete", () => {
 		expect(checkContentExamples(tree)).toEqual([])
@@ -57,14 +69,48 @@ describe("the authored content's examples", () => {
 
 describe("the Scenario document", () => {
 	test("is reported when the page has no json fence", () => {
-		expect(rulesOf([{ path: SCENARIO_PAGE, content: "# scenario\n" }])).toEqual([
-			"scenario-document-missing",
+		const page: ContentFile[] = [{ path: SCENARIO_PAGE, content: "# scenario\n" }]
+		expect(rulesOf(page)).toEqual(["scenario-document-missing"])
+		expect(detailsOf(page)).toEqual([
+			"no json fence is a Scenario document; it needs schemaVersion, currency, economy, accounts, flows, cashflow",
+		])
+	})
+
+	test("is reported as absent when a json fence carries none of the required keys", () => {
+		const page = scenarioPage({})
+		expect(rulesOf(page)).toEqual(["scenario-document-missing"])
+		expect(detailsOf(page)).toEqual([
+			"the Scenario document omits schemaVersion, currency, economy, accounts, flows, cashflow",
 		])
 	})
 
 	test("is reported when the document omits a key the CLI requires", () => {
 		const { cashflow: omitted, ...withoutCashflow } = DOCUMENT
-		expect(rulesOf(scenarioPage(withoutCashflow))).toEqual(["scenario-document-missing"])
+		const page = scenarioPage(withoutCashflow)
+		expect(rulesOf(page)).toEqual(["scenario-document-missing"])
+		expect(detailsOf(page)).toEqual(["the Scenario document omits cashflow"])
+	})
+
+	test("names the keys the first incomplete fence omits when no fence is complete", () => {
+		const page: ContentFile[] = [
+			{
+				path: SCENARIO_PAGE,
+				content: `# scenario\n\n\`\`\`json\n{"currency": "THB"}\n\`\`\`\n\n\`\`\`json\n{"flows": []}\n\`\`\`\n`,
+			},
+		]
+		expect(detailsOf(page)).toEqual([
+			"the Scenario document omits schemaVersion, economy, accounts, flows, cashflow",
+		])
+	})
+
+	test("is accepted when a complete document follows an incomplete json fence", () => {
+		const page: ContentFile[] = [
+			{
+				path: SCENARIO_PAGE,
+				content: `# scenario\n\n\`\`\`json\n{}\n\`\`\`\n\n\`\`\`json\n${JSON.stringify(DOCUMENT)}\n\`\`\`\n`,
+			},
+		]
+		expect(problemsOf(page)).toEqual([])
 	})
 
 	test("is reported when a route names an Account the document does not declare", () => {

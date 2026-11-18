@@ -31,16 +31,16 @@ const BUILDER_TAB = "developers/"
 const PROGRAM_LANGUAGES = ["ts", "typescript"]
 
 function scenarioProblems(file: ContentFile): readonly ContentExamplesProblem[] {
-	const { document, missing } = scenarioDocument(file.content)
-	if (document === undefined) {
+	const lookup = scenarioDocument(file.content)
+	if (lookup.kind !== "document") {
 		const detail =
-			missing.length === SCENARIO_DOCUMENT_KEYS.length
-				? `no json fence is a Scenario document; it needs ${missing.join(", ")}`
-				: `the Scenario document omits ${missing.join(", ")}`
+			lookup.kind === "absent"
+				? `no json fence is a Scenario document; it needs ${SCENARIO_DOCUMENT_KEYS.join(", ")}`
+				: `the Scenario document omits ${lookup.missing.join(", ")}`
 		return [{ rule: "scenario-document-missing", file: file.path, detail }]
 	}
-	const declared = declaredAccounts(document)
-	return accountReferences(document).flatMap(({ path, account }) =>
+	const declared = declaredAccounts(lookup.document)
+	return accountReferences(lookup.document).flatMap(({ path, account }) =>
 		declared.has(account)
 			? []
 			: [

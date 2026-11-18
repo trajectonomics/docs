@@ -6,11 +6,11 @@ export interface ScenarioAccountReference {
 	readonly account: string
 }
 
-/** What a page publishes as a Scenario document, and the required keys its best json fence omits. */
-export interface ScenarioDocumentLookup {
-	readonly document: Record<string, unknown> | undefined
-	readonly missing: readonly string[]
-}
+/** What a page publishes as a Scenario document, or why no json fence qualifies as one. */
+export type ScenarioDocumentLookup =
+	| { readonly kind: "document"; readonly document: Record<string, unknown> }
+	| { readonly kind: "absent" }
+	| { readonly kind: "incomplete"; readonly missing: readonly string[] }
 
 /** The keys every Scenario document the CLI accepts carries. */
 export const SCENARIO_DOCUMENT_KEYS = [
@@ -51,10 +51,10 @@ export function scenarioDocument(content: string): ScenarioDocumentLookup {
 		}
 		if (!isObject(parsed)) continue
 		const missing = SCENARIO_DOCUMENT_KEYS.filter((key) => !(key in parsed))
-		if (missing.length === 0) return { document: parsed, missing: [] }
+		if (missing.length === 0) return { kind: "document", document: parsed }
 		incomplete ??= missing
 	}
-	return { document: undefined, missing: incomplete ?? SCENARIO_DOCUMENT_KEYS }
+	return incomplete === undefined ? { kind: "absent" } : { kind: "incomplete", missing: incomplete }
 }
 
 /** The Account ids `document`'s `accounts` declares. */
