@@ -44,6 +44,7 @@ function LandingEnding() {
 	)
 }
 
+/** The Landing Page's props: the shell provider's and the release line it shows. */
 export interface LandingProps extends ProviderProps {
 	/** The line naming the release of `traj` the Operator content was synced from. */
 	readonly releaseLine: string

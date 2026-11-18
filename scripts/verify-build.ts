@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs"
 import { checkBuild } from "../src/lib/build"
 import { parseSyncManifest, SYNC_MANIFEST_PATH } from "../src/lib/docs-sync/manifest"
-import { releaseLine } from "../src/lib/docs-sync/release-line"
+import { releaseLine } from "../src/lib/release-line"
 import { readBuildFiles } from "./adapters/build-files"
 
 /** The Worker's assets root: Astro builds into `dist/docs`, so the Worker serves `./dist`. */

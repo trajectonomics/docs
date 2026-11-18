@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs"
 import { parseSyncManifest, SYNC_MANIFEST_PATH } from "../src/lib/docs-sync/manifest"
-import { releaseLine } from "../src/lib/docs-sync/release-line"
+import { releaseLine } from "../src/lib/release-line"
 import { DOCS_BASE_PATH, TABS, tabUrl } from "../src/lib/tabs"
 import { openSearch, otherTab, searchTerm } from "./docs-portal"
 import { expect, test } from "./fixtures"

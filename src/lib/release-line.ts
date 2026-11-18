@@ -1,4 +1,4 @@
-import { manifestEntry, SYNC_MANIFEST_PATH, type SyncManifest } from "./manifest"
+import { manifestEntry, SYNC_MANIFEST_PATH, type SyncManifest } from "./docs-sync/manifest"
 
 /** The ways the sync manifest cannot produce the Landing Page's release line; one per rule. */
 export type ReleaseLineErrorCode = "CLI_ENTRY_MISSING" | "RELEASE_TAG_INVALID"
@@ -20,10 +20,7 @@ export class ReleaseLineError extends Error {
 /** A release tag as Docs Sync records it: `v` and a semantic version, prerelease included. */
 const RELEASE_TAG = /^v\d+\.\d+\.\d+(?:-[0-9A-Za-z.]+)?$/
 
-/**
- * The Landing Page's release line for a parsed sync manifest: the `cli` tag the Operator content
- * was synced from, never npm's latest ([ADR 0002](../../../docs/adr/0002-authored-content-with-proposal-only-sync.md)).
- */
+/** The Landing Page's release line for a parsed sync manifest, from the `cli` tag it was synced from. */
 export function releaseLine(manifest: SyncManifest): string {
 	const entry = manifestEntry(manifest, "cli")
 	if (entry === undefined) {

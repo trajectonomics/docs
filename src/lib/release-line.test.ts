@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { parseSyncManifest, type SyncManifest } from "./manifest"
+import { parseSyncManifest, type SyncManifest } from "./docs-sync/manifest"
 import { ReleaseLineError, releaseLine } from "./release-line"
 
 /** A manifest whose only synced package is `cli`, at the given tag, or none without one. */
