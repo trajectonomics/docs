@@ -25,7 +25,8 @@ const FETCH_SENTENCE =
 
 /** One bullet of the index: a page's title, its absolute twin URL and its description. */
 function bullet(page: DocsIndexPage): string {
-	const described = page.description === undefined ? "" : `: ${page.description}`
+	const described =
+		page.description === undefined || page.description === "" ? "" : `: ${page.description}`
 	return `- [${page.title}](${portalUrl(twinPath(page.url))})${described}`
 }
 
