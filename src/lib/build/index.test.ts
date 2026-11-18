@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test"
+import { SITE_ORIGIN } from "../site"
 import type { BuiltFile } from "./built-files"
 import { checkBuild } from "./index"
 
@@ -55,9 +56,9 @@ function alias(path: string, target: string): BuiltFile {
 const SITEMAP = [
 	'<?xml version="1.0" encoding="UTF-8"?>',
 	'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-	"  <url><loc>https://trajectonomics.com/docs/</loc></url>",
-	"  <url><loc>https://trajectonomics.com/docs/cli/</loc></url>",
-	"  <url><loc>https://trajectonomics.com/docs/cli/commands/tx/</loc></url>",
+	`  <url><loc>${SITE_ORIGIN}/docs/</loc></url>`,
+	`  <url><loc>${SITE_ORIGIN}/docs/cli/</loc></url>`,
+	`  <url><loc>${SITE_ORIGIN}/docs/cli/commands/tx/</loc></url>`,
 	"</urlset>",
 ].join("\n")
 

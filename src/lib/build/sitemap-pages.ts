@@ -52,11 +52,11 @@ function duplicatedLocations(locations: readonly string[]): readonly string[] {
 /** The `<loc>` values that name no page a reader can open, in the order the document lists them. */
 function unexpectedLocations(
 	listed: readonly ListedUrl[],
-	expected: ReadonlySet<string>,
+	expectedPages: ReadonlySet<string>,
 ): readonly string[] {
 	const unexpected = new Set<string>()
 	for (const { location, path } of listed) {
-		if (path === undefined || !expected.has(path)) unexpected.add(location)
+		if (path === undefined || !expectedPages.has(path)) unexpected.add(location)
 	}
 	return [...unexpected]
 }
@@ -77,11 +77,11 @@ export function checkSitemapPages(files: readonly BuiltFile[]): readonly BuildFa
 			),
 		]
 	}
-	const expected = readerPagePaths(files)
+	const expectedPages = readerPagePaths(files)
 	const listed = locations.map(parseLocation)
 	const listedPaths = new Set(listed.map((url) => url.path))
 	return [
-		...expected
+		...expectedPages
 			.filter((page) => !listedPaths.has(page))
 			.map((page) =>
 				buildFailure("SITEMAP_PAGE_MISSING", SITEMAP_FILE, `the Sitemap does not list ${page}`),
@@ -93,7 +93,7 @@ export function checkSitemapPages(files: readonly BuiltFile[]): readonly BuildFa
 				`the Sitemap lists ${location} more than once`,
 			),
 		),
-		...unexpectedLocations(listed, new Set(expected)).map((location) =>
+		...unexpectedLocations(listed, new Set(expectedPages)).map((location) =>
 			buildFailure(
 				"SITEMAP_PAGE_UNEXPECTED",
 				SITEMAP_FILE,
