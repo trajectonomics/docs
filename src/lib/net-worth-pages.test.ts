@@ -33,6 +33,15 @@ function withTotalEntry(content: string, field: string, entry: string): string {
 	return `${content.slice(0, start)}${total}${content.slice(end)}`
 }
 
+/** `content` with the array under `${field}` replaced by `entries`, the array written on one line. */
+function withField(content: string, field: string, entries: string): string {
+	const start = content.indexOf(`"${field}": [`)
+	if (start < 0) return content
+	const end = content.indexOf("]", start)
+	if (end < 0) return content
+	return `${content.slice(0, start)}"${field}": ${entries}${content.slice(end + 1)}`
+}
+
 /** A `report` page whose only sample sits in its `pnl` section. */
 const REPORT_WITH_SAMPLE_ONLY_IN_PNL = [
 	"`traj report` reports on the ledger.",
@@ -122,5 +131,18 @@ describe("the net-worth command pages", () => {
 
 	test("a sample in the report pnl section does not stand in for the net-worth sample", () => {
 		expect(rulesOf(withPage(REPORT, REPORT_WITH_SAMPLE_ONLY_IN_PNL))).toEqual(["sample-missing"])
+	})
+
+	test("a page that prints one currency twice is reported, so a duplicate cannot read as agreement", () => {
+		const repeated = '[{"currency":"THB","amount":"500.00"},{"currency":"THB","amount":"1000.00"}]'
+		const once = '[{"currency":"THB","amount":"1000.00"}]'
+		const files = [
+			{ path: BALANCE, content: withField(page(BALANCE), "netWorth", repeated) },
+			{ path: REPORT, content: withField(page(REPORT), "totals", once) },
+		]
+		const problems = checkNetWorthPages(files)
+
+		expect(problems.map((problem) => problem.rule)).toEqual(["currency-repeated"])
+		expect(problems.map((problem) => problem.file)).toEqual([BALANCE])
 	})
 })
