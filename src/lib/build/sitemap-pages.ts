@@ -2,15 +2,13 @@ import { SITE_ORIGIN } from "../site"
 import { sitemapLocations } from "../sitemap"
 import { DOCS_BASE_PATH, SITEMAP_PATH } from "../tabs"
 import type { BuiltFile } from "./built-files"
-import { fileAt } from "./built-files"
+import { builtPageSlug, fileAt } from "./built-files"
 import type { BuildFailure } from "./failures"
 import { buildFailure } from "./failures"
 import { isRedirectPage } from "./redirect-page"
 
 /** Path of the Sitemap in the build output, one segment below the assets root. */
 export const SITEMAP_FILE = SITEMAP_PATH.slice(1)
-
-const DOCS_DIR = DOCS_BASE_PATH.slice(1)
 
 /** One `<loc>` of the built Sitemap: the URL as written, and the page path it names when on the origin. */
 interface ListedUrl {
@@ -20,10 +18,9 @@ interface ListedUrl {
 
 /** The URL path of a built page, or `undefined` for a file that is not an HTML page of the Portal. */
 function pagePath(path: string): string | undefined {
-	if (path === `${DOCS_DIR}/index.html`) return `${DOCS_BASE_PATH}/`
-	if (!path.startsWith(`${DOCS_DIR}/`) || !path.endsWith("/index.html")) return undefined
-	const slug = path.slice(DOCS_DIR.length + 1, -"index.html".length).replace(/\/$/, "")
-	return `${DOCS_BASE_PATH}/${slug}/`
+	const slug = builtPageSlug(path)
+	if (slug === undefined) return undefined
+	return slug.length === 0 ? `${DOCS_BASE_PATH}/` : `${DOCS_BASE_PATH}/${slug}/`
 }
 
 /** The URL paths of the pages a reader can open, sorted: every built page that is not a redirect. */
@@ -36,7 +33,7 @@ function readerPagePaths(files: readonly BuiltFile[]): readonly string[] {
 }
 
 /** The page path a `<loc>` names, or `undefined` when it is not a URL on the Portal's origin. */
-function listedUrl(location: string): ListedUrl {
+function parseLocation(location: string): ListedUrl {
 	try {
 		const url = new URL(location)
 		return { location, path: url.origin === SITE_ORIGIN ? url.pathname : undefined }
@@ -76,12 +73,12 @@ export function checkSitemapPages(files: readonly BuiltFile[]): readonly BuildFa
 			buildFailure(
 				"SITEMAP_INVALID",
 				SITEMAP_FILE,
-				"the Sitemap is not a readable urlset document",
+				"the Sitemap is not a urlset document this check can read",
 			),
 		]
 	}
 	const expected = readerPagePaths(files)
-	const listed = locations.map(listedUrl)
+	const listed = locations.map(parseLocation)
 	const listedPaths = new Set(listed.map((url) => url.path))
 	return [
 		...expected

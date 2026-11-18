@@ -41,15 +41,21 @@ describe("reading a Sitemap document", () => {
 		expect(sitemapLocations(document)).toEqual([])
 	})
 
-	test("text with no urlset open and close is unreadable", () => {
+	test("a document with no urlset is unreadable", () => {
 		expect(sitemapLocations("<html><body>not a sitemap</body></html>")).toBeUndefined()
+	})
+
+	test("a urlset with no closing tag is unreadable", () => {
 		expect(
 			sitemapLocations("<urlset><url><loc>https://trajectonomics.com/docs/</loc></url>"),
 		).toBeUndefined()
 	})
 
-	test("a url carrying no loc text is unreadable", () => {
+	test("a url with no loc is unreadable", () => {
 		expect(sitemapLocations("<urlset><url></url></urlset>")).toBeUndefined()
+	})
+
+	test("a url whose loc text is blank is unreadable", () => {
 		expect(sitemapLocations("<urlset><url><loc>  </loc></url></urlset>")).toBeUndefined()
 	})
 })
