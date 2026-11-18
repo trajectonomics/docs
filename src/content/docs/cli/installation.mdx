@@ -53,6 +53,9 @@ curl -fsSL https://github.com/trajectonomics/cli/releases/latest/download/instal
 npx @trajectonomics/cli@0.2.0 --version
 ```
 
+A release pinned below the operating skill's floor leaves that skill describing work the release
+cannot do, so setup skips the skill.
+
 ## Add the agent skill
 
 Both skills publish from `trajectonomics/skills`, and `-y` keeps the install non-interactive. The
@@ -63,7 +66,18 @@ installs the operating skill as its second step.
 npx skills add trajectonomics/skills --skill traj-onboarding -y
 ```
 
-The operating skill on its own, for an Agent that is already set up:
+The operating skill expects a recent `traj`: it describes a projection, a financial-independence
+date and Thai tax, and an older release has none of that work — the commands end at
+`unknown_command`.
+
+The setup skill states the exact floor it needs and checks the version your machine prints, which
+`traj version` shows ([Check the installed version](#check-the-installed-version)). On a `traj`
+below that floor it skips the operating skill, names the release range it wanted and says which
+work the older command line cannot do. The fix is to install the latest release rather than pin
+below the floor.
+
+The operating skill on its own, for an Agent that is already set up on a `traj` that setup accepts.
+This line skips the setup skill's version check, so that precondition is yours to check:
 
 ```bash
 npx skills add trajectonomics/skills --skill traj -y
