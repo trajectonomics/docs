@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test"
-import { SITE_HOME_LABEL, SITE_HOME_PATH } from "../src/lib/layout.shared"
+import { SITE_HOME_LABEL, SITE_HOME_PATH } from "../src/lib/site-home"
 import { DOCS_BASE_PATH, TABS, tabUrl } from "../src/lib/tabs"
 import { NOT_FOUND_PATH, openPage } from "./built-site"
 import { waitForIsland } from "./docs-portal"

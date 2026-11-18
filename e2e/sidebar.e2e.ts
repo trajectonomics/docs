@@ -124,7 +124,7 @@ test("the phone drawer opens with the site button, the search and the Tab dropdo
 	expect(treeSize, "the drawer's tree reads at the desktop sidebar's size").toBe("14px")
 })
 
-test(`the header of ${DOCS_PAGE_PATH} carries the wordmark and the Tabs and nothing else`, async ({
+test(`the header of ${DOCS_PAGE_PATH} carries the header mark and the Tabs and nothing else`, async ({
 	page,
 }) => {
 	await openDocsPage(page, 1280)

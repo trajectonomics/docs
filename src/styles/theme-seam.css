@@ -131,8 +131,10 @@
 /*
  * The shell draws no shadow. Keyboard focus on the header and sidebar controls is a ring on the
  * ring role, drawn with `outline` rather than `box-shadow`, because the removed soft shadow was
- * those links' only focus indicator.
+ * those links' only focus indicator. The home layout's header is in the list because the header
+ * mark is its first graphic control (docs#75).
  */
+#nd-nav :is(a, button):focus-visible,
 #nd-notebook-layout :is(#nd-subnav, #nd-sidebar, #nd-sidebar-mobile) :is(a, button):focus-visible {
 	outline: 2px solid var(--ds-color-ring);
 	outline-offset: 2px;

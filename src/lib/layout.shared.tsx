@@ -1,34 +1,11 @@
 import type { BaseLayoutProps, LinkItemType } from "fumadocs-ui/layouts/shared"
-import type { ReactNode } from "react"
+import type { ComponentProps, FC } from "react"
+import { HeaderMark } from "../components/header-mark"
+import { SITE_HOME_LABEL, SITE_HOME_LOAD, SITE_HOME_PATH } from "./site-home"
 import { DOCS_BASE_PATH } from "./tabs"
-
-/** The Docs Portal's name, shown in the header and as the Landing Page heading. */
-export const PORTAL_NAME = "Trajectonomics Docs"
-
-/** The one sentence that says what the Docs Portal is for. */
-export const PORTAL_PURPOSE =
-	"Documentation for running the Trajectonomics CLI and building on its packages."
-
-/** Visible text of the link to the Site Home. */
-export const SITE_HOME_LABEL = "trajectonomics.com"
-
-/**
- * URL path of the Site Home, the page at `/` that `trajectonomics/site` deploys. Relative, so
- * the href is right on the apex and on the staging `workers.dev` host (ADR 0006, ADR 0005).
- */
-export const SITE_HOME_PATH = "/"
 
 /** The Fumadocs layout the options serve: they nest a link item differently, so the link differs. */
 export type PortalLayout = "notebook" | "home"
-
-/**
- * Attributes of the Site Home link that make it a full document load: `/` is not a page the Docs
- * Portal serves, so it must not be prefetched by the Client Router on hover (ADR 0006).
- */
-export const SITE_HOME_LOAD = {
-	"data-astro-reload": true,
-	"data-astro-prefetch": "false",
-} as const
 
 /**
  * The link a reader clicks to leave the Docs Portal, as the home layout's header renders it: a
@@ -78,8 +55,12 @@ export function siteHomeButton() {
 }
 
 export interface BaseOptions {
-	/** The header title; the docs pages pass the design-system wordmark. */
-	readonly navTitle?: ReactNode
+	/**
+	 * The header title, in the component form Fumadocs calls with the link's `href` and `className`,
+	 * so the title renders the anchor and names it itself. The Portal's own mark is the default;
+	 * only a page that needs a different mark passes one.
+	 */
+	readonly navTitle?: FC<ComponentProps<"a">>
 }
 
 /**
@@ -90,7 +71,7 @@ export interface BaseOptions {
  */
 export function baseOptions(layout: PortalLayout, options?: BaseOptions): BaseLayoutProps {
 	return {
-		nav: { title: options?.navTitle ?? PORTAL_NAME, url: `${DOCS_BASE_PATH}/` },
+		nav: { title: options?.navTitle ?? HeaderMark, url: `${DOCS_BASE_PATH}/` },
 		links: layout === "home" ? [...homeSiteHomeLinks()] : [],
 		// The Docs Portal exposes one Theme for now (docs#89), so no control offers the other
 		// one. Light's return flips this option and deletes the provider's forced value.

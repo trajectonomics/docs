@@ -1,5 +1,6 @@
 import { HomeLayout } from "fumadocs-ui/layouts/home"
-import { baseOptions, PORTAL_NAME, PORTAL_PURPOSE } from "../lib/layout.shared"
+import { baseOptions } from "../lib/layout.shared"
+import { PORTAL_NAME, PORTAL_PURPOSE } from "../lib/portal"
 import { TABS, tabUrl } from "../lib/tabs"
 import { Provider, type ProviderProps } from "./provider"
 
