@@ -1,19 +1,10 @@
 import { describe, expect, test } from "bun:test"
 import type { ContentFile } from "./content-pages"
+import { readContentTree } from "./content-tree-support"
 import { checkNetWorthPages } from "./net-worth-pages"
 
-const CONTENT_ROOT = "src/content/docs"
 const BALANCE = "cli/commands/balance.mdx"
 const REPORT = "cli/commands/report.mdx"
-
-async function readContentTree(): Promise<ContentFile[]> {
-	const files: ContentFile[] = []
-	const glob = new Bun.Glob("**/*.{md,mdx,json}")
-	for await (const path of glob.scan({ cwd: CONTENT_ROOT })) {
-		files.push({ path, content: await Bun.file(`${CONTENT_ROOT}/${path}`).text() })
-	}
-	return files.sort((left, right) => left.path.localeCompare(right.path))
-}
 
 const tree = await readContentTree()
 
@@ -120,6 +111,13 @@ describe("the net-worth command pages", () => {
 
 		expect(shape).not.toBe(page(BALANCE))
 		expect(rulesOf(withPage(BALANCE, shape))).toEqual(["total-entry"])
+	})
+
+	test("a net-worth section that ends the page is still read", () => {
+		const ending = page(REPORT).slice(0, page(REPORT).indexOf("## `traj report pnl`")).trimEnd()
+
+		expect(ending).not.toContain("## `traj report pnl`")
+		expect(rulesOf(withPage(REPORT, ending))).toEqual([])
 	})
 
 	test("a sample in the report pnl section does not stand in for the net-worth sample", () => {

@@ -21,26 +21,26 @@ interface NetWorthTotal {
 	readonly amount: string
 }
 
-/** One page that prints net worth: the field carrying its total and the section it prints in. */
-type NetWorthPage = { readonly path: string; readonly field: string; readonly section: string }
+/** One page that prints net worth: the field carrying its total and, when it has several, its section. */
+type NetWorthPage = { readonly path: string; readonly field: string; readonly section?: string }
 
 /** The Operator tab's two pages that report net worth; an empty section means the whole page. */
 const NET_WORTH_PAGES: readonly NetWorthPage[] = [
-	{ path: "cli/commands/balance.mdx", field: "netWorth", section: "" },
+	{ path: "cli/commands/balance.mdx", field: "netWorth" },
 	{ path: "cli/commands/report.mdx", field: "totals", section: "## `traj report networth`" },
 ]
 
 /** `content` between `page`'s heading and the next `## ` heading, or `undefined` when it is gone. */
 function sectionContent(page: NetWorthPage, content: string): string | undefined {
-	if (page.section === "") return content
+	if (page.section === undefined) return content
 	const start = content.indexOf(`\n${page.section}\n`)
 	if (start < 0) return undefined
 	const end = content.indexOf("\n## ", start + page.section.length + 1)
 	return end < 0 ? content.slice(start) : content.slice(start, end)
 }
 
-/** The first `json` block in `content` carrying the `asOf` and `rows` every report prints. */
-function reportOutput(content: string): Record<string, unknown> | undefined {
+/** The first `json` block in `content` carrying the `asOf` and `rows` every sample prints. */
+function sampleOutput(content: string): Record<string, unknown> | undefined {
 	for (const match of content.matchAll(/^```json\n([\s\S]*?)^```$/gm)) {
 		try {
 			const parsed: unknown = JSON.parse(match[1] ?? "")
@@ -65,9 +65,9 @@ function readTotal(page: NetWorthPage, content: string): TotalRead {
 		kind: "problem",
 		problem: { rule, file: page.path, detail },
 	})
-	const scoped = sectionContent(page, content)
-	if (scoped === undefined) return problem("section-missing", `no "${page.section}" section`)
-	const object = reportOutput(scoped)
+	const sectionText = sectionContent(page, content)
+	if (sectionText === undefined) return problem("section-missing", `no "${page.section}" section`)
+	const object = sampleOutput(sectionText)
 	if (object === undefined)
 		return problem("sample-missing", "no sample output carrying asOf and rows")
 	const total: unknown = object[page.field]
@@ -87,14 +87,18 @@ function readTotal(page: NetWorthPage, content: string): TotalRead {
 	return { kind: "total", total: entries }
 }
 
-/** Whether both totals print one figure per currency, the same figure on each side. */
+/** The figure each currency prints on one page. */
+function figuresByCurrency(total: readonly NetWorthTotal[]): ReadonlyMap<string, string> {
+	return new Map(total.map((entry) => [entry.currency, entry.amount]))
+}
+
+/** Whether both totals print the same figure for every currency, whatever order either lists. */
 function sameFigures(left: readonly NetWorthTotal[], right: readonly NetWorthTotal[]): boolean {
+	const leftFigures = figuresByCurrency(left)
+	const rightFigures = figuresByCurrency(right)
 	return (
-		left.length === right.length &&
-		left.every((entry) => {
-			const other = right.find((candidate) => candidate.currency === entry.currency)
-			return other !== undefined && other.amount === entry.amount
-		})
+		leftFigures.size === rightFigures.size &&
+		[...leftFigures].every(([currency, amount]) => rightFigures.get(currency) === amount)
 	)
 }
 
