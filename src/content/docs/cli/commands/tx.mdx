@@ -17,7 +17,8 @@ Record a transaction, either from flags or from a JSON transaction document.
 - `--to <string>` — the destination account's exact name or id; required
 - `--amount <string>` — a magnitude in the accounts' currency, as a decimal string; required
 - `--date <string>` — the transaction's `YYYY-MM-DD` date; required
-- `--opening` — read `--from` as equity and `--amount` as signed
+- `--opening` — `--from` names the equity account, and `--amount` is signed: positive funds the
+  destination, negative opens it overdrawn; another kind of account is refused `NON_EQUITY_CONTRA`
 - `--project <string>` — tag every posting with this project
 - `--memo <string>` — free text kept with the transaction; part of its duplicate identity
 - `--external-ref <string>` — an idempotency key; replaying it is a duplicate
@@ -25,10 +26,35 @@ Record a transaction, either from flags or from a JSON transaction document.
 - `--postings <string>` — read a JSON transaction document from this path, or `-` for stdin
 
 ```bash
-traj tx add --from Cash --to Food --amount 120.50 --date 2026-03-01               # Record a purchase from Cash.
-traj tx add --opening --from Opening --to Cash --amount -25.00 --date 2026-01-01  # Open an overdrawn asset.
-traj tx add --postings -                                                          # Read a multi-posting document from stdin.
+traj tx add --from Cash --to Food --amount 120.50 --date 2026-03-01  # Record a purchase from Cash.
+traj tx add --postings -                                            # Read a multi-posting document from stdin.
 ```
+
+### An opening balance
+
+`--opening` names the equity account in `--from` and posts `--amount` against it, and it is how a
+ledger gets its first money. The Quickstart creates and funds `Opening` already; on a ledger of
+your own, create the equity account first and then post against it:
+
+```bash
+traj account add Opening --type equity --currency THB                              # The equity account an opening balance posts against.
+traj tx add --opening --from Opening --to Cash --amount 1000.00 --date 2026-01-01  # Fund Cash at the start of the record.
+```
+
+A positive `--amount` funds the destination; a negative one opens it already overdrawn, on a ledger
+where Cash has no earlier posting — a deliberate state, not a mistake, because `--amount`'s sign is
+always yours to state
+([ADR 0036](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0036-an-opening-balances-sign-is-the-callers.md)):
+
+```bash
+traj tx add --opening --from Opening --to Cash --amount -25.00 --date 2026-01-01  # Open Cash at -25.00 THB.
+```
+
+An asset opened that way refuses the Baseline with `NEGATIVE_AMOUNT` until a posting funds it, as
+[the baseline page](/docs/cli/commands/baseline/) explains.
+
+`--from` must be an equity account. Any other type is refused at exit code `3` with
+`NON_EQUITY_CONTRA`, which names the type it found.
 
 ## `traj tx amend <id>`
 
@@ -40,7 +66,9 @@ Reverse a transaction and record its replacement.
 - `--from <string>` — the replacement's source account's exact name or id; required
 - `--to <string>` — the replacement's destination account's exact name or id; required
 - `--amount <string>` — a magnitude in the accounts' currency, as a decimal string; required
-- `--opening` — read `--from` as equity and `--amount` as signed
+- `--opening` — `--from` names the equity account, and `--amount` is signed: positive funds the
+  replacement's destination, negative opens it overdrawn; another kind of account is refused
+  `NON_EQUITY_CONTRA`
 - `--project <string>` — tag every replacement posting with this project
 - `--memo <string>` — free text kept with the replacement
 - `--external-ref <string>` — the replacement's new idempotency key; the original's is a conflict
@@ -109,5 +137,6 @@ traj tx void 0194a000-0003-7000-8000-000000000003 --date 2026-03-02 --dry-run  #
 - [ADR 0020: a leaf may declare a document schema, and `-` reads it from stdin](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0020-a-leaf-may-declare-a-document-schema.md)
 - [ADR 0022: date ranges are `--since` and `--until`](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0022-date-ranges-are-since-and-until.md)
 - [ADR 0025: CSV import is one template, one transaction, keyed by external reference](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0025-csv-import-is-one-template.md)
+- [ADR 0036: an opening balance's sign is the caller's, never inferred from the account](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0036-an-opening-balances-sign-is-the-callers.md)
 
 See [Commands](/docs/cli/commands/) for the global options, exit codes and error envelope.

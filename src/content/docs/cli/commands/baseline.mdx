@@ -3,9 +3,17 @@ title: baseline
 description: Show the Baseline a Projection starts from.
 ---
 
-`traj baseline` shows the Baseline a Projection starts from. The Baseline is derived on demand from
-the stored rows, holds only balance-sheet accounts, and refuses what it cannot state
+`traj baseline` shows the Baseline a Projection starts from. It is derived on demand from the stored
+rows and refuses what it cannot state
 ([ADR 0026](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0026-baseline-is-derived-and-balance-sheet-only.md)).
+
+## What a Baseline holds
+
+Only asset and liability leaf accounts cross, and only when their balance at the date is non-zero.
+Equity, income and expense never do: equity is the contra side of an opening balance, and income and
+expense are flows. A header account never appears either, while an account closed with
+`traj account close` does, because closing keeps its history. Net worth is assets minus liabilities,
+and it counts nothing else.
 
 ## `traj baseline show`
 
@@ -16,5 +24,19 @@ Show the Baseline a Projection starts from at a date.
 ```bash
 traj baseline show --as-of 2026-03-31 --json  # The Baseline a Projection would start from at one date.
 ```
+
+On the [Quickstart](/docs/cli/)'s funded ledger the Baseline is one row: `Cash`, an asset, `879.50`
+THB. The equity account `Opening` and the expense account `Food` do not cross.
+
+## When a Baseline refuses
+
+A balance with no representation refuses the whole Baseline at exit code `3` rather than dropping or
+clamping the account. An overdrawn asset and an overpaid loan are both negative once stated, so
+carrying either would make the Baseline disagree with the ledger without saying so.
+
+On the Quickstart's ledger without its opening balance, Cash holds `-120.50` THB and the command
+fails with `NEGATIVE_AMOUNT` and `Cash holds -120.50 THB, which is negative once stated as an
+asset`. The way to a Baseline that succeeds is a funded ledger: create the equity account, then post
+the [opening balance](/docs/cli/commands/tx/) that keeps every asset and liability positive.
 
 See [Commands](/docs/cli/commands/) for the global options, exit codes and error envelope.
