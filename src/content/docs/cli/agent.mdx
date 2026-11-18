@@ -33,10 +33,13 @@ the current one.
 `traj` has no opinions, and the date a command acts on is always one you pass, so every fact it
 uses is one you state. Expect these questions before the first answer:
 
-- **Dates.** Every date is `YYYY-MM-DD`, including every as-of date, and none is read off your
-  machine: "today" is a date you give
+- **Dates.** Every date a command acts on is `YYYY-MM-DD`, including every as-of date, and none is
+  read off your machine: "today" is a date you give
   ([ADR 0018](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0018-no-clock-in-ledger-commands.md),
   [ADR 0029](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0029-reads-take-their-date-from-the-caller.md)).
+  When a command writes, the row it returns carries `createdAt` and `updatedAt` from your machine's
+  clock, plus `archivedAt` when you close an account and `deletedAt` when you remove a Scenario.
+  They record when that row was written or removed, and no answer is taken from them.
   A date in a source can be a Buddhist Era year, which is the same day under a different year
   number: the Agent converts it, and asks you which calendar the source uses when the source does
   not say.

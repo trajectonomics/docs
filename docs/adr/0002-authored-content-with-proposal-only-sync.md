@@ -23,3 +23,13 @@ the tag in an upstream link, a pinned `@trajectonomics/cli` version, and every r
 the Operator tab. `src/lib/release-truth.ts` fails the test suite for a page that names another,
 so the manifest stays the one place a new tag is chosen and the pages cannot drift from it one at
 a time (the drift that left the Operator tab on `v0.1.0` after `v0.2.0` shipped).
+
+## Amendment (2026-11-18, docs#86): a page names the date a command acts on, never that the CLI has no clock
+
+An Operator-tab page says which date a command acts on; it never says the CLI has no clock. The
+ledger holds no fact a clock produced, but the row a write returns carries `createdAt` and
+`updatedAt` from the machine's clock, `archivedAt` when an account is closed and `deletedAt` when a
+Scenario is removed (cli ADR 0018: those are row metadata, not ledger facts).
+`src/lib/clock-claims.ts` fails the test suite for a page in the Operator tab that makes the
+absolute claim, so the boundary is stated where a reader sees the timestamps and a later edit
+cannot put the claim back.
