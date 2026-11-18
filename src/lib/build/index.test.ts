@@ -58,12 +58,28 @@ const COMPLETE_BUILD: readonly BuiltFile[] = [
 	alias("docs/builders/index.html", "/docs/developers/"),
 	page("docs/index.html", LANDING_PAGE),
 	page("docs/cli/index.html", OPERATOR_TAB_PAGE),
+	page(
+		"docs/cli/commands/tx/index.html",
+		[
+			'<html data-theme="dark">',
+			'<header id="nd-subnav"><a href="/docs/" aria-label="Trajectonomics Docs"><svg></svg></a></header>',
+			"<pre><code>date,from,to,amount,memo,external_ref,project</code></pre>",
+			"</html>",
+		].join(""),
+	),
 	{
 		path: "docs/api/search.json",
 		content: JSON.stringify({
 			type: "advanced",
-			internalDocumentIDStore: { internalIdToId: ["/docs/cli"] },
-			docs: { docs: { "1": { page_id: "/docs/cli", type: "page" } } },
+			internalDocumentIDStore: {
+				internalIdToId: ["/docs/cli", "/docs/cli/commands/tx"],
+			},
+			docs: {
+				docs: {
+					"1": { page_id: "/docs/cli", type: "page" },
+					"2": { page_id: "/docs/cli/commands/tx", type: "page" },
+				},
+			},
 		}),
 	},
 ]
@@ -84,6 +100,7 @@ describe("the check of the built Docs Portal", () => {
 			"REDIRECT_TO_OPERATOR_TAB",
 			"TAB_ALIAS_MISSING",
 			"TAB_ALIAS_MISSING",
+			"IMPORT_TEMPLATE_NOT_SHOWN",
 		])
 	})
 })

@@ -66,6 +66,21 @@ traj tx import statement.csv  # Import a filled template.
 traj tx import - --dry-run    # Preview a template read from stdin.
 ```
 
+`--template` prints exactly the header the importer reads and opens no data directory:
+
+```csv
+date,from,to,amount,memo,external_ref,project
+```
+
+A file you write starts with that same header and one row per transaction. `amount` is a positive
+magnitude in the destination account's currency, and `external_ref` is required: it is the duplicate
+key, so prefix it with its source.
+
+```csv
+date,from,to,amount,memo,external_ref,project
+2026-03-01,Cash,Food,120.50,Groceries,kbank:2026-03-01-0001,lunch
+```
+
 ## `traj tx list`
 
 List transactions by date. Date ranges are `--since` and `--until`, both inclusive
