@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import type { ContentFile } from "./content-pages"
-import { checkOperatorExamples } from "./operator-examples"
+import { checkOperatorExamples, type OperatorExampleProblem } from "./operator-examples"
 
 const CONTENT_ROOT = "src/content/docs"
 
@@ -15,20 +15,22 @@ async function readContentTree(): Promise<ContentFile[]> {
 
 const tree = await readContentTree()
 
-/** An Operator page carrying `block` as its one fenced bash block. */
-function operatorPage(block: string): ContentFile[] {
-	return [{ path: "cli/example.mdx", content: `# Example\n\n\`\`\`bash\n${block}\n\`\`\`\n` }]
+/** One page carrying `block` as its fenced bash block, and the problems the rule reports on it. */
+function problemsOf(path: string, block: string): readonly OperatorExampleProblem[] {
+	return checkOperatorExamples([{ path, content: `# Example\n\n\`\`\`bash\n${block}\n\`\`\`\n` }])
 }
 
-/** The details the Operator page's problems report, so a test reads what a maintainer will see. */
-function detailsOf(path: string, block: string): readonly string[] {
-	return checkOperatorExamples([{ path, content: `\`\`\`bash\n${block}\n\`\`\`\n` }]).map(
-		(problem) => problem.detail,
-	)
+/** The problems an Operator page built from `block` reports, and the rules they break. */
+function operatorProblems(block: string): readonly OperatorExampleProblem[] {
+	return problemsOf("cli/example.mdx", block)
 }
 
-function accounts(block: string): readonly string[] {
-	return detailsOf("cli/example.mdx", block)
+function operatorRules(block: string): readonly string[] {
+	return operatorProblems(block).map((problem) => problem.rule)
+}
+
+function operatorDetails(block: string): readonly string[] {
+	return operatorProblems(block).map((problem) => problem.detail)
 }
 
 const OPENING = "traj tx add --opening --from Opening --to Cash --amount -25.00 --date 2026-01-01"
@@ -40,38 +42,33 @@ describe("an --opening example in the Operator tab", () => {
 	})
 
 	test("is reported, naming the page and the account, when the page never creates the account", () => {
-		expect(
-			checkOperatorExamples(operatorPage(OPENING)).map((problem) => [
-				problem.rule,
-				problem.file,
-				problem.detail,
-			]),
-		).toEqual([
-			[
-				"opening-account",
-				"cli/example.mdx",
-				"an --opening example posts against Opening, which the page does not create as an equity account",
-			],
+		expect(operatorProblems(OPENING)).toEqual([
+			{
+				rule: "opening-account",
+				file: "cli/example.mdx",
+				detail:
+					"an --opening example posts against Opening, which the page does not create as an equity account",
+			},
 		])
 	})
 
 	test("is accepted when the page creates that account as equity before the example", () => {
-		expect(accounts(`${CREATE}\n${OPENING}`)).toEqual([])
+		expect(operatorProblems(`${CREATE}\n${OPENING}`)).toEqual([])
 	})
 
 	test("is reported when the page creates the account only after the example", () => {
-		expect(accounts(`${OPENING}\n${CREATE}`)).toHaveLength(1)
+		expect(operatorRules(`${OPENING}\n${CREATE}`)).toEqual(["opening-account"])
 	})
 
 	test("is reported when the page creates the account with another type", () => {
 		expect(
-			accounts(`traj account add Opening --type asset --currency THB\n${OPENING}`),
-		).toHaveLength(1)
+			operatorRules(`traj account add Opening --type asset --currency THB\n${OPENING}`),
+		).toEqual(["opening-account"])
 	})
 
 	test("is accepted when the account is quoted and the flags are in any order", () => {
 		expect(
-			accounts(
+			operatorRules(
 				'traj account add "Opening" --currency THB --type equity\ntraj tx add --to Cash --amount 1000.00 --date 2026-01-01 --from Opening --opening',
 			),
 		).toEqual([])
@@ -79,14 +76,14 @@ describe("an --opening example in the Operator tab", () => {
 
 	test("is reported from an amend, which posts the same transaction shape", () => {
 		expect(
-			accounts(
+			operatorRules(
 				"traj tx amend 0194a000-0003-7000-8000-000000000003 --opening --from Opening --to Cash --amount 1000.00 --date 2026-01-01",
 			),
-		).toHaveLength(1)
+		).toEqual(["opening-account"])
 	})
 
 	test("is not read from a page outside the Operator tab", () => {
-		expect(detailsOf("developers/example.mdx", OPENING)).toEqual([])
+		expect(problemsOf("developers/example.mdx", OPENING)).toEqual([])
 	})
 
 	test("is not read from prose, which the rule cannot copy from", () => {
@@ -99,7 +96,7 @@ describe("an --opening example in the Operator tab", () => {
 
 	test("is not read from a line that continues onto the next", () => {
 		expect(
-			accounts(
+			operatorDetails(
 				"traj tx add --opening --from Opening \\\n  --to Cash --amount -25.00 --date 2026-01-01",
 			),
 		).toEqual([])
@@ -107,7 +104,7 @@ describe("an --opening example in the Operator tab", () => {
 
 	test("a trailing comment in the example is not read as part of the command", () => {
 		expect(
-			accounts(`${CREATE}  # The equity account\n${OPENING}  # Open an overdrawn asset.`),
+			operatorRules(`${CREATE}  # The equity account\n${OPENING}  # Open an overdrawn asset.`),
 		).toEqual([])
 	})
 })

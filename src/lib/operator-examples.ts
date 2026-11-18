@@ -1,3 +1,4 @@
+import { type ContentCommand, commandsIn } from "./content-commands"
 import type { ContentFile } from "./content-pages"
 import { OPERATOR_TAB_CONTENT } from "./release-truth"
 
@@ -11,86 +12,14 @@ export interface OperatorExampleProblem {
 	readonly detail: string
 }
 
-/** One line of a page's code blocks: the `traj` group and leaf, its positionals and its flags. */
-interface Command {
-	readonly group: string
-	readonly leaf: string
-	readonly positionals: readonly string[]
-	readonly flags: ReadonlyMap<string, string | true>
-}
-
-/** Flags that take no value, so the token after one is the next flag or positional. */
-const BOOLEAN_FLAGS = new Set([
-	"opening",
-	"dry-run",
-	"json",
-	"help",
-	"version",
-	"monthly",
-	"template",
-	"trial-balance",
-])
-
-/** The words of one command line, quoted values unquoted and a trailing `#` comment dropped. */
-function words(line: string): readonly string[] {
-	const [body = ""] = line.split(/\s#/)
-	return [...body.matchAll(/"[^"]*"|'[^']*'|\S+/g)].map((match) =>
-		match[0].replace(/^["']|["']$/g, ""),
-	)
-}
-
-/** The positionals and the flags of the words after a `traj` group and leaf. */
-function argumentsOf(words: readonly string[]): {
-	readonly positionals: readonly string[]
-	readonly flags: ReadonlyMap<string, string | true>
-} {
-	const positionals: string[] = []
-	const flags = new Map<string, string | true>()
-	let index = 0
-	while (index < words.length) {
-		const token = words[index] ?? ""
-		const value = words[index + 1]
-		if (!token.startsWith("--")) {
-			positionals.push(token)
-			index += 1
-			continue
-		}
-		const flag = token.slice(2)
-		const takesValue = value !== undefined && !value.startsWith("--") && !BOOLEAN_FLAGS.has(flag)
-		flags.set(flag, takesValue ? value : true)
-		index += takesValue ? 2 : 1
-	}
-	return { positionals, flags }
-}
-
-/** The `traj` command a line states, or `undefined` when the line is not one the rule can read. */
-function parse(line: string): Command | undefined {
-	if (line.trimEnd().endsWith("\\")) return undefined
-	const [program, group, leaf, ...rest] = words(line)
-	if (program !== "traj" || group === undefined || leaf === undefined) return undefined
-	return { group, leaf, ...argumentsOf(rest) }
-}
-
-/** The lines inside the page's fenced code blocks, in source order. */
-function fencedLines(content: string): readonly string[] {
-	const lines: string[] = []
-	let inside = false
-	for (const line of content.split("\n")) {
-		if (line.trimStart().startsWith("```")) inside = !inside
-		else if (inside) lines.push(line)
-	}
-	return lines
-}
-
-/** The equity account a line creates, when the line is `traj account add <name> --type equity`. */
-function createdEquityAccount(command: Command): string | undefined {
+/** The equity account a command creates, when it is `traj account add <name> --type equity`. */
+function createdEquityAccount(command: ContentCommand): string | undefined {
 	if (command.group !== "account" || command.leaf !== "add") return undefined
-	const name = command.positionals[0]
-	return command.flags.get("type") === "equity" ? name : undefined
+	return command.flags.get("type") === "equity" ? command.positionals[0] : undefined
 }
 
-/** The account an `--opening` example posts against, when the line is an opening balance. */
-function openingAccount(command: Command): string | undefined {
+/** The account an `--opening` example posts against, when the command is an opening balance. */
+function openingAccount(command: ContentCommand): string | undefined {
 	if (command.group !== "tx" || (command.leaf !== "add" && command.leaf !== "amend"))
 		return undefined
 	if (command.flags.get("opening") !== true) return undefined
@@ -102,9 +31,7 @@ function pageProblems(file: ContentFile): readonly OperatorExampleProblem[] {
 	if (!file.path.startsWith(`${OPERATOR_TAB_CONTENT}/`)) return []
 	const problems: OperatorExampleProblem[] = []
 	const equity = new Set<string>()
-	for (const line of fencedLines(file.content)) {
-		const command = parse(line)
-		if (command === undefined) continue
+	for (const command of commandsIn(file.content)) {
 		const created = createdEquityAccount(command)
 		if (created !== undefined) equity.add(created)
 		const account = openingAccount(command)

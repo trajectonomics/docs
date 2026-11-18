@@ -38,20 +38,13 @@ your own, create the equity account first and then post against it:
 
 ```bash
 traj account add Opening --type equity --currency THB                              # The equity account an opening balance posts against.
-traj tx add --opening --from Opening --to Cash --amount 1000.00 --date 2026-01-01  # Fund Cash at the start of the record.
+traj tx add --opening --from Opening --to Cash --amount 1000.00 --date 2026-01-01  # Fund Cash: a positive amount.
+traj tx add --opening --from Opening --to Cash --amount -25.00 --date 2026-01-01   # Instead of funding it: a negative amount opens Cash already overdrawn.
 ```
 
-A positive `--amount` funds the destination; a negative one opens it already overdrawn, on a ledger
-where Cash has no earlier posting — a deliberate state, not a mistake, because `--amount`'s sign is
-always yours to state
-([ADR 0036](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0036-an-opening-balances-sign-is-the-callers.md)):
-
-```bash
-traj tx add --opening --from Opening --to Cash --amount -25.00 --date 2026-01-01  # Open Cash at -25.00 THB.
-```
-
-An asset opened that way refuses the Baseline with `NEGATIVE_AMOUNT` until a posting funds it, as
-[the baseline page](/docs/cli/commands/baseline/) explains.
+A positive `--amount` funds the destination; a negative one opens it already overdrawn, and the
+sign is always yours to state. An asset opened that way refuses the Baseline with `NEGATIVE_AMOUNT`
+until a posting funds it, as [the baseline page](/docs/cli/commands/baseline/) explains.
 
 `--from` must be an equity account. Any other type is refused at exit code `3` with
 `NON_EQUITY_CONTRA`, which names the type it found.
@@ -137,6 +130,5 @@ traj tx void 0194a000-0003-7000-8000-000000000003 --date 2026-03-02 --dry-run  #
 - [ADR 0020: a leaf may declare a document schema, and `-` reads it from stdin](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0020-a-leaf-may-declare-a-document-schema.md)
 - [ADR 0022: date ranges are `--since` and `--until`](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0022-date-ranges-are-since-and-until.md)
 - [ADR 0025: CSV import is one template, one transaction, keyed by external reference](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0025-csv-import-is-one-template.md)
-- [ADR 0036: an opening balance's sign is the caller's, never inferred from the account](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0036-an-opening-balances-sign-is-the-callers.md)
 
 See [Commands](/docs/cli/commands/) for the global options, exit codes and error envelope.
