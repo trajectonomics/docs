@@ -18,9 +18,9 @@ the others.
 
 ## How they fit together
 
-- **Project what is planned.** `sim-core` takes a Baseline of balances and a Scenario of Flows and
-  Levies, and returns a Projection over a Timeline. It knows nothing about tax: a Levy is data
-  authored outside the core, so nothing forces an application to use `tax-core`.
+- **Project what is planned.** `sim-core` takes a Baseline of balances and a Scenario of Flows, and
+  returns a Projection over a Timeline. It knows nothing about tax, so nothing forces an application
+  to use `tax-core`.
 - **Record what happened.** `ledger-core` records Postings in a Chart of Accounts and answers
   Balance, Net Worth, P&L and Trial Balance questions. It never edits history: a correction adds a
   Reversal or an Amendment.

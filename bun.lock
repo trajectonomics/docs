@@ -22,6 +22,7 @@
         "@biomejs/biome": "2.6.3",
         "@playwright/test": "1.65.0",
         "@tailwindcss/vite": "^4.3.5",
+        "@trajectonomics/sim": "0.1.0",
         "@types/bun": "^1.4.4",
         "@types/mdx": "^2.0.14",
         "@types/react": "^19.3.0",
@@ -480,6 +481,8 @@
     "@trajectonomics/design-system-assets": ["@trajectonomics/design-system-assets@0.1.0-alpha.2", "", {}, "sha512-btWz8lNNZIytFjzZHRrA472XyYSyCUATzwdPtdcaMUvIs2ULhCWuwJ48f5br4h+ZJt0QVDudtXe6eKu9oNDHzg=="],
 
     "@trajectonomics/design-system-theme": ["@trajectonomics/design-system-theme@0.1.0-alpha.5", "", { "peerDependencies": { "@trajectonomics/design-system": "^0.1.0-alpha.3" } }, "sha512-2uRN3XduQEwTUp2SCIYyF2owrDFmfDz5OUFGcKbrMqW4szAe/gZ4uFVCmHJ9l/qaqCrvA7F0tRVtlH8wwijWSw=="],
+
+    "@trajectonomics/sim": ["@trajectonomics/sim@0.1.0", "", { "peerDependencies": { "@trajectonomics/tax": ">=0.0.0" }, "optionalPeers": ["@trajectonomics/tax"] }, "sha512-Ntb0P5dk+J9QLO0SZDfENfup9vOTNGxyH/2mmHx7YyxS8MZvc76X3FVi33fqcmqo8T3P1Ipn68ys6/YO1FKuig=="],
 
     "@tybys/wasm-util": ["@tybys/wasm-util@0.10.4", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-W3c4gRigFS0T/Ma4qIYF3GDAc5AQdHb1yL5znJT1Zv1YaD9Kitx656wBjvr19qbiosmZT8lWDM5BEMynUqX65A=="],
 
