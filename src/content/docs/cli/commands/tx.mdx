@@ -23,7 +23,8 @@ Record a transaction, either from flags or from a JSON transaction document.
 - `--memo <string>` — free text kept with the transaction; part of its duplicate identity
 - `--external-ref <string>` — an idempotency key; replaying it is a duplicate
 - `--dry-run` — report the transaction and roll the write back
-- `--postings <string>` — read a JSON transaction document from this path, or `-` for stdin
+- `--postings <string>` — read a JSON transaction document from this path, or `-` for stdin; see
+  [The transaction document](#the-transaction-document)
 
 ```bash
 traj tx add --from Cash --to Food --amount 120.50 --date 2026-03-01  # Record a purchase from Cash.
@@ -49,6 +50,71 @@ until a posting funds it, as [the baseline page](/docs/cli/commands/baseline/) e
 `--from` must be an equity account. Any other type is refused at exit code `3` with
 `NON_EQUITY_CONTRA`, which names the type it found.
 
+## The transaction document
+
+`--postings` reads a transaction document: the transaction itself, with its postings in the order
+they are written. `traj tx add` and `traj tx amend` take the same shape. This one records a 60.00
+THB purchase paid from Cash, and is the smallest document that runs:
+
+```json
+{
+  "date": "2026-07-01",
+  "postings": [
+    { "account": "Food", "amount": "60.00", "currency": "THB" },
+    { "account": "Cash", "amount": "-60.00", "currency": "THB" }
+  ]
+}
+```
+
+- `date` — required. The transaction's `YYYY-MM-DD` date; an impossible date is `INVALID_DATE`.
+- `postings` — required. At least two postings, written in the order they are stored, summing to
+  zero per currency.
+- `memo` — optional. Free text kept with the transaction; part of its duplicate identity.
+- `externalRef` — optional. An idempotency key; replaying it is a duplicate.
+- A posting's `account` — required. The account's exact name or its id.
+- A posting's `amount` — required. A signed decimal string in the posting's currency, such as
+  `"60.00"` or `"-60.00"`, with debit positive: the postings of one transaction sum to zero, so
+  one side of it is negative. There is no `+` sign, no thousands separator and no exponent —
+  `+60.00`, `1,000.00` and `6e1` are each invalid input — and a posting of zero is refused. This is
+  not the flag form's `--amount`, which is a magnitude except under `--opening`.
+- A posting's `currency` — required. The document has no currency of its own and there is no
+  currency flag: each posting names an ISO 4217 code, and this release supports THB only.
+- A posting's `dimensions` — optional. Tags that change no balance. `--project lunch` in the flag
+  form is exactly `"dimensions": { "project": "lunch" }` on each posting.
+
+Unlike a Scenario document, whose amounts are whole numbers of the currency's smallest unit
+([Agent](/docs/cli/agent/)), a transaction document's amounts are decimal strings.
+
+Hand the document over by path, or as `-` to read it from stdin:
+
+```bash
+traj tx add --postings receipt.json      # Read the document from a file.
+traj tx add --postings - < receipt.json  # Read the same document from stdin.
+```
+
+`-` is the only way to ask for stdin, and an empty document is invalid input. A file that cannot be
+read fails at `--postings`, before the document is parsed.
+
+A document replaces the flags: the two forms cannot be combined
+([ADR 0020](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0020-a-leaf-may-declare-a-document-schema.md)).
+Beside `--postings`, `traj tx add` accepts only `--dry-run` and refuses its other flags —
+`traj tx add --postings - --date 2026-07-02` exits `2` with "`--postings` cannot be combined with
+`--date`". Global options are not among the refused fields, so `--json` still applies.
+
+`traj tx amend <id> --postings -` reads the replacement from the same shape. The document is the
+replacement in full: its `date` is the replacement's date, and `--void-date` defaults to that date,
+not to `--date`, which the document form does not take. Beside `--postings`, `traj tx amend` keeps
+its `<id>` positional and accepts only `--void-date` and `--dry-run`.
+
+The authority for the shape is the release in your hand: `traj schema tx add --json` prints it as
+`.document`, a JSON Schema, and `traj schema tx amend --json` prints the same document.
+
+A failure names the document's path. A document the schema rejects carries a `document.` prefix:
+`invalid_input (document.postings.0.currency)` for a missing `currency`, and `document.project` for
+a field the document does not define, so a project belongs in a posting's `dimensions`. The checks
+that run after the schema name the path without it, such as `postings.0.amount` for an amount that
+is not a plain decimal.
+
 ## `traj tx amend <id>`
 
 Reverse a transaction and record its replacement.
@@ -66,7 +132,8 @@ Reverse a transaction and record its replacement.
 - `--memo <string>` — free text kept with the replacement
 - `--external-ref <string>` — the replacement's new idempotency key; the original's is a conflict
 - `--dry-run` — report both rows and roll the write back
-- `--postings <string>` — read a JSON transaction document for the replacement from this path, or `-`
+- `--postings <string>` — read a JSON transaction document for the replacement from this path, or
+  `-`; see [The transaction document](#the-transaction-document)
 
 ```bash
 traj tx amend 0194a000-0003-7000-8000-000000000003 --from Cash --to Food --amount 100 --date 2026-03-02
