@@ -1,9 +1,11 @@
 import { describe, expect, test } from "bun:test"
 import { buildLandingTwin } from "./landing-twin"
 
+const ORIGIN = "https://trajectonomics.com"
+
 describe("the Landing Page's Markdown twin", () => {
 	test("states the Portal's name, purpose and release line, then one entry per Tab's Markdown", () => {
-		expect(buildLandingTwin("Docs synced from traj v0.2.0")).toBe(
+		expect(buildLandingTwin("Docs synced from traj v0.2.0", ORIGIN)).toBe(
 			[
 				"# Trajectonomics Docs",
 				"",
@@ -24,7 +26,7 @@ describe("the Landing Page's Markdown twin", () => {
 	})
 
 	test("states the release line it is given, so the twin cannot name another release", () => {
-		expect(buildLandingTwin("Docs synced from traj v0.3.0-rc.1")).toContain(
+		expect(buildLandingTwin("Docs synced from traj v0.3.0-rc.1", ORIGIN)).toContain(
 			"Docs synced from traj v0.3.0-rc.1",
 		)
 	})

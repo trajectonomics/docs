@@ -1,19 +1,13 @@
 import type { DocsIndexPage } from "./docs-index"
+import { PageRefusalError } from "./refusal"
 
 /** The ways a content page cannot give its authored words; one value per rule. */
 export type PageWordsErrorCode = "TITLE_MISSING"
 
 /** A page whose frontmatter carries no title, so it has no Markdown twin or Docs index entry. */
-export class PageWordsError extends Error {
-	readonly code: PageWordsErrorCode
-	readonly field: string
-
+export class PageWordsError extends PageRefusalError<PageWordsErrorCode> {
 	constructor(code: PageWordsErrorCode, message: string, field: string) {
-		super(message)
-		this.name = "PageWordsError"
-		this.code = code
-		this.field = field
-		Object.freeze(this)
+		super("PageWordsError", code, message, field)
 	}
 }
 

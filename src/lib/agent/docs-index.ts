@@ -1,8 +1,7 @@
 import { PORTAL_NAME, PORTAL_PURPOSE } from "../portal"
 import { DOCS_BASE_PATH, type TabDefinition } from "../tabs"
 import { shownDescription } from "./description"
-import { portalUrl } from "./portal-url"
-import { twinPath } from "./twin-path"
+import { twinUrl } from "./twin-url"
 
 /** One page the Docs index lists: the words its bullet shows and the page URL its twin follows. */
 export interface DocsIndexPage {
@@ -25,14 +24,14 @@ const FETCH_SENTENCE =
 	"To fetch a page as Markdown, take its twin URL: the page's path with `.md` in place of the trailing slash, and `/docs/index.md` for the Landing Page. The links below are absolute, so this index works wherever it is read."
 
 /** One bullet of the index: a page's title, its absolute twin URL and its description. */
-function bullet(page: DocsIndexPage): string {
+function bullet(page: DocsIndexPage, origin: string): string {
 	const description = shownDescription(page.description)
 	const described = description === undefined ? "" : `: ${description}`
-	return `- [${page.title}](${portalUrl(twinPath(page.url))})${described}`
+	return `- [${page.title}](${twinUrl(origin, page.url)})${described}`
 }
 
 /** The Docs index at `/docs/llms.txt`: every page once, in the order the Tabs present them. */
-export function buildDocsIndex(tabs: readonly DocsIndexTab[]): string {
+export function buildDocsIndex(tabs: readonly DocsIndexTab[], origin: string): string {
 	const landingPage: DocsIndexPage = {
 		title: PORTAL_NAME,
 		description: PORTAL_PURPOSE,
@@ -48,11 +47,11 @@ export function buildDocsIndex(tabs: readonly DocsIndexTab[]): string {
 		"",
 		`## ${START_HERE}`,
 		"",
-		bullet(landingPage),
+		bullet(landingPage, origin),
 		"",
 	]
 	for (const { tab, pages } of tabs) {
-		lines.push(`## ${tab.audience}`, "", ...pages.map(bullet), "")
+		lines.push(`## ${tab.audience}`, "", ...pages.map((page) => bullet(page, origin)), "")
 	}
 	return lines.join("\n")
 }

@@ -45,4 +45,8 @@ describe("the order the Docs sidebar presents its pages in", () => {
 	test("a separator and an external link are not Docs pages", () => {
 		expect(sidebarPageUrls(TREE)).not.toContain("https://github.com/trajectonomics/docs")
 	})
+
+	test("the order is frozen, so no caller can reorder the Tabs it came from", () => {
+		expect(Object.isFrozen(sidebarPageUrls(TREE))).toBe(true)
+	})
 })

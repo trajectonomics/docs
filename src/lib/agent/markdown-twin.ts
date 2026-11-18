@@ -1,21 +1,14 @@
 import { absoluteDocsLinks } from "./absolute-links"
 import { shownDescription } from "./description"
-import { PORTAL_ORIGIN } from "./portal-url"
+import { PageRefusalError } from "./refusal"
 
 /** The ways an authored page cannot produce a faithful Markdown twin; one value per rule. */
 export type MarkdownTwinErrorCode = "JSX_BODY"
 
 /** A page whose authored body carries content no Markdown twin can hold. */
-export class MarkdownTwinError extends Error {
-	readonly code: MarkdownTwinErrorCode
-	readonly field: string
-
+export class MarkdownTwinError extends PageRefusalError<MarkdownTwinErrorCode> {
 	constructor(code: MarkdownTwinErrorCode, message: string, field: string) {
-		super(message)
-		this.name = "MarkdownTwinError"
-		this.code = code
-		this.field = field
-		Object.freeze(this)
+		super("MarkdownTwinError", code, message, field)
 	}
 }
 
@@ -41,7 +34,7 @@ function carriesJsx(body: string): boolean {
 }
 
 /** The Markdown twin of a page: its title, its description, then its body with links made absolute. */
-export function buildMarkdownTwin(page: PageTwinSource): string {
+export function buildMarkdownTwin(page: PageTwinSource, origin: string): string {
 	if (carriesJsx(page.body)) {
 		throw new MarkdownTwinError(
 			"JSX_BODY",
@@ -55,7 +48,7 @@ export function buildMarkdownTwin(page: PageTwinSource): string {
 		`# ${page.title}`,
 		"",
 		...described,
-		absoluteDocsLinks(page.body.trim(), PORTAL_ORIGIN),
+		absoluteDocsLinks(page.body.trim(), origin),
 		"",
 	].join("\n")
 }

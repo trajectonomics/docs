@@ -14,5 +14,5 @@ function nodeUrls(node: Node): readonly string[] {
 
 /** Every page URL the Docs sidebar presents, in the order the Tabs and their folders present them. */
 export function sidebarPageUrls(tree: Root): readonly string[] {
-	return tree.children.flatMap(nodeUrls)
+	return Object.freeze(tree.children.flatMap(nodeUrls))
 }

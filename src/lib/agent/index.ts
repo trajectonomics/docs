@@ -1,6 +1,5 @@
-/** The agent artifacts' public surface: the builders, a page's words and the refusal boundary. */
+/** The agent artifacts' public surface: the builders, a page's words and the build boundary. */
 
-export { buildStep } from "./build-step"
 export { shownDescription } from "./description"
 export type { DocsIndexPage, DocsIndexTab } from "./docs-index"
 export { buildDocsIndex } from "./docs-index"
@@ -10,5 +9,7 @@ export { buildMarkdownTwin, MarkdownTwinError } from "./markdown-twin"
 export { sidebarPageUrls } from "./page-order"
 export type { PageWordsErrorCode, SourcePageWords } from "./page-words"
 export { PageWordsError, pageWords } from "./page-words"
-export { PORTAL_ORIGIN, portalUrl } from "./portal-url"
+export { portalOrigin } from "./portal-origin"
+export { runBuildStep } from "./run-build-step"
 export { twinPath } from "./twin-path"
+export { twinUrl } from "./twin-url"
