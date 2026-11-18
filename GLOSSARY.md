@@ -28,6 +28,10 @@ _Avoid_: Data folder, state directory
 A top-level section of the Docs Portal addressed to exactly one audience. There are two: the Operator tab (CLI and quickstart) and the Builder tab (build on Trajectonomics). Tabs are navigation in the header; a Tab's name is not repeated as a page title.
 _Avoid_: Section, category, track
 
+**Command reference**:
+The Operator tab's pages that document every released `traj` leaf and its flags: one page per top-level command, one section per leaf beneath it. The check in `.github/workflows/command-reference.yml` fails when they disagree with the published release ([ADR 0011](./docs/adr/0011-command-reference-drift-is-checked-by-a-workflow.md)).
+_Avoid_: CLI docs, reference docs, man pages
+
 **Landing Page**:
 The page at `/docs/` that names the two audiences and sends each to its Tab.
 _Avoid_: Home page, index page, front page
