@@ -4,10 +4,7 @@ import { PORTAL_ORIGIN } from "./portal-url"
 /** The ways an authored page cannot produce a faithful Markdown twin; one value per rule. */
 export type MarkdownTwinErrorCode = "JSX_BODY"
 
-/**
- * A page whose authored body carries content no Markdown twin can hold. Not frozen: Astro annotates
- * a build error in place, and a frozen error turns that annotation into a TypeError of its own.
- */
+/** A page whose authored body carries content no Markdown twin can hold. */
 export class MarkdownTwinError extends Error {
 	readonly code: MarkdownTwinErrorCode
 	readonly field: string
@@ -17,6 +14,7 @@ export class MarkdownTwinError extends Error {
 		this.name = "MarkdownTwinError"
 		this.code = code
 		this.field = field
+		Object.freeze(this)
 	}
 }
 

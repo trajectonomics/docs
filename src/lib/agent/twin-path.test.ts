@@ -2,19 +2,29 @@ import { describe, expect, test } from "bun:test"
 import { twinPath } from "./twin-path"
 
 describe("the path of a page's Markdown twin", () => {
-	test("a page's twin is its path with `.md` in place of the trailing slash", () => {
-		expect(twinPath("/docs/cli/commands/tx")).toBe("/docs/cli/commands/tx.md")
-		expect(twinPath("/docs/cli/commands/tx/")).toBe("/docs/cli/commands/tx.md")
+	test.each([
+		["/docs/cli/commands/tx", "/docs/cli/commands/tx.md"],
+		["/docs/cli/commands/tx/", "/docs/cli/commands/tx.md"],
+		["/docs/cli/installation", "/docs/cli/installation.md"],
+	])(
+		"the twin of %s is %s, its path with `.md` in place of the trailing slash",
+		(pageUrl, twin) => {
+			expect(twinPath(pageUrl)).toBe(twin)
+		},
+	)
+
+	test.each([
+		["/docs/cli", "/docs/cli.md"],
+		["/docs/cli/", "/docs/cli.md"],
+		["/docs/cli/commands", "/docs/cli/commands.md"],
+	])("the twin of the folder index page %s is %s, never an index path", (pageUrl, twin) => {
+		expect(twinPath(pageUrl)).toBe(twin)
 	})
 
-	test("a folder index page's twin sits beside the folder, never at its index path", () => {
-		expect(twinPath("/docs/cli")).toBe("/docs/cli.md")
-		expect(twinPath("/docs/cli/")).toBe("/docs/cli.md")
-		expect(twinPath("/docs/cli/commands")).toBe("/docs/cli/commands.md")
-	})
-
-	test("the Landing Page's twin is /docs/index.md", () => {
-		expect(twinPath("/docs")).toBe("/docs/index.md")
-		expect(twinPath("/docs/")).toBe("/docs/index.md")
+	test.each([
+		["/docs", "/docs/index.md"],
+		["/docs/", "/docs/index.md"],
+	])("the twin of the Landing Page %s is %s", (pageUrl, twin) => {
+		expect(twinPath(pageUrl)).toBe(twin)
 	})
 })
