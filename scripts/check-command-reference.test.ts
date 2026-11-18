@@ -35,6 +35,7 @@ const HELP = [
 ].join("\n")
 
 interface FakeOptions {
+	readonly listed?: unknown
 	readonly latest?: string | undefined
 	readonly pages?: readonly ContentFile[] | undefined
 	readonly baselinePages?: readonly ContentFile[] | undefined
@@ -63,7 +64,7 @@ function fakeDeps(options: FakeOptions = {}): Fake {
 		cliJson: async (_version: string, args: readonly string[]) => {
 			if (args[0] !== "schema") return undefined
 			const path = args.slice(1, -1).join(" ")
-			if (path === "") return { commands: [{ name: "tx add" }, { name: "fi" }] }
+			if (path === "") return options.listed ?? { commands: [{ name: "tx add" }, { name: "fi" }] }
 			return SCHEMAS[path]
 		},
 		cliText: async () => options.help ?? HELP,
@@ -99,10 +100,10 @@ describe("a release that cannot be read", () => {
 		expect(fake.sleeps.length).toBeGreaterThan(0)
 	})
 
-	test("exits 2 with RELEASE_MALFORMED when the help output has no global block", async () => {
-		const fake = fakeDeps({ help: "Usage: traj [options]\n" })
+	test("exits 2 with NO_LEAVES_LISTED when the listing names no leaf", async () => {
+		const fake = fakeDeps({ listed: { commands: [] } })
 		expect(await main([], fake.deps)).toBe(2)
-		expect(fake.lines.join("\n")).toContain("GLOBAL_OPTIONS_MISSING")
+		expect(fake.lines.join("\n")).toContain("NO_LEAVES_LISTED")
 	})
 })
 
@@ -165,12 +166,12 @@ describe("the check's arguments", () => {
 
 describe("the offline deploy gate", () => {
 	test("`bun run check` does not run the command-reference check", () => {
-		const manifest: unknown = JSON.parse(readFileSync("package.json", "utf8"))
-		const scripts =
-			typeof manifest === "object" && manifest !== null
-				? (manifest as Record<string, Record<string, string>>)["scripts"]
-				: undefined
-		expect(scripts?.["check"]).not.toContain("check:command-reference")
-		expect(scripts?.["check:command-reference"]).toBe("bun scripts/check-command-reference.ts")
+		const manifest = JSON.parse(readFileSync("package.json", "utf8")) as {
+			scripts: Record<string, string>
+		}
+		expect(manifest.scripts["check"]).not.toContain("check:command-reference")
+		expect(manifest.scripts["check:command-reference"]).toBe(
+			"bun scripts/check-command-reference.ts",
+		)
 	})
 })

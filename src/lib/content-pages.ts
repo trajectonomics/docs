@@ -8,7 +8,7 @@ export interface ContentFile {
 export const CONTENT_ROOT = "src/content/docs"
 
 /** Extensions Fumadocs reads as a page. */
-const PAGE_EXTENSIONS = [".mdx", ".md"] as const
+export const PAGE_EXTENSIONS = [".mdx", ".md"] as const
 
 /** Whether `path`, without an extension, names a page file. */
 export function hasPage(files: readonly ContentFile[], path: string): boolean {

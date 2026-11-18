@@ -1,8 +1,5 @@
-import type { ContentFile } from "../content-pages"
+import { type ContentFile, PAGE_EXTENSIONS } from "../content-pages"
 import { COMMAND_REFERENCE_ROOT, type PageSection } from "./sections"
-
-/** The extensions Fumadocs reads as a page. */
-export const PAGE_EXTENSIONS = [".mdx", ".md"] as const
 
 /** The path a top-level command's page has, whether or not a page is there. */
 export function pagePathFor(topLevel: string, extension: string = PAGE_EXTENSIONS[0]): string {

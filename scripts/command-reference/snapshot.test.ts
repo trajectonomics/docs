@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { globalFlagsOf, leafNamesOf, leafOf } from "./snapshot"
+import { globalFlagsOf, leafFromSchema, leafNamesOf } from "./snapshot"
 
 /** The code a refusal carries, so a test names the rule rather than its wording. */
 function codeOf(run: () => unknown): string | undefined {
@@ -34,7 +34,7 @@ describe("the leaf names of a schema listing", () => {
 
 describe("a leaf's flags", () => {
 	test("are its input properties minus its positionals, kebab-cased", () => {
-		const leaf = leafOf(
+		const leaf = leafFromSchema(
 			{ positionals: ["name"], input: { properties: { name: {}, dryRun: {}, carryIn: {} } } },
 			"scenario apply",
 		)
@@ -42,25 +42,25 @@ describe("a leaf's flags", () => {
 	})
 
 	test("are refused as POSITIONALS_UNDESCRIBED when the positionals are not a list of names", () => {
-		expect(codeOf(() => leafOf({ positionals: [1], input: { properties: {} } }, "fi"))).toBe(
-			"POSITIONALS_UNDESCRIBED",
-		)
+		expect(
+			codeOf(() => leafFromSchema({ positionals: [1], input: { properties: {} } }, "fi")),
+		).toBe("POSITIONALS_UNDESCRIBED")
 	})
 
 	test("are refused as POSITIONALS_UNDESCRIBED when the schema has no positionals", () => {
-		expect(codeOf(() => leafOf({ input: { properties: {} } }, "fi"))).toBe(
+		expect(codeOf(() => leafFromSchema({ input: { properties: {} } }, "fi"))).toBe(
 			"POSITIONALS_UNDESCRIBED",
 		)
 	})
 
 	test("are refused as INPUT_UNDESCRIBED when the input schema is missing", () => {
-		expect(codeOf(() => leafOf({ positionals: [] }, "fi"))).toBe("INPUT_UNDESCRIBED")
+		expect(codeOf(() => leafFromSchema({ positionals: [] }, "fi"))).toBe("INPUT_UNDESCRIBED")
 	})
 
 	test("are refused as INPUT_UNDESCRIBED when the input carries no properties object", () => {
-		expect(codeOf(() => leafOf({ positionals: [], input: { properties: "none" } }, "fi"))).toBe(
-			"INPUT_UNDESCRIBED",
-		)
+		expect(
+			codeOf(() => leafFromSchema({ positionals: [], input: { properties: "none" } }, "fi")),
+		).toBe("INPUT_UNDESCRIBED")
 	})
 })
 

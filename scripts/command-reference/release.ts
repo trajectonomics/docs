@@ -1,7 +1,7 @@
 import type { ReleaseLeaf, ReleaseSnapshot } from "../../src/lib/command-reference"
 import { type CommandReferenceDeps, RELEASE_POLL_MS, RELEASE_WAIT_MS } from "./deps"
 import { CheckError } from "./errors"
-import { globalFlagsOf, leafNamesOf, leafOf } from "./snapshot"
+import { globalFlagsOf, leafFromSchema, leafNamesOf } from "./snapshot"
 
 /** One attempt at the release, or undefined while npm has not served the version's assets yet. */
 async function attemptRelease(deps: CommandReferenceDeps): Promise<ReleaseSnapshot | undefined> {
@@ -13,7 +13,7 @@ async function attemptRelease(deps: CommandReferenceDeps): Promise<ReleaseSnapsh
 	for (const name of leafNamesOf(listed)) {
 		const schema = await deps.cliJson(version, ["schema", ...name.split(" "), "--json"])
 		if (schema === undefined) return undefined
-		leaves.push(leafOf(schema, name))
+		leaves.push(leafFromSchema(schema, name))
 	}
 	const first = leaves[0]
 	if (first === undefined) {
