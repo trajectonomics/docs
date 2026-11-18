@@ -63,10 +63,9 @@ export interface DocsSidebarBannerProps {
 
 /**
  * The sidebar's top block: the way back to the Site Home above the search trigger, a hairline under
- * them, then the Tab dropdown the header row gives up below `lg`. The block renders Fumadocs' own
- * header children, so the drawer keeps the library's close button and nothing here is a control the
- * library would not have drawn. The tree follows the block; from `lg` up it follows the hairline,
- * because the dropdown is hidden there (ADR 0009).
+ * them, then the header children Fumadocs passes a banner — its Tab dropdown, and in the drawer its
+ * close button, drawn by the library rather than by this block. The tree follows the block; from
+ * `lg` up it follows the hairline, because the dropdown is hidden there (ADR 0009).
  */
 export function DocsSidebarBanner({ children }: DocsSidebarBannerProps) {
 	return (
