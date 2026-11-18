@@ -67,10 +67,7 @@ export function anchors(html: string): readonly HtmlAnchor[] {
 	)
 }
 
-/**
- * The name a link is read aloud with: the `aria-label` it names itself with when it has one,
- * otherwise its text.
- */
+/** The name a link is read aloud with. */
 export function linkName(link: HtmlAnchor): string {
 	return link.ariaLabel ?? link.text
 }

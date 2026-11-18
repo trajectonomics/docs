@@ -12,27 +12,24 @@ const HEADER_IDS = ["nd-nav", "nd-subnav"] as const
 /** The Landing Page, the one destination the header mark takes on every page (docs#75). */
 const LANDING_PAGE_URL = `${DOCS_BASE_PATH}/`
 
-/** The content of the header of whichever layout the page uses, or `undefined` when it has none. */
-function headerContent(html: string): string | undefined {
+/** The content of the header of whichever layout the page uses, empty when it has none. */
+function headerContent(html: string): string {
 	for (const id of HEADER_IDS) {
 		const content = elementContent(html, id)
 		if (content !== undefined) return content
 	}
-	return undefined
+	return ""
 }
 
 function markFailures(page: BuiltFile): readonly BuildFailure[] {
 	const header = headerContent(page.content)
-	if (header === undefined) {
-		return [buildFailure("HEADER_MARK_LINK", page.path, "the page has no Docs Portal header")]
-	}
 	const marks = anchors(header).filter((link) => link.href === LANDING_PAGE_URL)
 	if (marks.length !== 1) {
 		return [
 			buildFailure(
 				"HEADER_MARK_LINK",
 				page.path,
-				`the header links to ${LANDING_PAGE_URL} ${marks.length} times, expected once`,
+				`the header carries ${marks.length} links to ${LANDING_PAGE_URL}, expected one`,
 			),
 		]
 	}

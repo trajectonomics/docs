@@ -22,10 +22,8 @@ function decoration(artwork: string): string {
 }
 
 /**
- * The one header mark of the Docs Portal: the Site's glyph on a tile painted from the Theme's
- * primary roles, linking to the Landing Page under the portal's own name. It renders the anchor
- * rather than a title node, in the component form Fumadocs calls with the link's `href` and
- * `className`, so the name reaches the link itself on every page (docs#75).
+ * The Docs Portal's header mark: the Site's glyph on a tile painted from the Theme's primary
+ * roles, in the one link to the Landing Page that every page carries, named after the portal.
  */
 export function HeaderMark({ href, className }: ComponentProps<"a">) {
 	return (

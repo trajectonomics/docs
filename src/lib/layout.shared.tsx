@@ -1,5 +1,4 @@
 import type { BaseLayoutProps, LinkItemType } from "fumadocs-ui/layouts/shared"
-import type { ComponentProps, FC } from "react"
 import { HeaderMark } from "../components/header-mark"
 import { SITE_HOME_LABEL, SITE_HOME_LOAD, SITE_HOME_PATH } from "./site-home"
 import { DOCS_BASE_PATH } from "./tabs"
@@ -54,24 +53,16 @@ export function siteHomeButton() {
 	)
 }
 
-export interface BaseOptions {
-	/**
-	 * The header title, in the component form Fumadocs calls with the link's `href` and `className`,
-	 * so the title renders the anchor and names it itself. The Portal's own mark is the default;
-	 * only a page that needs a different mark passes one.
-	 */
-	readonly navTitle?: FC<ComponentProps<"a">>
-}
-
 /**
- * Layout options shared by every Docs Portal page of `layout`. The docs pages carry no header link
- * items: the Site Home is the sidebar's button, and the Tabs are the header's only other control
- * (ADR 0009). No layout offers a theme switch, because the portal renders one Theme for every
- * reader.
+ * Layout options shared by every Docs Portal page of `layout`. Every page carries the Portal's one
+ * header mark, here and nowhere else, so a page cannot choose another (docs#75, ADR 0009). The docs
+ * pages carry no header link items: the Site Home is the sidebar's button, and the Tabs are the
+ * header's only other control (ADR 0009). No layout offers a theme switch, because the portal
+ * renders one Theme for every reader.
  */
-export function baseOptions(layout: PortalLayout, options?: BaseOptions): BaseLayoutProps {
+export function baseOptions(layout: PortalLayout): BaseLayoutProps {
 	return {
-		nav: { title: options?.navTitle ?? HeaderMark, url: `${DOCS_BASE_PATH}/` },
+		nav: { title: HeaderMark, url: `${DOCS_BASE_PATH}/` },
 		links: layout === "home" ? [...homeSiteHomeLinks()] : [],
 		// The Docs Portal exposes one Theme for now (docs#89), so no control offers the other
 		// one. Light's return flips this option and deletes the provider's forced value.
