@@ -1,10 +1,14 @@
 import { describe, expect, test } from "bun:test"
+import { resolve } from "node:path"
 import { CONTENT_ROOT } from "./content-pages"
 import { typescriptPrograms } from "./content-programs"
 import { manifestEntry, parseSyncManifest, SYNC_MANIFEST_PATH } from "./docs-sync/manifest"
 
 /** The Builder page whose TypeScript programs must run as printed. */
 const PAGE = "developers/sim-core/index.mdx"
+
+/** The repository root, where the installed package the program imports is resolved from. */
+const REPO_ROOT = resolve(import.meta.dir, "../..")
 
 /** How long one program may run before the check fails it, so a hung run cannot hold a Claim. */
 const RUN_TIMEOUT_MS = 30_000
@@ -54,13 +58,13 @@ interface Run {
 
 function run(source: string): Run {
 	const result = Bun.spawnSync([process.execPath, "--no-install", "-e", source], {
-		cwd: process.cwd(),
+		cwd: REPO_ROOT,
 		timeout: RUN_TIMEOUT_MS,
 	})
 	return { code: result.exitCode, stderr: result.stderr.toString() }
 }
 
-const page = await Bun.file(`${CONTENT_ROOT}/${PAGE}`).text()
+const page = await Bun.file(`${REPO_ROOT}/${CONTENT_ROOT}/${PAGE}`).text()
 const programs = typescriptPrograms({ path: PAGE, content: page })
 
 function firstLine(program: string): string {
@@ -90,9 +94,9 @@ describe("the sim-core example runs as printed", () => {
 
 describe("the example runs against the release the page documents", () => {
 	test("the sim devDependency equals the sync manifest's sim-core tag", async () => {
-		const manifest = parseSyncManifest(await Bun.file(SYNC_MANIFEST_PATH).text())
+		const manifest = parseSyncManifest(await Bun.file(`${REPO_ROOT}/${SYNC_MANIFEST_PATH}`).text())
 		const tag = manifestEntry(manifest, "sim-core")?.lastSyncedTag
-		const packageJson = JSON.parse(await Bun.file("package.json").text()) as {
+		const packageJson = JSON.parse(await Bun.file(`${REPO_ROOT}/package.json`).text()) as {
 			readonly devDependencies?: Readonly<Record<string, string>>
 		}
 		expect(tag).toBeDefined()
