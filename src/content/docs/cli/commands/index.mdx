@@ -63,6 +63,8 @@ Outside JSON mode the same failure is text on stderr with the same exit code. Co
 Some commands take a JSON document beside the flag form — `--postings` on `tx add` and `tx amend`,
 `--file` on `scenario apply` — named by a path, or `-` to read it from stdin
 ([ADR 0020](https://github.com/trajectonomics/cli/blob/v0.2.0/docs/adr/0020-a-leaf-may-declare-a-document-schema.md)).
+The transaction document those `--postings` flags read is on
+[the `tx` page](/docs/cli/commands/tx/#the-transaction-document).
 
 ## Decisions
 
