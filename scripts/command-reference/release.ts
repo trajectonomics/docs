@@ -21,7 +21,7 @@ async function attemptRelease(deps: CommandReferenceDeps): Promise<ReleaseSnapsh
 	}
 	const first = leaves[0]
 	if (first === undefined) {
-		throw new UnreadableError("`schema --json` listed no leaves")
+		throw new UnreadableError("RELEASE_MALFORMED", "`schema --json` listed no leaves")
 	}
 	const help = await deps.cliText(version, ["help", ...first.name.split(" ")])
 	if (help === undefined) return undefined
@@ -40,6 +40,7 @@ export async function readRelease(deps: CommandReferenceDeps): Promise<ReleaseSn
 		if (release !== undefined) return release
 		if (deps.now() >= deadline) {
 			throw new UnreadableError(
+				"RELEASE_UNREADABLE",
 				`the published CLI did not become readable within ${RELEASE_WAIT_MS / 60_000} minutes`,
 			)
 		}

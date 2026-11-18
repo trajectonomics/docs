@@ -1,20 +1,10 @@
 import { describe, expect, test } from "bun:test"
 import { readFileSync } from "node:fs"
-import type { ContentFile } from "../src/lib/command-reference"
-import { COMMAND_REFERENCE_ROOT } from "../src/lib/command-reference"
+import { COMMAND_REFERENCE_ROOT, type ContentFile } from "../src/lib/command-reference"
+import { INDEX, page } from "../src/lib/command-reference/fixtures"
 import { main } from "./check-command-reference"
+import { parseArguments } from "./command-reference/arguments"
 import type { CommandReferenceDeps } from "./command-reference/deps"
-
-const GLOBALS = ["--json", "-h", "--help", "-v", "--version"]
-
-const INDEX = page(
-	"index.mdx",
-	[
-		"## Global options",
-		"",
-		...GLOBALS.map((flag) => `- \`${flag}\` — accepted by every command.`),
-	].join("\n"),
-)
 
 const TX = page(
 	"tx.mdx",
@@ -43,10 +33,6 @@ const HELP = [
 	"",
 	"Examples:",
 ].join("\n")
-
-function page(name: string, content: string): ContentFile {
-	return { path: `${COMMAND_REFERENCE_ROOT}/${name}`, content }
-}
 
 interface FakeOptions {
 	readonly latest?: string | undefined
@@ -106,30 +92,31 @@ describe("a page that drifts from the published CLI", () => {
 })
 
 describe("a release that cannot be read", () => {
-	test("exits 2 after the bounded wait, naming the failure", async () => {
+	test("exits 2 with RELEASE_UNREADABLE after the bounded wait", async () => {
 		const fake = fakeDeps({ latest: undefined })
 		expect(await main([], fake.deps)).toBe(2)
-		expect(fake.lines.join("\n")).toContain("did not become readable within 10 minutes")
+		expect(fake.lines.join("\n")).toContain("RELEASE_UNREADABLE")
 		expect(fake.sleeps.length).toBeGreaterThan(0)
 	})
 
-	test("exits 2 when the help output has no `Global options:` block", async () => {
+	test("exits 2 with RELEASE_MALFORMED when the help output has no global block", async () => {
 		const fake = fakeDeps({ help: "Usage: traj [options]\n" })
 		expect(await main([], fake.deps)).toBe(2)
-		expect(fake.lines.join("\n")).toContain("Global options:")
+		expect(fake.lines.join("\n")).toContain("RELEASE_MALFORMED")
 	})
 })
 
 describe("pages that cannot be read", () => {
-	test("exits 2 rather than passing", async () => {
+	test("exits 2 with PAGES_UNREADABLE rather than passing", async () => {
 		const fake = fakeDeps({ pages: undefined })
 		expect(await main([], fake.deps)).toBe(2)
-		expect(fake.lines.join("\n")).toContain("could not be read")
+		expect(fake.lines.join("\n")).toContain("PAGES_UNREADABLE")
 	})
 
-	test("exits 2 when the baseline ref cannot be read", async () => {
+	test("exits 2 with BASELINE_UNREADABLE when the baseline ref cannot be read", async () => {
 		const fake = fakeDeps({ baselinePages: undefined })
 		expect(await main(["--baseline", "origin/main"], fake.deps)).toBe(2)
+		expect(fake.lines.join("\n")).toContain("BASELINE_UNREADABLE")
 	})
 })
 
@@ -165,10 +152,16 @@ describe("a pull request that compares against a baseline", () => {
 })
 
 describe("the check's arguments", () => {
+	test("an unusable argument is refused as USAGE_INVALID", () => {
+		expect(() => parseArguments(["--pages", "somewhere"])).toThrow(
+			expect.objectContaining({ code: "USAGE_INVALID" }),
+		)
+	})
+
 	test("an unknown argument exits 2 with the usage line", async () => {
 		const fake = fakeDeps()
 		expect(await main(["--pages", "somewhere"], fake.deps)).toBe(2)
-		expect(fake.lines.join("\n")).toContain("usage: bun run check:command-reference")
+		expect(fake.lines.join("\n")).toContain("USAGE_INVALID")
 	})
 })
 

@@ -4,12 +4,15 @@ import { COMMAND_REFERENCE_ROOT, type PageSection } from "./sections"
 /** The extensions Fumadocs reads as a page. */
 export const PAGE_EXTENSIONS = [".mdx", ".md"] as const
 
+/** The path a top-level command's page has, whether or not a page is there. */
+export function pagePathFor(topLevel: string, extension: string = PAGE_EXTENSIONS[0]): string {
+	return `${COMMAND_REFERENCE_ROOT}/${topLevel}${extension}`
+}
+
 /** The page that documents a top-level command, or undefined when no page names it. */
-export function pageOf(files: readonly ContentFile[], token: string): ContentFile | undefined {
+export function pageOf(files: readonly ContentFile[], topLevel: string): ContentFile | undefined {
 	return files.find((file) =>
-		PAGE_EXTENSIONS.some(
-			(extension) => file.path === `${COMMAND_REFERENCE_ROOT}/${token}${extension}`,
-		),
+		PAGE_EXTENSIONS.some((extension) => file.path === pagePathFor(topLevel, extension)),
 	)
 }
 

@@ -22,7 +22,9 @@ export type CommandReferenceRule =
 export interface CommandReferenceProblem {
 	readonly rule: CommandReferenceRule
 	readonly file: string
+	/** The released leaf, or `GLOBAL_LEAF` for the global-options section. */
 	readonly leaf: string
+	/** The flag the rule is about, or "" when the rule is about a leaf. */
 	readonly flag: string
 	readonly detail: string
 }

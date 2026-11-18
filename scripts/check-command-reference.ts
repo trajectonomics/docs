@@ -12,19 +12,22 @@ export async function main(argv: readonly string[], deps: CommandReferenceDeps):
 		const release = await readRelease(deps)
 		const pages = await deps.pages()
 		if (pages === undefined) {
-			throw new UnreadableError("the command-reference pages could not be read")
+			throw new UnreadableError("PAGES_UNREADABLE", "the command-reference pages could not be read")
 		}
 		const problems = checkCommandReference(release, pages)
 		if (baseline === undefined) return reportAll(problems, release, deps.print)
 		const baselinePages = await deps.pagesAt(baseline)
 		if (baselinePages === undefined) {
-			throw new UnreadableError(`the command-reference pages at ${baseline} could not be read`)
+			throw new UnreadableError(
+				"BASELINE_UNREADABLE",
+				`the command-reference pages at ${baseline} could not be read`,
+			)
 		}
 		const known = checkCommandReference(release, baselinePages)
 		return reportNew(problems, known, baseline, release, deps.print)
 	} catch (error) {
 		if (!(error instanceof UnreadableError)) throw error
-		deps.print(`check:command-reference: ${error.message}`)
+		deps.print(`check:command-reference: ${error.code}: ${error.message}`)
 		return 2
 	}
 }

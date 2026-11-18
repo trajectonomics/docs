@@ -3,7 +3,7 @@ import { COMMAND_REFERENCE_ROOT } from "./sections"
 import type { ReleaseLeaf, ReleaseSnapshot } from "./types"
 
 /** The global flags every fixture release accepts. */
-export const GLOBALS = ["--json", "-h", "--help"] as const
+export const GLOBALS = ["--json", "-h", "--help", "-v", "--version"] as const
 
 /** A release of the shape the runner builds, carrying the fixture global flags. */
 export function release(leaves: readonly ReleaseLeaf[]): ReleaseSnapshot {

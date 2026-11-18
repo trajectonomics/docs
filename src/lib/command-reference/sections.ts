@@ -14,6 +14,9 @@ export interface PageSection {
 	readonly flags: readonly string[]
 }
 
+/** A fenced code block's marker; every line inside the fence is an example, not a claim. */
+const FENCE = /^\s*(`{3,}|~{3,})/
+
 /** A `##` heading, which opens a new section; `###` and deeper stay inside their parent. */
 const SECTION_HEADING = /^##\s+(.*)$/
 
@@ -47,12 +50,27 @@ function flagsIn(line: string): readonly string[] {
 	})
 }
 
+/** The lines outside fenced code blocks: headings and bullets there are claims, not examples. */
+function unfencedLines(content: string): readonly string[] {
+	const lines: string[] = []
+	let fence: string | undefined
+	for (const line of content.split("\n")) {
+		const marker = FENCE.exec(line)?.[1]
+		if (marker !== undefined) {
+			fence = fence === marker ? undefined : (fence ?? marker)
+			continue
+		}
+		if (fence === undefined) lines.push(line)
+	}
+	return lines
+}
+
 /** Every section of a page in source order, the front matter and intro as the first one. */
 export function pageSections(content: string): readonly PageSection[] {
 	const sections: { heading: string; leaf: string | undefined; flags: string[] }[] = [
 		{ heading: "", leaf: undefined, flags: [] },
 	]
-	for (const line of content.split("\n")) {
+	for (const line of unfencedLines(content)) {
 		const heading = SECTION_HEADING.exec(line)?.[1]
 		if (heading !== undefined) {
 			sections.push({ heading, leaf: leafOf(heading), flags: [] })

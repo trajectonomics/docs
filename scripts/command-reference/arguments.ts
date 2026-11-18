@@ -12,5 +12,8 @@ export function parseArguments(argv: readonly string[]): CheckArguments {
 	if (flag === "--baseline" && ref !== undefined && !ref.startsWith("-") && rest.length === 0) {
 		return Object.freeze({ baseline: ref })
 	}
-	throw new UnreadableError("usage: bun run check:command-reference [--baseline <git ref>]")
+	throw new UnreadableError(
+		"USAGE_INVALID",
+		"usage: bun run check:command-reference [--baseline <git ref>]",
+	)
 }
