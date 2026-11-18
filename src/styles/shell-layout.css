@@ -1,16 +1,45 @@
 /*
  * Docs Portal shell layout that is not a theme mapping: rules that adapt Fumadocs' markup to the
  * shell's own geometry, with no colour, radius, shadow, font or scale of their own. Token values
- * come from the theme seam (theme-seam.css); see docs/adr/0004-docs-portal-shell.md.
+ * come from the theme seam (theme-seam.css); see
+ * docs/adr/0009-shell-spans-the-page-one-header-row-and-twentys-sidebar.md.
  */
 
+:where(#nd-sidebar, #nd-sidebar-mobile) :is(a, button) {
+	min-height: 2.25rem;
+	gap: 0.375rem;
+}
+
 /*
- * The subnav row cross-fades the page name to the active heading by translating each label a full
- * line. Clip the row to its 40px bar so a fading label cannot paint over the header or the
- * hairline; the slide itself stays (docs#69).
+ * The Tab dropdown is a full-width row of the top block, as the site button and the search are. The
+ * drawer's close button sits beside it and keeps its own size, so the rule names the dropdown's
+ * trigger by its popover state rather than every control in the block.
  */
-#nd-notebook-layout [data-toc-popover-trigger] {
-	overflow: hidden;
+:where(#nd-sidebar, #nd-sidebar-mobile) [data-sidebar-tabs] [data-state] {
+	width: 100%;
+}
+
+/*
+ * The sidebar's tree takes Twenty's rhythm: 36px rows standing 6px apart, inset 12px, instead of
+ * Fumadocs' flush 16px block (docs#91). The inset lands on Radix's viewport inside the sidebar's
+ * scroll area, never on the area's other children (the corner and the scrollbar). Fumadocs already
+ * stands the rows 2px apart with an `!important` utility, and an important declaration in a layer
+ * outranks this unlayered stylesheet, so the other 4px comes from each row after the first.
+ */
+:where(#nd-sidebar, #nd-sidebar-mobile) [data-radix-scroll-area-viewport] {
+	padding: 0.75rem;
+}
+
+:where(#nd-sidebar, #nd-sidebar-mobile) [data-radix-scroll-area-viewport] > div > * + * {
+	margin-block-start: 0.25rem;
+}
+
+/*
+ * The sidebar's column is flush at the page edge: Fumadocs ends its children at the aside's 1px
+ * end hairline, which would shift the top block and the tree a pixel off the edge (docs#91).
+ */
+#nd-sidebar {
+	align-items: start;
 }
 
 /*
@@ -19,4 +48,55 @@
  */
 #nd-page pre {
 	overflow-x: auto;
+}
+
+/*
+ * The header is one row of 56px. The Tabs are laid over that row and centred on the page, so the
+ * wordmark at the start of the row cannot push them off centre (docs#91).
+ */
+#nd-subnav [data-header-body] {
+	position: relative;
+}
+
+#nd-subnav [data-shell-tabs] {
+	position: absolute;
+	inset-inline-start: 50%;
+	translate: -50% 0;
+}
+
+/*
+ * From lg up the header carries the Tabs, so the sidebar's Tab dropdown would be the same choice
+ * twice. Below lg the dropdown is the only one, and it stays (docs#91).
+ */
+@media (min-width: 64rem) {
+	#nd-sidebar [data-sidebar-tabs] {
+		display: none;
+	}
+}
+
+/*
+ * The reading column keeps the seam's measure inside the page track the grid gives it, centred
+ * between the sidebar and the table of contents. Fumadocs caps the article's children instead;
+ * they are sized to the measure and centred here with an auto inline margin, because a child that
+ * only took a `max-width` would be centred at its content width, and centring the article's items
+ * with `align-items` stops the scroll spy marking the headings it centres (docs#91).
+ *
+ * The page's own content arrives through Astro's slot and two `display: contents` wrappers, so it
+ * is the prose wrapper the MDX pipeline renders (`DocsBody`, src/components/mdx.tsx) that takes the
+ * measure; a child of the article would only reach the wrappers (docs#91).
+ */
+#nd-notebook-layout #nd-page > *,
+#nd-notebook-layout #nd-page .prose {
+	width: 100%;
+	max-width: var(--fd-reading-measure);
+	margin-inline: auto;
+}
+
+/*
+ * The subnav row cross-fades the page name to the active heading by translating each label a full
+ * line. Clip the row to its 40px bar so a fading label cannot paint over the header or the
+ * hairline; the slide itself stays (docs#69).
+ */
+#nd-notebook-layout [data-toc-popover-trigger] {
+	overflow: hidden;
 }

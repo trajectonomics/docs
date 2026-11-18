@@ -22,27 +22,29 @@ export const SITE_HOME_PATH = "/"
 export type PortalLayout = "notebook" | "home"
 
 /**
- * The link a reader clicks to leave the Docs Portal. A child anchor, not a normal link item,
- * because only a custom child renders as given: a full document load (`data-astro-reload`), and
- * no prefetch, which would fetch `/` on hover (a page staging does not serve). The classes are
- * the control corner and the header and sidebar link treatment.
+ * Attributes of the Site Home link that make it a full document load: `/` is not a page the Docs
+ * Portal serves, so it must not be prefetched by the Client Router on hover (ADR 0006).
+ */
+export const SITE_HOME_LOAD = {
+	"data-astro-reload": true,
+	"data-astro-prefetch": "false",
+} as const
+
+/**
+ * The link a reader clicks to leave the Docs Portal, as the home layout's header renders it: a
+ * link item, because only a custom child renders as given (`SITE_HOME_LOAD`). The classes are the
+ * control corner and the header link treatment.
  */
 function siteHomeAnchor() {
 	return (
 		<a
 			href={SITE_HOME_PATH}
-			data-astro-reload
-			data-astro-prefetch="false"
+			{...SITE_HOME_LOAD}
 			className="inline-flex items-center rounded-sm p-2 text-sm text-fd-muted-foreground transition-colors hover:text-fd-accent-foreground"
 		>
 			{SITE_HOME_LABEL}
 		</a>
 	)
-}
-
-/** The Site Home link of the notebook layout, which nests a link item in a `<div>`. */
-function notebookSiteHomeLink(): LinkItemType {
-	return { type: "custom", children: siteHomeAnchor() }
 }
 
 /**
@@ -56,16 +58,40 @@ function homeSiteHomeLinks(): readonly LinkItemType[] {
 	]
 }
 
+/**
+ * The way back to the Site Home on the docs pages: the bordered button at the top of the sidebar
+ * (ADR 0009). It takes the shell's control surface — the border, secondary ground and radius roles,
+ * muted until the reader points at it — and it always loads the Site Home as a full document.
+ */
+export function siteHomeButton() {
+	return (
+		<a
+			href={SITE_HOME_PATH}
+			{...SITE_HOME_LOAD}
+			data-site-home=""
+			className="flex w-full items-center justify-between gap-2 rounded-lg border p-2 text-sm transition-colors"
+		>
+			{SITE_HOME_LABEL}
+			<span aria-hidden="true">↗</span>
+		</a>
+	)
+}
+
 export interface BaseOptions {
 	/** The header title; the docs pages pass the design-system wordmark. */
 	readonly navTitle?: ReactNode
 }
 
-/** Layout options shared by every Docs Portal page of `layout`. */
+/**
+ * Layout options shared by every Docs Portal page of `layout`. The docs pages carry no header link
+ * items: the Site Home is the sidebar's button, and the Tabs are the header's only other control
+ * (ADR 0009). No layout offers a theme switch, because the portal renders one Theme for every
+ * reader.
+ */
 export function baseOptions(layout: PortalLayout, options?: BaseOptions): BaseLayoutProps {
 	return {
 		nav: { title: options?.navTitle ?? PORTAL_NAME, url: `${DOCS_BASE_PATH}/` },
-		links: layout === "home" ? [...homeSiteHomeLinks()] : [notebookSiteHomeLink()],
+		links: layout === "home" ? [...homeSiteHomeLinks()] : [],
 		// The Docs Portal exposes one Theme for now (docs#89), so no control offers the other
 		// one. Light's return flips this option and deletes the provider's forced value.
 		themeSwitch: { enabled: false },

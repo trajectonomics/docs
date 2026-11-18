@@ -116,6 +116,10 @@ describe("findSeamViolations", () => {
 		expect(rules(":root { --fd-layout-width: 1400px; }")).toEqual(["layout-width"])
 	})
 
+	test("the reading measure belongs in the seam", () => {
+		expect(rules(":root { --fd-reading-measure: 900px; }")).toEqual(["layout-width"])
+	})
+
 	for (const css of ALLOWED_DECLARATIONS) {
 		test(`the seam does not own this declaration: ${css}`, () => {
 			expect(rules(css)).toEqual([])

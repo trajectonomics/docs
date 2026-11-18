@@ -5,7 +5,7 @@
  */
 import { join } from "node:path"
 import type { Page } from "@playwright/test"
-import { openPhoneMenu, openSearch } from "../e2e/docs-portal"
+import { openPhoneMenu, openSearch, openSidebarDrawer } from "../e2e/docs-portal"
 import { TEST_WIDTHS_PX } from "../e2e/viewports"
 
 /** Fumadocs' copy control on a code block: the "Copy Text" button in the block's figure. */
@@ -38,7 +38,9 @@ async function hoverCopyControl(page: Page): Promise<void> {
 
 /**
  * The pages the set shows, each under the file name it is committed as. The search dialog and the
- * phone menu are here because they are the surfaces where a shadow becomes a hairline (docs#90).
+ * phone menu are here because they are the surfaces where a shadow becomes a hairline (docs#90);
+ * the sidebar drawer is here because the phone reaches the Site Home button, the search and the Tab
+ * dropdown through it (docs#91). Both Tab pages are here, because the shell reaches every Tab page.
  */
 const PAGES: readonly CuratedPage[] = [
 	{ path: "/docs/", name: "landing-page", widthsPx: TEST_WIDTHS_PX, drive: null, fullPage: true },
@@ -50,6 +52,13 @@ const PAGES: readonly CuratedPage[] = [
 		fullPage: true,
 	},
 	{ path: "/docs/cli/", name: "cli", widthsPx: TEST_WIDTHS_PX, drive: null, fullPage: true },
+	{
+		path: "/docs/developers/",
+		name: "developers",
+		widthsPx: TEST_WIDTHS_PX,
+		drive: null,
+		fullPage: true,
+	},
 	{
 		path: "/docs/cli/commands/tx/",
 		name: "cli-commands-tx",
@@ -76,6 +85,13 @@ const PAGES: readonly CuratedPage[] = [
 		name: "phone-menu",
 		widthsPx: [390],
 		drive: openPhoneMenu,
+		fullPage: false,
+	},
+	{
+		path: "/docs/cli/",
+		name: "sidebar-drawer",
+		widthsPx: [390],
+		drive: openSidebarDrawer,
 		fullPage: false,
 	},
 ]

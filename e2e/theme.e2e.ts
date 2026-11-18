@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test"
-import { openPage, pagesUnderTest } from "./built-site"
+import { NOT_FOUND_PATH, openPage, pagesUnderTest } from "./built-site"
 import { waitForIsland } from "./docs-portal"
 import { expect, test } from "./fixtures"
 import { expectDarkTheme, seedStoredLightTheme } from "./theme"
@@ -23,6 +23,19 @@ async function documentWasKept(page: Page): Promise<boolean> {
 		NAVIGATION_MARKER,
 	)
 }
+
+test("no layout offers a control that switches the Theme", async ({ page }) => {
+	// One page of each layout the shell draws: the home layout's Landing Page and 404 page, and a
+	// docs page (docs#91, docs#89).
+	for (const path of [LANDING_PATH, NOT_FOUND_PATH, OPERATOR_PATH]) {
+		await openPage(page, path)
+		await waitForIsland(page)
+		expect(
+			await page.locator("[data-theme-switch], button[aria-label*='heme']").count(),
+			`the page at ${path} offers no theme switch`,
+		).toBe(0)
+	}
+})
 
 test.describe("a device set to light with a stored light preference", () => {
 	test.use({ colorScheme: "light" })

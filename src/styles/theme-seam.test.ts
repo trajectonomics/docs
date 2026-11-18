@@ -109,7 +109,7 @@ describe("theme seam", () => {
 		const css = await Bun.file(SEAM_PATH).text()
 		const declarations = declarationsOf(
 			css,
-			"#nd-notebook-layout #nd-subnav :is([data-search], [data-search-full]):is(:hover, :focus-visible)",
+			":where(#nd-sidebar, #nd-sidebar-mobile) [data-search-full]:is(:hover, :focus-visible)",
 		)
 		expect(declarationValue(declarations, "background-color")).toBe("var(--ds-color-secondary)")
 		expect(declarationValue(declarations, "color")).toBe("var(--ds-color-foreground)")
@@ -124,6 +124,19 @@ describe("theme seam", () => {
 		const css = await Bun.file(SEAM_PATH).text()
 		expect(css.match(/--fd-layout-width\s*:/g) ?? []).toHaveLength(1)
 		expect(declarationsOf(css, ":root")).toMatch(/--fd-layout-width:\s*1400px;/)
+	})
+
+	test("the drawer's tree takes the desktop sidebar's text size", async () => {
+		const css = await Bun.file(SEAM_PATH).text()
+		expect(
+			declarationValue(declarationsOf(css, "#nd-notebook-layout #nd-sidebar-mobile"), "font-size"),
+		).toBe("var(--ds-font-size-sm)")
+	})
+
+	test("the seam declares the reading measure once, on :root", async () => {
+		const css = await Bun.file(SEAM_PATH).text()
+		expect(css.match(/--fd-reading-measure\s*:/g) ?? []).toHaveLength(1)
+		expect(declarationsOf(css, ":root")).toMatch(/--fd-reading-measure:\s*900px;/)
 	})
 
 	test("the global stylesheet imports the assets font stylesheet and not the fontsource package", async () => {

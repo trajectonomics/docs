@@ -22,7 +22,8 @@ const FLAT_PANELS = [
 ] as const
 
 /** The header and sidebar controls whose soft shadow was their only focus affordance. */
-const CONTROLS = "#nd-notebook-layout :is(#nd-subnav, #nd-sidebar) :is(a, button):focus-visible"
+const CONTROLS =
+	"#nd-notebook-layout :is(#nd-subnav, #nd-sidebar, #nd-sidebar-mobile) :is(a, button):focus-visible"
 
 async function seamCss(): Promise<string> {
 	return Bun.file(SEAM_PATH).text()

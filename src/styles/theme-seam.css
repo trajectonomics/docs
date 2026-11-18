@@ -34,6 +34,12 @@
 	--fd-layout-width: 1400px;
 
 	/*
+	 * The reading column's own measure: Fumadocs' 900px page column, the design brief's measure.
+	 * Kept beside the layout width so the shell has one place for the two widths it spans.
+	 */
+	--fd-reading-measure: 900px;
+
+	/*
 	 * Tailwind v4 computes spacing from one unit; Contract v2's spacing roles
 	 * are 0.25rem multiples, so `--ds-space-1` is that unit.
 	 */
@@ -83,19 +89,9 @@
 }
 
 /* The search trigger keeps neutral chrome on hover; the flat fill is the affordance. */
-#nd-notebook-layout #nd-subnav :is([data-search], [data-search-full]):is(:hover, :focus-visible) {
+:where(#nd-sidebar, #nd-sidebar-mobile) [data-search-full]:is(:hover, :focus-visible) {
 	background-color: var(--ds-color-secondary);
 	color: var(--ds-color-foreground);
-}
-
-/*
- * The shell draws no shadow. Keyboard focus on the header and sidebar controls is a ring on the
- * ring role, drawn with `outline` rather than `box-shadow`, because the removed soft shadow was
- * those links' only focus indicator.
- */
-#nd-notebook-layout :is(#nd-subnav, #nd-sidebar) :is(a, button):focus-visible {
-	outline: 2px solid var(--ds-color-ring);
-	outline-offset: 2px;
 }
 
 /*
@@ -109,4 +105,43 @@
 [data-toc-popover] > header,
 [role="dialog"] {
 	box-shadow: none;
+}
+/*
+ * The sidebar's way back to the site is the shell's control surface: a hairline border on the
+ * secondary ground, muted until the reader points at it.
+ */
+#nd-notebook-layout [data-site-home] {
+	border-color: var(--ds-color-border);
+	background-color: var(--ds-color-secondary);
+	color: var(--ds-color-muted-foreground);
+}
+
+#nd-notebook-layout [data-site-home]:is(:hover, :focus-visible) {
+	background-color: var(--ds-color-accent);
+	color: var(--ds-color-accent-foreground);
+}
+
+/* Twenty's rhythm marks the row the reader is on with the secondary ground, not an accent tint. */
+#nd-notebook-layout :is(#nd-sidebar, #nd-sidebar-mobile) a[data-active="true"],
+#nd-notebook-layout :is(#nd-sidebar, #nd-sidebar-mobile) a[data-active="true"]:hover {
+	background-color: var(--ds-color-secondary);
+	color: var(--ds-color-foreground);
+}
+
+/*
+ * The shell draws no shadow. Keyboard focus on the header and sidebar controls is a ring on the
+ * ring role, drawn with `outline` rather than `box-shadow`, because the removed soft shadow was
+ * those links' only focus indicator.
+ */
+#nd-notebook-layout :is(#nd-subnav, #nd-sidebar, #nd-sidebar-mobile) :is(a, button):focus-visible {
+	outline: 2px solid var(--ds-color-ring);
+	outline-offset: 2px;
+}
+
+/*
+ * The drawer's tree reads at the desktop sidebar's size: Fumadocs sets the drawer to 0.9375rem, so
+ * the same navigation would change size when a phone opens it (docs#91).
+ */
+#nd-notebook-layout #nd-sidebar-mobile {
+	font-size: var(--ds-font-size-sm);
 }

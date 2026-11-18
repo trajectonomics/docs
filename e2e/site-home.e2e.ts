@@ -8,10 +8,12 @@ import { TEST_VIEWPORT_HEIGHT_PX } from "./viewports"
 
 const LANDING_PATH = `${DOCS_BASE_PATH}/`
 
-/** A page that carries the Site Home link, and the small-screen control that reveals its copy. */
+/** A page that carries the Site Home link, where it lives, and the control that reveals a phone's. */
 interface PageWithSiteHomeLink {
 	readonly name: string
 	readonly path: string
+	/** The element the link sits in when the page is wide: the header, or the docs' sidebar top. */
+	readonly wideContainer: string
 	/** Accessible name of the control that opens the small-screen copy. */
 	readonly control: string
 	/** The element the small-screen copy lands in. */
@@ -22,11 +24,25 @@ const PAGES: readonly PageWithSiteHomeLink[] = [
 	{
 		name: "a Tab page",
 		path: tabUrl(TABS[0]),
+		// The docs pages carry the way back to the site at the top of the sidebar (ADR 0009).
+		wideContainer: "#nd-sidebar",
 		control: "Open Sidebar",
 		container: "#nd-sidebar-mobile",
 	},
-	{ name: "the Landing Page", path: LANDING_PATH, control: "Toggle Menu", container: "#nd-nav" },
-	{ name: "the 404 page", path: NOT_FOUND_PATH, control: "Toggle Menu", container: "#nd-nav" },
+	{
+		name: "the Landing Page",
+		path: LANDING_PATH,
+		wideContainer: "header",
+		control: "Toggle Menu",
+		container: "#nd-nav",
+	},
+	{
+		name: "the 404 page",
+		path: NOT_FOUND_PATH,
+		wideContainer: "header",
+		control: "Toggle Menu",
+		container: "#nd-nav",
+	},
 ]
 
 /** A Site Home document, so the browser test never asks `wrangler dev` for the page at `/`. */
@@ -39,17 +55,17 @@ function siteHomeLink(page: Page) {
 
 for (const widthPx of [1280, 2000]) {
 	for (const pageUnderTest of PAGES) {
-		test(`the Site Home link is visible in the header of ${pageUnderTest.name} at ${widthPx}px`, async ({
+		test(`the Site Home link is visible in ${pageUnderTest.wideContainer} on ${pageUnderTest.name} at ${widthPx}px`, async ({
 			page,
 		}) => {
 			await page.setViewportSize({ width: widthPx, height: TEST_VIEWPORT_HEIGHT_PX })
 			await openPage(page, pageUnderTest.path)
 
-			const inHeader = page
-				.locator("header")
+			const placed = page
+				.locator(pageUnderTest.wideContainer)
 				.getByRole("link", { name: SITE_HOME_LABEL, exact: true })
-			await expect(inHeader).toHaveAttribute("href", SITE_HOME_PATH)
-			await expect(inHeader).toBeVisible()
+			await expect(placed).toHaveAttribute("href", SITE_HOME_PATH)
+			await expect(placed).toBeVisible()
 			await expect(siteHomeLink(page).filter({ visible: true })).toHaveCount(1)
 		})
 	}
@@ -89,7 +105,7 @@ test("clicking the Site Home link loads / as a new document", async ({ page }) =
 		}
 	})
 
-	const link = page.locator("header").getByRole("link", { name: SITE_HOME_LABEL, exact: true })
+	const link = page.locator("#nd-sidebar").getByRole("link", { name: SITE_HOME_LABEL, exact: true })
 	await link.hover()
 	// Longer than Astro's 80ms hover prefetch debounce.
 	await page.waitForTimeout(300)
