@@ -1,4 +1,4 @@
-import { codeFences } from "./markdown-fences"
+import { codeFences } from "./content-programs"
 
 /** One Account id a Scenario documents names at a path, for the check that `accounts` declares it. */
 export interface ScenarioAccountReference {

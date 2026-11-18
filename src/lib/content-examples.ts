@@ -1,5 +1,5 @@
 import type { ContentFile } from "./content-pages"
-import { codeFences } from "./markdown-fences"
+import { codeFences } from "./content-programs"
 import { undefinedProjectArguments } from "./project-example"
 import {
 	accountReferences,

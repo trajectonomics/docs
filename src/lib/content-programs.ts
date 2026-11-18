@@ -1,7 +1,13 @@
 import type { ContentFile } from "./content-pages"
 
+/** One fenced code block a page publishes: its language and the text between its fences. */
+export interface CodeFence {
+	readonly language: string
+	readonly body: string
+}
+
 /** A fence line: the character that opens it, how many of that character, and its info string. */
-interface Fence {
+interface FenceLine {
 	readonly marker: "`" | "~"
 	readonly length: number
 	readonly info: string
@@ -10,7 +16,7 @@ interface Fence {
 /** The fence languages whose blocks are TypeScript programs a reader can run. */
 const TYPESCRIPT_LANGUAGES: ReadonlySet<string> = new Set(["ts", "typescript"])
 
-function fenceOf(line: string): Fence | undefined {
+function fenceOf(line: string): FenceLine | undefined {
 	const match = /^\s*(`{3,}|~{3,})(.*)$/.exec(line)
 	const spec = match?.[1]
 	if (spec === undefined) {
@@ -23,21 +29,22 @@ function fenceOf(line: string): Fence | undefined {
 	}
 }
 
-function isClosingFence(line: Fence, open: Fence): boolean {
+function isClosingFence(line: FenceLine, open: FenceLine): boolean {
 	return line.info === "" && line.marker === open.marker && line.length >= open.length
 }
 
-function isTypeScript(info: string): boolean {
+/** The language on an info string, without the options that may follow it. */
+function languageOf(info: string): string {
 	const [language = ""] = info.split(/\s+/)
-	return TYPESCRIPT_LANGUAGES.has(language.toLowerCase())
+	return language.toLowerCase()
 }
 
-/** Every TypeScript fenced program in one content file, in source order. */
-export function typescriptPrograms(file: ContentFile): readonly string[] {
-	const programs: string[][] = []
-	let open: Fence | undefined
+/** Every fenced code block in `content`, in source order. A fence never closed is not a block. */
+export function codeFences(content: string): readonly CodeFence[] {
+	const fences: CodeFence[] = []
+	let open: FenceLine | undefined
 	let lines: string[] = []
-	for (const line of file.content.split("\n")) {
+	for (const line of content.split("\n")) {
 		const fence = fenceOf(line)
 		if (open === undefined) {
 			open = fence
@@ -47,11 +54,16 @@ export function typescriptPrograms(file: ContentFile): readonly string[] {
 			lines.push(line)
 			continue
 		}
-		if (isTypeScript(open.info)) {
-			programs.push(lines)
-		}
+		fences.push({ language: languageOf(open.info), body: lines.join("\n") })
 		open = undefined
 		lines = []
 	}
-	return programs.map((program) => program.join("\n"))
+	return fences
+}
+
+/** Every TypeScript fenced program in one content file, in source order. */
+export function typescriptPrograms(file: ContentFile): readonly string[] {
+	return codeFences(file.content)
+		.filter((fence) => TYPESCRIPT_LANGUAGES.has(fence.language))
+		.map((fence) => fence.body)
 }
