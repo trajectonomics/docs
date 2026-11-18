@@ -1,5 +1,6 @@
 import { PORTAL_NAME, PORTAL_PURPOSE } from "../portal"
 import { DOCS_BASE_PATH, type TabDefinition } from "../tabs"
+import { shownDescription } from "./description"
 import { portalUrl } from "./portal-url"
 import { twinPath } from "./twin-path"
 
@@ -25,8 +26,8 @@ const FETCH_SENTENCE =
 
 /** One bullet of the index: a page's title, its absolute twin URL and its description. */
 function bullet(page: DocsIndexPage): string {
-	const described =
-		page.description === undefined || page.description === "" ? "" : `: ${page.description}`
+	const description = shownDescription(page.description)
+	const described = description === undefined ? "" : `: ${description}`
 	return `- [${page.title}](${portalUrl(twinPath(page.url))})${described}`
 }
 

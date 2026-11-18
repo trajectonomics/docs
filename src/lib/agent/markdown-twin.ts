@@ -1,4 +1,5 @@
 import { absoluteDocsLinks } from "./absolute-links"
+import { shownDescription } from "./description"
 import { PORTAL_ORIGIN } from "./portal-url"
 
 /** The ways an authored page cannot produce a faithful Markdown twin; one value per rule. */
@@ -48,8 +49,8 @@ export function buildMarkdownTwin(page: PageTwinSource): string {
 			"body",
 		)
 	}
-	const described =
-		page.description === undefined || page.description === "" ? [] : [`> ${page.description}`, ""]
+	const description = shownDescription(page.description)
+	const described = description === undefined ? [] : [`> ${description}`, ""]
 	return [
 		`# ${page.title}`,
 		"",

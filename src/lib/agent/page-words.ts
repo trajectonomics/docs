@@ -1,5 +1,22 @@
 import type { DocsIndexPage } from "./docs-index"
 
+/** The ways a content page cannot give its authored words; one value per rule. */
+export type PageWordsErrorCode = "TITLE_MISSING"
+
+/** A page whose frontmatter carries no title, so it has no Markdown twin or Docs index entry. */
+export class PageWordsError extends Error {
+	readonly code: PageWordsErrorCode
+	readonly field: string
+
+	constructor(code: PageWordsErrorCode, message: string, field: string) {
+		super(message)
+		this.name = "PageWordsError"
+		this.code = code
+		this.field = field
+		Object.freeze(this)
+	}
+}
+
 /** A content page as the build's source exposes it: its URL, and the frontmatter words a page must carry. */
 export interface SourcePageWords {
 	readonly url: string
@@ -13,9 +30,11 @@ export interface SourcePageWords {
 export function pageWords(page: SourcePageWords): DocsIndexPage {
 	const title = page.data.title
 	if (title === undefined) {
-		throw new Error(
+		throw new PageWordsError(
+			"TITLE_MISSING",
 			`${page.url} has no frontmatter title, so it has no Markdown twin or Docs index entry`,
+			"data.title",
 		)
 	}
-	return { title, description: page.data.description, url: page.url }
+	return Object.freeze({ title, description: page.data.description, url: page.url })
 }
