@@ -1,13 +1,10 @@
 ---
-import { readFileSync } from "node:fs"
 import { Landing } from "../components/landing"
 import Layout from "../layouts/Layout.astro"
-import { parseSyncManifest, SYNC_MANIFEST_PATH } from "../lib/docs-sync/manifest"
 import { PORTAL_NAME, PORTAL_PURPOSE } from "../lib/portal"
-import { releaseLine } from "../lib/release-line"
+import { trackedReleaseLine } from "../lib/tracked-release-line"
 
-const manifest = parseSyncManifest(readFileSync(SYNC_MANIFEST_PATH, "utf8"))
-const line = releaseLine(manifest)
+const line = trackedReleaseLine()
 ---
 
 <Layout title={PORTAL_NAME} description={PORTAL_PURPOSE}>

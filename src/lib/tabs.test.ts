@@ -31,6 +31,11 @@ describe("the Tab a pathname belongs to", () => {
 		expect(isTabPath(TABS[1], "/docs/developers/")).toBe(true)
 	})
 
+	test("a Tab's index page belongs to that Tab before its trailing slash is added", () => {
+		expect(isTabPath(TABS[0], "/docs/cli")).toBe(true)
+		expect(isTabPath(TABS[1], "/docs/developers")).toBe(true)
+	})
+
 	test("a page under a Tab belongs to that Tab", () => {
 		expect(isTabPath(TABS[0], "/docs/cli/installation/")).toBe(true)
 		expect(isTabPath(TABS[1], "/docs/developers/sim-core/")).toBe(true)

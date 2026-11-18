@@ -1,16 +1,10 @@
-import { existsSync, readFileSync } from "node:fs"
+import { existsSync } from "node:fs"
 import { checkBuild } from "../src/lib/build"
-import { parseSyncManifest, SYNC_MANIFEST_PATH } from "../src/lib/docs-sync/manifest"
-import { releaseLine } from "../src/lib/release-line"
+import { trackedReleaseLine } from "../src/lib/tracked-release-line"
 import { readBuildFiles } from "./adapters/build-files"
 
 /** The Worker's assets root: Astro builds into `dist/docs`, so the Worker serves `./dist`. */
 const BUILD_ROOT = "dist"
-
-/** The release line the built Landing Page must state, read from the tracked sync manifest. */
-function expectedReleaseLine(): string {
-	return releaseLine(parseSyncManifest(readFileSync(SYNC_MANIFEST_PATH, "utf8")))
-}
 
 /** Check the built Docs Portal on disk, returning the process exit code. */
 export async function main(root: string): Promise<number> {
@@ -20,7 +14,7 @@ export async function main(root: string): Promise<number> {
 	}
 	let line: string
 	try {
-		line = expectedReleaseLine()
+		line = trackedReleaseLine()
 	} catch (error) {
 		console.error(`verify:build: ${error instanceof Error ? error.message : String(error)}`)
 		return 1

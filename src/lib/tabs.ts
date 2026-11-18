@@ -52,9 +52,10 @@ export const TAB_ALIASES: readonly [TabAlias, TabAlias] = [
 	{ path: "/builders", tab: TABS[1] },
 ]
 
-/** Whether `pathname` is a page of the Tab `tab`, its index page included. */
+/** Whether `pathname` is a page of the Tab `tab`, its index page included, with or without its trailing slash. */
 export function isTabPath(tab: TabDefinition, pathname: string): boolean {
-	return pathname.startsWith(tabUrl(tab))
+	const url = tabUrl(tab)
+	return pathname === url.slice(0, -1) || pathname.startsWith(url)
 }
 
 /** URL path of the static search index, exported at build time (see `pages/api/search.json.ts`). */
