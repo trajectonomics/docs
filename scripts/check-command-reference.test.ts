@@ -39,7 +39,6 @@ interface FakeOptions {
 	readonly latest?: string | undefined
 	readonly pages?: readonly ContentFile[] | undefined
 	readonly baselinePages?: readonly ContentFile[] | undefined
-	readonly help?: string
 }
 
 interface Fake {
@@ -67,7 +66,7 @@ function fakeDeps(options: FakeOptions = {}): Fake {
 			if (path === "") return options.listed ?? { commands: [{ name: "tx add" }, { name: "fi" }] }
 			return SCHEMAS[path]
 		},
-		cliText: async () => options.help ?? HELP,
+		cliText: async () => HELP,
 		pages: async () => ("pages" in options ? options.pages : [INDEX, TX, FI]),
 		pagesAt: async () => options.baselinePages,
 	}

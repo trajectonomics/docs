@@ -2,7 +2,11 @@ import { existsSync } from "node:fs"
 import { mkdtemp } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
-import { COMMAND_REFERENCE_ROOT, type ContentFile } from "../../src/lib/command-reference"
+import {
+	COMMAND_REFERENCE_ROOT,
+	type ContentFile,
+	PAGE_EXTENSIONS,
+} from "../../src/lib/command-reference"
 import type { CommandReferenceDeps } from "../command-reference/deps"
 
 /** The npm registry's `dist-tags` document, which names the release `latest`. */
@@ -10,6 +14,14 @@ const DIST_TAGS = "https://registry.npmjs.org/-/package/@trajectonomics/cli/dist
 
 /** The command reference's folder relative to the repository root. */
 const ROOT = COMMAND_REFERENCE_ROOT
+
+/** The glob that matches every page extension Fumadocs reads, such as `*.{mdx,md}`. */
+const PAGE_GLOB = `*.{${PAGE_EXTENSIONS.map((extension) => extension.slice(1)).join(",")}}`
+
+/** Whether `path` names a page Fumadocs reads. */
+function isPage(path: string): boolean {
+	return PAGE_EXTENSIONS.some((extension) => path.endsWith(extension))
+}
 
 /** The version npm's `latest` tag names, or undefined while the registry cannot serve it. */
 async function latestVersion(): Promise<string | undefined> {
@@ -60,7 +72,7 @@ function cliRunner(): Pick<CommandReferenceDeps, "cliJson" | "cliText"> {
 async function readPages(root: string): Promise<readonly ContentFile[] | undefined> {
 	if (!existsSync(join(root, ROOT))) return undefined
 	const files: ContentFile[] = []
-	for await (const path of new Bun.Glob(`${ROOT}/**/*.{md,mdx}`).scan({ cwd: root })) {
+	for await (const path of new Bun.Glob(`${ROOT}/**/${PAGE_GLOB}`).scan({ cwd: root })) {
 		files.push({ path, content: await Bun.file(join(root, path)).text() })
 	}
 	return files.sort((left, right) => left.path.localeCompare(right.path))
@@ -77,9 +89,7 @@ async function pagesAt(ref: string): Promise<readonly ContentFile[] | undefined>
 	const listed = git(["ls-tree", "-r", "--name-only", ref, "--", ROOT])
 	if (listed === undefined) return undefined
 	const files: ContentFile[] = []
-	for (const path of listed
-		.split("\n")
-		.filter((line) => line.endsWith(".mdx") || line.endsWith(".md"))) {
+	for (const path of listed.split("\n").filter(isPage)) {
 		const content = git(["show", `${ref}:${path}`])
 		if (content === undefined) return undefined
 		files.push({ path, content })
