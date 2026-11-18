@@ -23,10 +23,13 @@ curl -fsSL \
 # create ~/.traj and an empty database
 traj init
 
-# an asset account and an expense account
+# an asset account, an expense account, and the equity account an opening balance needs
 traj account add Cash --type asset --currency THB
 traj account add Food --type expense --currency THB
+traj account add Opening --type equity --currency THB
 
+# fund Cash at the start of the record, then spend from it
+traj tx add --opening --from Opening --to Cash --amount 1000.00 --date 2026-01-01
 traj tx add --from Cash --to Food --amount 120.50 --date 2026-03-01
 
 # every account's balance and net worth
@@ -36,6 +39,12 @@ traj balance --as-of 2026-03-31
 `--type` and `--currency` are required when adding an account, and THB is the only currency this
 release supports. `--as-of` is required on `balance`. Every date a command acts on is `YYYY-MM-DD`,
 and it is always one you pass.
+
+`traj tx add --opening` is how a ledger gets its first money: `--from` names the equity account the
+amount posts against. On this ledger the balance prints Cash `879.50` THB, Food `120.50` THB and
+Opening `-1000.00` THB, and net worth (assets minus liabilities) is `879.50` THB. Without the
+opening balance Cash holds `-120.50` THB, and [the Baseline](/docs/cli/commands/baseline/) refuses
+the ledger rather than state a negative asset.
 
 ## Where your data lives
 
