@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { SITE_ORIGIN } from "../site"
+import { sitemapDocument, sitemapLocations } from "../sitemap"
 import type { BuiltFile } from "./built-files"
 import { checkSitemapPages, SITEMAP_FILE } from "./sitemap-pages"
 
@@ -42,6 +43,16 @@ describe("the Sitemap's coverage of the pages a reader can open", () => {
 		expect(checkSitemapPages(files)).toEqual([])
 	})
 
+	test("a page whose slug needs percent-encoding is listed and checked once", () => {
+		const files = [
+			...PAGES_A_READER_CAN_OPEN,
+			page("docs/cli/café/index.html"),
+			sitemap([...URLS, sitemapLocations(sitemapDocument(["/docs/cli/café/"]))?.[0] ?? ""]),
+		]
+
+		expect(checkSitemapPages(files)).toEqual([])
+	})
+
 	test("a build with no Sitemap is reported as SITEMAP_MISSING", () => {
 		const failures = checkSitemapPages(PAGES_A_READER_CAN_OPEN)
 
@@ -64,7 +75,7 @@ describe("the Sitemap's coverage of the pages a reader can open", () => {
 	})
 
 	test("a URL listed twice is reported as SITEMAP_PAGE_DUPLICATE, naming the URL", () => {
-		const files = [...PAGES_A_READER_CAN_OPEN, sitemap([...URLS, URLS[0] ?? ""])]
+		const files = [...PAGES_A_READER_CAN_OPEN, sitemap([...URLS, URLS[0]!])]
 
 		const failures = checkSitemapPages(files)
 		expect(failures.map((failure) => failure.code)).toEqual(["SITEMAP_PAGE_DUPLICATE"])
@@ -94,7 +105,7 @@ describe("the Sitemap's coverage of the pages a reader can open", () => {
 	})
 
 	test("a URL without its trailing slash does not match the page it names", () => {
-		const listed = [`${SITE_ORIGIN}/docs/`, `${SITE_ORIGIN}/docs/cli`, URLS[2] ?? ""]
+		const listed = [`${SITE_ORIGIN}/docs/`, `${SITE_ORIGIN}/docs/cli`, URLS[2]!]
 
 		const failures = checkSitemapPages([...PAGES_A_READER_CAN_OPEN, sitemap(listed)])
 		expect(failures.map((failure) => failure.code)).toEqual([

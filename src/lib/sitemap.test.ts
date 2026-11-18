@@ -9,12 +9,18 @@ describe("the Sitemap document", () => {
 		expect(sitemapLocations(sitemapDocument(["/docs/cli"]))).toEqual([`${SITE_ORIGIN}/docs/cli/`])
 	})
 
-	test("the URLs are sorted, and a page path given twice is listed once", () => {
+	test("the URLs are sorted", () => {
 		expect(sitemapLocations(sitemapDocument(PAGE_PATHS))).toEqual([
 			`${SITE_ORIGIN}/docs/`,
 			`${SITE_ORIGIN}/docs/cli/`,
 			`${SITE_ORIGIN}/docs/cli/commands/tx/`,
 		])
+	})
+
+	test("a page path given twice is listed once", () => {
+		const document = sitemapDocument(["/docs/cli/", "/docs/cli"])
+
+		expect(sitemapLocations(document)).toEqual([`${SITE_ORIGIN}/docs/cli/`])
 	})
 
 	test("it carries no lastmod, changefreq, priority or hreflang", () => {

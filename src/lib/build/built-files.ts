@@ -8,7 +8,7 @@ export interface BuiltFile {
 
 const DOCS_DIR = DOCS_BASE_PATH.slice(1)
 
-/** The directory of a built `index.html` below the Docs Portal's base, or `undefined` for another file. */
+/** The slug of a built `index.html` below the Docs Portal's base, or `undefined` for another file. */
 export function builtPageSlug(path: string): string | undefined {
 	if (!path.startsWith(`${DOCS_DIR}/`) || !path.endsWith("/index.html")) return undefined
 	return path.slice(DOCS_DIR.length + 1, -"index.html".length).replace(/\/$/, "")

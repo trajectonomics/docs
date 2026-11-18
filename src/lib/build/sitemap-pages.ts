@@ -32,11 +32,15 @@ function readerPagePaths(files: readonly BuiltFile[]): readonly string[] {
 		.sort()
 }
 
-/** The page path a `<loc>` names, or `undefined` when it is not a URL on the Portal's origin. */
+/**
+ * The page path a `<loc>` names, or `undefined` when it is not a URL on the Portal's origin. A URL
+ * carries its path percent-encoded, so it is decoded to the slug the build knows.
+ */
 function parseLocation(location: string): ListedUrl {
 	try {
 		const url = new URL(location)
-		return { location, path: url.origin === SITE_ORIGIN ? url.pathname : undefined }
+		const path = url.origin === SITE_ORIGIN ? decodeURIComponent(url.pathname) : undefined
+		return { location, path }
 	} catch {
 		return { location, path: undefined }
 	}
