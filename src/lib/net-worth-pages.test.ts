@@ -68,17 +68,24 @@ describe("the net-worth command pages", () => {
 		}
 	})
 
-	test("each page prints the same 1,000.00 THB total", () => {
+	test("a page that prints another total is reported against the figure the other page prints", () => {
 		const other = '"currency": "THB",\n      "amount": "2000.00"'
-		const fromBalance = withPage(BALANCE, withTotalEntry(page(BALANCE), "netWorth", other))
-		const fromReport = withPage(REPORT, withTotalEntry(page(REPORT), "totals", other))
+		const fromBalance = checkNetWorthPages(
+			withPage(BALANCE, withTotalEntry(page(BALANCE), "netWorth", other)),
+		)
+		const fromReport = checkNetWorthPages(
+			withPage(REPORT, withTotalEntry(page(REPORT), "totals", other)),
+		)
 
-		expect(checkNetWorthPages(fromBalance)[0]?.detail).toBe(
-			"cli/commands/report.mdx prints THB 1000.00, but cli/commands/balance.mdx prints THB 2000.00",
-		)
-		expect(checkNetWorthPages(fromReport)[0]?.detail).toBe(
-			"cli/commands/report.mdx prints THB 2000.00, but cli/commands/balance.mdx prints THB 1000.00",
-		)
+		expect(fromBalance.map((problem) => problem.rule)).toEqual(["totals-disagree"])
+		expect(fromReport.map((problem) => problem.rule)).toEqual(["totals-disagree"])
+		expect(fromBalance[0]?.detail).toContain("THB 1000.00")
+		expect(fromReport[0]?.detail).toContain("THB 1000.00")
+		expect(fromBalance[0]?.detail).toContain("THB 2000.00")
+		expect(fromReport[0]?.detail).toContain("THB 2000.00")
+		expect([fromBalance[0]?.detail, fromReport[0]?.detail].join()).toContain(BALANCE)
+		expect([fromBalance[0]?.detail, fromReport[0]?.detail].join()).toContain(REPORT)
+		expect([fromBalance[0]?.file, fromReport[0]?.file]).toEqual([REPORT, REPORT])
 	})
 
 	test("a page without a sample output is reported, naming that page", () => {
@@ -86,6 +93,15 @@ describe("the net-worth command pages", () => {
 
 		expect(problems.map((problem) => problem.rule)).toEqual(["sample-missing"])
 		expect(problems.map((problem) => problem.file)).toEqual([BALANCE])
+	})
+
+	test("a page whose net-worth section is gone is reported, naming that page", () => {
+		const renamed = page(REPORT).replace("## `traj report networth`", "## Net worth")
+		const problems = checkNetWorthPages(withPage(REPORT, renamed))
+
+		expect(renamed).not.toBe(page(REPORT))
+		expect(problems.map((problem) => problem.rule)).toEqual(["section-missing"])
+		expect(problems.map((problem) => problem.file)).toEqual([REPORT])
 	})
 
 	test("a page that carries its total under another field is reported", () => {
@@ -104,16 +120,6 @@ describe("the net-worth command pages", () => {
 
 		expect(shape).not.toBe(page(BALANCE))
 		expect(rulesOf(withPage(BALANCE, shape))).toEqual(["total-entry"])
-	})
-
-	test("two pages that print different totals are reported", () => {
-		const other = withTotalEntry(
-			page(BALANCE),
-			"netWorth",
-			'"currency": "THB",\n      "amount": "2000.00"',
-		)
-
-		expect(rulesOf(withPage(BALANCE, other))).toEqual(["totals-disagree"])
 	})
 
 	test("a sample in the report pnl section does not stand in for the net-worth sample", () => {

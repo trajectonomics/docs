@@ -2,6 +2,7 @@ import type { ContentFile } from "./content-pages"
 
 /** A rule the two net-worth pages must keep; one value per way a reader can lose the total. */
 export type NetWorthPageRule =
+	| "section-missing"
 	| "sample-missing"
 	| "total-missing"
 	| "total-entry"
@@ -29,11 +30,11 @@ const NET_WORTH_PAGES: readonly NetWorthPage[] = [
 	{ path: "cli/commands/report.mdx", field: "totals", section: "## `traj report networth`" },
 ]
 
-/** `content` scoped to the `## ` section that starts with `page.section`. */
-function scoped(page: NetWorthPage, content: string): string {
+/** `content` between `page`'s heading and the next `## ` heading, or `undefined` when it is gone. */
+function sectionContent(page: NetWorthPage, content: string): string | undefined {
 	if (page.section === "") return content
 	const start = content.indexOf(`\n${page.section}\n`)
-	if (start < 0) return ""
+	if (start < 0) return undefined
 	const end = content.indexOf("\n## ", start + page.section.length + 1)
 	return end < 0 ? content.slice(start) : content.slice(start, end)
 }
@@ -53,15 +54,20 @@ function reportOutput(content: string): Record<string, unknown> | undefined {
 	return undefined
 }
 
+/** One page's total, or the rule that stops the page printing one. */
+type TotalRead =
+	| { readonly kind: "total"; readonly total: readonly NetWorthTotal[] }
+	| { readonly kind: "problem"; readonly problem: NetWorthPageProblem }
+
 /** The total `page` prints, or the rule that stops it printing one. */
-function readTotal(
-	page: NetWorthPage,
-	content: string,
-): { readonly total?: readonly NetWorthTotal[]; readonly problem?: NetWorthPageProblem } {
-	const problem = (rule: NetWorthPageRule, detail: string) => ({
+function readTotal(page: NetWorthPage, content: string): TotalRead {
+	const problem = (rule: NetWorthPageRule, detail: string): TotalRead => ({
+		kind: "problem",
 		problem: { rule, file: page.path, detail },
 	})
-	const object = reportOutput(scoped(page, content))
+	const scoped = sectionContent(page, content)
+	if (scoped === undefined) return problem("section-missing", `no "${page.section}" section`)
+	const object = reportOutput(scoped)
 	if (object === undefined)
 		return problem("sample-missing", "no sample output carrying asOf and rows")
 	const total: unknown = object[page.field]
@@ -78,18 +84,16 @@ function readTotal(
 		}
 		entries.push({ currency, amount })
 	}
-	return { total: entries }
+	return { kind: "total", total: entries }
 }
 
-/** Whether two total arrays print the same figure for every entry. */
+/** Whether both totals print one figure per currency, the same figure on each side. */
 function sameFigures(left: readonly NetWorthTotal[], right: readonly NetWorthTotal[]): boolean {
 	return (
 		left.length === right.length &&
-		left.every((entry, index) => {
-			const other = right[index]
-			return (
-				other !== undefined && entry.currency === other.currency && entry.amount === other.amount
-			)
+		left.every((entry) => {
+			const other = right.find((candidate) => candidate.currency === entry.currency)
+			return other !== undefined && other.amount === entry.amount
 		})
 	)
 }
@@ -105,9 +109,9 @@ export function checkNetWorthPages(files: readonly ContentFile[]): readonly NetW
 	const totals: { readonly file: string; readonly total: readonly NetWorthTotal[] }[] = []
 	for (const page of NET_WORTH_PAGES) {
 		const content = files.find((file) => file.path === page.path)?.content ?? ""
-		const { total, problem } = readTotal(page, content)
-		if (problem !== undefined) problems.push(problem)
-		else if (total !== undefined) totals.push({ file: page.path, total })
+		const read = readTotal(page, content)
+		if (read.kind === "problem") problems.push(read.problem)
+		else totals.push({ file: page.path, total: read.total })
 	}
 	const [left, right] = totals
 	if (left !== undefined && right !== undefined && !sameFigures(left.total, right.total)) {
