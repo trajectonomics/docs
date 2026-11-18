@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { anchors, elementContent } from "./html"
+import { anchors, elementContent, linkName } from "./html"
 
 const PAGE = [
 	'<header id="nd-subnav" class="x">',
@@ -38,15 +38,48 @@ describe("the element of an HTML fragment found by id", () => {
 describe("the links of an HTML fragment", () => {
 	test("reads the href, the aria-current and the text of every link", () => {
 		expect(anchors(PAGE)).toEqual([
-			{ href: "/docs/cli/", ariaCurrent: "page", text: "CLI & Quickstart" },
-			{ href: "/docs/developers/", ariaCurrent: undefined, text: "Build on Trajectonomics" },
-			{ href: "/docs/other/", ariaCurrent: undefined, text: "Other" },
+			{
+				href: "/docs/cli/",
+				ariaCurrent: "page",
+				ariaLabel: undefined,
+				text: "CLI & Quickstart",
+			},
+			{
+				href: "/docs/developers/",
+				ariaCurrent: undefined,
+				ariaLabel: undefined,
+				text: "Build on Trajectonomics",
+			},
+			{
+				href: "/docs/other/",
+				ariaCurrent: undefined,
+				ariaLabel: undefined,
+				text: "Other",
+			},
 		])
 	})
 
 	test("a link without the attributes the checks read is still a link", () => {
 		expect(anchors("<a>bare</a>")).toEqual([
-			{ href: undefined, ariaCurrent: undefined, text: "bare" },
+			{ href: undefined, ariaCurrent: undefined, ariaLabel: undefined, text: "bare" },
 		])
+	})
+
+	test("reads the aria-label a link names itself with", () => {
+		expect(anchors('<a href="/docs/" aria-label="Trajectonomics Docs"><svg></svg></a>')).toEqual([
+			{ href: "/docs/", ariaCurrent: undefined, ariaLabel: "Trajectonomics Docs", text: "" },
+		])
+	})
+})
+
+describe("the name a link is read aloud with", () => {
+	test("a link that names itself is read with its aria-label, not its artwork", () => {
+		const [link] = anchors('<a href="/docs/" aria-label="Trajectonomics Docs"><svg></svg></a>')
+		expect(link === undefined ? undefined : linkName(link)).toBe("Trajectonomics Docs")
+	})
+
+	test("a link without an aria-label is read with its text", () => {
+		const [link] = anchors('<a href="/docs/">Trajectonomics Docs</a>')
+		expect(link === undefined ? undefined : linkName(link)).toBe("Trajectonomics Docs")
 	})
 })

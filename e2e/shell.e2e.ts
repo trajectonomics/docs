@@ -8,7 +8,7 @@ const HEADER_HEIGHT_PX = 56
 /** The reading column's measure, the design brief's 900px page column (ADR 0009). */
 const READING_MEASURE_PX = 900
 
-/** The header's own inset (`md:px-6`), which the wordmark opens the row from. */
+/** The header's own inset (`md:px-6`), which the header mark opens the row from. */
 const HEADER_INSET_PX = 24
 
 /**
@@ -29,7 +29,7 @@ test("the shell spans the page and the header is one row", async ({ page }) => {
 	const viewport = await page.evaluate(() => ({ width: window.innerWidth }))
 	const header = await box(page, "#nd-subnav")
 	const tabs = await box(page, "[data-shell-tabs]")
-	const wordmark = await box(page, "#nd-subnav [data-header-body] a")
+	const mark = await box(page, "#nd-subnav [data-header-body] a")
 	const sidebar = await box(page, "#nd-sidebar")
 	const contents = await box(page, "#nd-toc")
 	const blocks = await readingBlocks(page)
@@ -50,13 +50,13 @@ test("the shell spans the page and the header is one row", async ({ page }) => {
 		"the table of contents ends at the page's right edge",
 	).toBe(viewport.width)
 
-	// The Tabs are centred on the page itself, not on the space the wordmark leaves.
+	// The Tabs are centred on the page itself, not on the space the mark leaves.
 	expect(tabs, "the Tabs are in the header").not.toBeNull()
 	expect(
 		Math.abs((tabs?.x ?? 0) + (tabs?.width ?? 0) / 2 - viewport.width / 2),
 	).toBeLessThanOrEqual(1)
-	// The wordmark keeps the header's own inset, so the row starts where the page does.
-	expect(wordmark?.x, "the wordmark sits at the header's inset").toBe(HEADER_INSET_PX)
+	// The mark keeps the header's own inset, so the row starts where the page does.
+	expect(mark?.x, "the mark sits at the header's inset").toBe(HEADER_INSET_PX)
 
 	// Every block of the column — the title, the prose, a code block — keeps the measure.
 	const reading = blocks.find((block) => block.width === READING_MEASURE_PX)

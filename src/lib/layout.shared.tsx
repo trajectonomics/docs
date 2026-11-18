@@ -1,34 +1,10 @@
 import type { BaseLayoutProps, LinkItemType } from "fumadocs-ui/layouts/shared"
-import type { ReactNode } from "react"
+import { HeaderMark } from "../components/header-mark"
+import { SITE_HOME_LABEL, SITE_HOME_LOAD, SITE_HOME_PATH } from "./site-home"
 import { DOCS_BASE_PATH } from "./tabs"
-
-/** The Docs Portal's name, shown in the header and as the Landing Page heading. */
-export const PORTAL_NAME = "Trajectonomics Docs"
-
-/** The one sentence that says what the Docs Portal is for. */
-export const PORTAL_PURPOSE =
-	"Documentation for running the Trajectonomics CLI and building on its packages."
-
-/** Visible text of the link to the Site Home. */
-export const SITE_HOME_LABEL = "trajectonomics.com"
-
-/**
- * URL path of the Site Home, the page at `/` that `trajectonomics/site` deploys. Relative, so
- * the href is right on the apex and on the staging `workers.dev` host (ADR 0006, ADR 0005).
- */
-export const SITE_HOME_PATH = "/"
 
 /** The Fumadocs layout the options serve: they nest a link item differently, so the link differs. */
 export type PortalLayout = "notebook" | "home"
-
-/**
- * Attributes of the Site Home link that make it a full document load: `/` is not a page the Docs
- * Portal serves, so it must not be prefetched by the Client Router on hover (ADR 0006).
- */
-export const SITE_HOME_LOAD = {
-	"data-astro-reload": true,
-	"data-astro-prefetch": "false",
-} as const
 
 /**
  * The link a reader clicks to leave the Docs Portal, as the home layout's header renders it: a
@@ -77,20 +53,16 @@ export function siteHomeButton() {
 	)
 }
 
-export interface BaseOptions {
-	/** The header title; the docs pages pass the design-system wordmark. */
-	readonly navTitle?: ReactNode
-}
-
 /**
- * Layout options shared by every Docs Portal page of `layout`. The docs pages carry no header link
- * items: the Site Home is the sidebar's button, and the Tabs are the header's only other control
- * (ADR 0009). No layout offers a theme switch, because the portal renders one Theme for every
- * reader.
+ * Layout options shared by every Docs Portal page of `layout`. Every page carries the Portal's one
+ * header mark, here and nowhere else, so a page cannot choose another (docs#75, ADR 0009). The docs
+ * pages carry no header link items: the Site Home is the sidebar's button, and the Tabs are the
+ * header's only other control (ADR 0009). No layout offers a theme switch, because the portal
+ * renders one Theme for every reader.
  */
-export function baseOptions(layout: PortalLayout, options?: BaseOptions): BaseLayoutProps {
+export function baseOptions(layout: PortalLayout): BaseLayoutProps {
 	return {
-		nav: { title: options?.navTitle ?? PORTAL_NAME, url: `${DOCS_BASE_PATH}/` },
+		nav: { title: HeaderMark, url: `${DOCS_BASE_PATH}/` },
 		links: layout === "home" ? [...homeSiteHomeLinks()] : [],
 		// The Docs Portal exposes one Theme for now (docs#89), so no control offers the other
 		// one. Light's return flips this option and deletes the provider's forced value.

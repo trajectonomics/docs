@@ -2,6 +2,7 @@
 export interface HtmlAnchor {
 	readonly href: string | undefined
 	readonly ariaCurrent: string | undefined
+	readonly ariaLabel: string | undefined
 	readonly text: string
 }
 
@@ -60,7 +61,13 @@ export function anchors(html: string): readonly HtmlAnchor[] {
 		Object.freeze({
 			href: tagAttribute(match[1] ?? "", "href"),
 			ariaCurrent: tagAttribute(match[1] ?? "", "aria-current"),
+			ariaLabel: tagAttribute(match[1] ?? "", "aria-label"),
 			text: textOf(match[2] ?? ""),
 		}),
 	)
+}
+
+/** The name a link is read aloud with. */
+export function linkName(link: HtmlAnchor): string {
+	return link.ariaLabel ?? link.text
 }

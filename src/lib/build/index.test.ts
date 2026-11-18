@@ -13,6 +13,7 @@ function page(
 const OPERATOR_TAB_PAGE = [
 	'<html data-theme="dark">',
 	'<header id="nd-subnav">',
+	'<a href="/docs/" aria-label="Trajectonomics Docs"><svg aria-hidden="true"></svg></a>',
 	'<a href="/docs/cli/" aria-current="page">CLI &amp; Quickstart</a>',
 	'<a href="/docs/developers/">Build on Trajectonomics</a>',
 	"</header>",
@@ -22,6 +23,7 @@ const OPERATOR_TAB_PAGE = [
 
 const LANDING_PAGE = [
 	'<html data-theme="dark">',
+	'<header id="nd-nav"><a href="/docs/" aria-label="Trajectonomics Docs"><svg></svg></a></header>',
 	"<main>",
 	'<a href="/docs/cli/">For Operators: install and run the CLI</a>',
 	'<a href="/docs/developers/">For Builders: build on Trajectonomics packages</a>',
@@ -31,7 +33,10 @@ const LANDING_PAGE = [
 
 const NOT_FOUND_PAGE = [
 	'<html data-theme="dark">',
-	'<header id="nd-nav"><button data-search-full=""></button></header>',
+	'<header id="nd-nav">',
+	'<a href="/docs/" aria-label="Trajectonomics Docs"><svg></svg></a>',
+	'<button data-search-full=""></button>',
+	"</header>",
 	'<div id="portal-not-found"><h1>Page not found</h1><a href="/docs/">Docs Portal</a></div>',
 	"</html>",
 ].join("")

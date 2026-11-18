@@ -22,8 +22,10 @@ const FLAT_PANELS = [
 ] as const
 
 /** The header and sidebar controls whose soft shadow was their only focus affordance. */
-const CONTROLS =
-	"#nd-notebook-layout :is(#nd-subnav, #nd-sidebar, #nd-sidebar-mobile) :is(a, button):focus-visible"
+const CONTROLS = [
+	"#nd-notebook-layout :is(#nd-subnav, #nd-sidebar, #nd-sidebar-mobile) :is(a, button):focus-visible",
+	"#nd-nav :is(a, button):focus-visible",
+] as const
 
 async function seamCss(): Promise<string> {
 	return Bun.file(SEAM_PATH).text()
@@ -81,9 +83,13 @@ describe("theme seam shape", () => {
 
 	test("keyboard focus on the header and sidebar controls is a ring, not a shadow", async () => {
 		const css = await seamCss()
-		const declarations = declarationsOf(css, CONTROLS)
-		expect(declarationValue(declarations, "outline")).toBe("2px solid var(--ds-color-ring)")
-		expect(declarationValue(declarations, "outline-offset")).toBeDefined()
+		for (const selector of CONTROLS) {
+			const declarations = declarationsOf(css, selector)
+			expect(declarationValue(declarations, "outline"), selector).toBe(
+				"2px solid var(--ds-color-ring)",
+			)
+			expect(declarationValue(declarations, "outline-offset"), selector).toBeDefined()
+		}
 	})
 
 	test("Fumadocs' floating panels take a hairline instead of a shadow", async () => {
