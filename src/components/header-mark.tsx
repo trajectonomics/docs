@@ -21,10 +21,7 @@ function decoration(artwork: string): string {
 		.replace(ARTWORK_OPEN, '<svg aria-hidden="true" focusable="false"')
 }
 
-/**
- * The Docs Portal's header mark: the Site's glyph on a tile painted from the Theme's primary
- * roles, in the one link to the Landing Page that every page carries, named after the portal.
- */
+/** The Docs Portal's header mark: the Site's glyph on a tile, in the link to the Landing Page. */
 export function HeaderMark({ href, className }: ComponentProps<"a">) {
 	return (
 		<a href={href} aria-label={PORTAL_NAME} className={className}>
