@@ -89,6 +89,12 @@ if (!result.ok) {
 }
 ```
 
+The page documents `v0.1.0` of `@trajectonomics/sim`. The CLI pins its own `@trajectonomics/sim`,
+which can be newer, so `traj scenario apply` may accept a later `schemaVersion` and can carry Levies
+and Financial Independence this release does not; run `traj scenario apply --template` for the
+document the installed CLI accepts. A Baseline for `traj` comes from the ledger:
+`traj baseline show --as-of 2026-01-01` derives it, so read it rather than writing one.
+
 A Projection has one row per date in the Timeline, annual roll-ups, and the Runs-out date with the
 unmet amount if the money does not last. `project()` never throws on a valid input, and it never
 reads a clock.
