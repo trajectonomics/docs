@@ -21,3 +21,11 @@ A merge to `main` deploys production whether or not the `e2e` job passes, becaus
 - **Pixel-diff visual regression.** Deferred until #10 settles the shell; baselines would churn with every layout change.
 - **`astro preview` as the test server.** Rejected: it does not apply the Worker's asset rules (redirects, 404 page).
 - **A shared Playwright workflow in `cicd`.** Deferred until a second repository has a browser-tested site.
+
+## Amendment (2026-11-18, docs#107): the Sitemap's coverage
+
+`verify:build` gains one rule beside the search index's: the built `sitemap.xml` lists every page
+the build produced that a reader can open — the Landing Page and every content page, each exactly
+once — and nothing else. One code per rule: `SITEMAP_MISSING`, `SITEMAP_INVALID`,
+`SITEMAP_PAGE_MISSING`, `SITEMAP_PAGE_DUPLICATE`, `SITEMAP_PAGE_UNEXPECTED`. A page added without a
+sitemap entry therefore fails the deploy gate.
