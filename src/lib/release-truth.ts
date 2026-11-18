@@ -4,8 +4,12 @@ import { manifestEntry } from "./docs-sync/manifest"
 import { SUPPORTED_UPSTREAM_PACKAGES, UPSTREAM_OWNER } from "./docs-sync/package-map"
 import type { UpstreamPackageName } from "./docs-sync/types"
 
+/** One rule of the release truth check; one value per way a page can name the wrong release. */
+export type ReleaseTruthRule = "upstream-link" | "cli-pin" | "operator-tab-version"
+
 /** A page that names a release other than the one the sync manifest records for it. */
 export interface ReleaseTruthProblem {
+	readonly rule: ReleaseTruthRule
 	readonly file: string
 	readonly detail: string
 }
@@ -52,7 +56,7 @@ function linkProblems(file: ContentFile, manifest: SyncManifest): readonly Relea
 			return []
 		}
 		const detail = `links ${name} at ${tag}, but the manifest records ${expected}`
-		return [{ file: file.path, detail }]
+		return [{ rule: "upstream-link", file: file.path, detail }]
 	})
 }
 
@@ -65,6 +69,7 @@ function pinProblems(file: ContentFile, manifest: SyncManifest): readonly Releas
 			if (pinned === undefined || pinned === version) return []
 			return [
 				{
+					rule: "cli-pin",
 					file: file.path,
 					detail: `pins ${label} at ${pinned}, but the manifest records cli ${version}`,
 				},
@@ -83,7 +88,13 @@ function operatorTabProblems(
 	return [...file.content.matchAll(BARE_RELEASE)].flatMap((match) => {
 		const named = match[1]
 		if (named === undefined || match[0] === tag) return []
-		return [{ file: file.path, detail: `names ${match[0]}, but the manifest records cli ${tag}` }]
+		return [
+			{
+				rule: "operator-tab-version",
+				file: file.path,
+				detail: `names ${match[0]}, but the manifest records cli ${tag}`,
+			},
+		]
 	})
 }
 

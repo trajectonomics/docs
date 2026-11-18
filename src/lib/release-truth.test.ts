@@ -29,30 +29,39 @@ const FIXTURE = parseSyncManifest(
 	}),
 )
 
-/** The details a single page's problems report, so a test can name the wrong release. */
+/** The rules a single page breaks, so a test names the rule rather than its wording. */
+function rulesOf(path: string, content: string): readonly string[] {
+	return checkReleaseTruth([{ path, content }], FIXTURE).map((problem) => problem.rule)
+}
+
+/** The details a single page's problems report, so a test can read what a maintainer will see. */
 function detailsOf(path: string, content: string): readonly string[] {
 	return checkReleaseTruth([{ path, content }], FIXTURE).map((problem) => problem.detail)
 }
 
 function cliPage(content: string): readonly string[] {
-	return detailsOf("cli/example.mdx", content)
+	return rulesOf("cli/example.mdx", content)
 }
 
 function builderPage(content: string): readonly string[] {
-	return detailsOf("developers/sim-core/example.mdx", content)
+	return rulesOf("developers/sim-core/example.mdx", content)
 }
 
 describe("release truth in the Docs Portal content", () => {
 	test("the authored content names only the release the sync manifest records", () => {
 		expect(checkReleaseTruth(tree, manifest)).toEqual([])
 	})
+
+	test("a problem names the release the page wrote and the release the manifest records", () => {
+		expect(detailsOf("cli/example.mdx", "The latest release is `v0.3.0`.")).toEqual([
+			"names v0.3.0, but the manifest records cli v0.2.0",
+		])
+	})
 })
 
 describe("a version the Operator tab names", () => {
 	test("is reported when it is not the cli release the manifest records", () => {
-		expect(cliPage("The latest release is `v0.3.0`.")).toEqual([
-			"names v0.3.0, but the manifest records cli v0.2.0",
-		])
+		expect(cliPage("The latest release is `v0.3.0`.")).toEqual(["operator-tab-version"])
 	})
 
 	test("is accepted when it is the cli release the manifest records", () => {
@@ -60,9 +69,7 @@ describe("a version the Operator tab names", () => {
 	})
 
 	test("is reported when a pinned npm spec names another release", () => {
-		expect(cliPage("npx @trajectonomics/cli@0.3.0 --version")).toEqual([
-			"pins @trajectonomics/cli at 0.3.0, but the manifest records cli 0.2.0",
-		])
+		expect(cliPage("npx @trajectonomics/cli@0.3.0 --version")).toEqual(["cli-pin"])
 	})
 
 	test("is accepted when the npm spec is unpinned", () => {
@@ -70,9 +77,7 @@ describe("a version the Operator tab names", () => {
 	})
 
 	test("is reported when a pinned install script names another release", () => {
-		expect(cliPage("TRAJ_VERSION=0.3.0 sh")).toEqual([
-			"pins TRAJ_VERSION at 0.3.0, but the manifest records cli 0.2.0",
-		])
+		expect(cliPage("TRAJ_VERSION=0.3.0 sh")).toEqual(["cli-pin"])
 	})
 })
 
@@ -82,7 +87,7 @@ describe("an upstream link in any tab", () => {
 			builderPage(
 				"[ADR 0005](https://github.com/trajectonomics/sim-core/blob/v0.3.0/docs/adr/0005.md)",
 			),
-		).toEqual(["links sim-core at v0.3.0, but the manifest records v0.1.0"])
+		).toEqual(["upstream-link"])
 	})
 
 	test("is accepted when it names the manifest's release of that package", () => {

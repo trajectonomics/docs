@@ -32,7 +32,7 @@ export function tabUrl(tab: TabDefinition): string {
 	return `${DOCS_BASE_PATH}/${tab.folder}/`
 }
 
-/** An audience name a reader may type as a URL, and the Tab's index page it means. */
+/** An audience name a reader may type as a URL, and the Tab it leads to. */
 export interface TabAlias {
 	/** The path below the Docs Portal base, without a trailing slash. */
 	readonly path: string
