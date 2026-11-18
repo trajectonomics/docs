@@ -52,6 +52,15 @@ function alias(path: string, target: string): BuiltFile {
 	}
 }
 
+const SITEMAP = [
+	'<?xml version="1.0" encoding="UTF-8"?>',
+	'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+	"  <url><loc>https://trajectonomics.com/docs/</loc></url>",
+	"  <url><loc>https://trajectonomics.com/docs/cli/</loc></url>",
+	"  <url><loc>https://trajectonomics.com/docs/cli/commands/tx/</loc></url>",
+	"</urlset>",
+].join("\n")
+
 const COMPLETE_BUILD: readonly BuiltFile[] = [
 	page("docs/404.html", NOT_FOUND_PAGE),
 	alias("docs/operators/index.html", "/docs/cli/"),
@@ -67,6 +76,7 @@ const COMPLETE_BUILD: readonly BuiltFile[] = [
 			"</html>",
 		].join(""),
 	),
+	{ path: "docs/sitemap.xml", content: SITEMAP },
 	{
 		path: "docs/api/search.json",
 		content: JSON.stringify({
@@ -109,6 +119,7 @@ describe("the check of the built Docs Portal", () => {
 			"LANDING_PAGE_MISSING",
 			"OPERATOR_TAB_PAGE_MISSING",
 			"SEARCH_INDEX_MISSING",
+			"SITEMAP_MISSING",
 			"REDIRECT_TO_OPERATOR_TAB",
 			"TAB_ALIAS_MISSING",
 			"TAB_ALIAS_MISSING",

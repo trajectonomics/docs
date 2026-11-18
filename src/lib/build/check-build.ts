@@ -12,6 +12,7 @@ import { checkRequiredPages } from "./required-pages"
 import { checkSearchIndex } from "./search-index"
 import { checkSearchIndexPages } from "./search-index-pages"
 import { checkSidebarTitles } from "./sidebar-titles"
+import { checkSitemapPages } from "./sitemap-pages"
 import { checkTabAliases } from "./tab-aliases"
 import { checkTheme } from "./theme"
 import { checkTocPlaceholder } from "./toc-placeholder"
@@ -26,6 +27,7 @@ export function checkBuild(
 		...checkNotFoundPage(files),
 		...checkSearchIndex(files),
 		...checkSearchIndexPages(files),
+		...checkSitemapPages(files),
 		...checkLandingPage(files, releaseLine),
 		...checkRedirects(files),
 		...checkTabAliases(files),
