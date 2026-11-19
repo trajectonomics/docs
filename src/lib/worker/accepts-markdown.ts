@@ -12,10 +12,7 @@ function quality(range: string): number {
 	return 1
 }
 
-/**
- * Whether an `Accept` header asks for Markdown: a `text/markdown` media range with a non-zero
- * quality. A wildcard range does not count, and neither does a missing header.
- */
+/** Whether an `Accept` header asks for Markdown: a `text/markdown` range with a non-zero quality. */
 export function acceptsMarkdown(accept: string | null): boolean {
 	if (accept === null) return false
 	return accept.split(",").some((range) => {

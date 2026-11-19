@@ -43,10 +43,7 @@ function markdownResponse(request: Request, twin: Response): Response {
 	})
 }
 
-/**
- * Answer one request: a page URL whose client asks for Markdown gets the page's twin, and every
- * other request goes to the assets, whose rules decide the redirect, the aliases and the 404 page.
- */
+/** Answer one request: a page's Markdown twin when its client asks for it, the assets otherwise. */
 export async function handleRequest(request: Request, assets: AssetsBinding): Promise<Response> {
 	const read = request.method === "GET" || request.method === "HEAD"
 	const twinPath = read ? pageTwinPath(new URL(request.url).pathname) : null

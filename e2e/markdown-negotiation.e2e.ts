@@ -88,6 +88,20 @@ test("/docs still redirects to /docs/", async ({ request }) => {
 	expect(response.headers()["location"]).toBe("/docs/")
 })
 
+test("an audience alias still reaches its Tab", async ({ request }) => {
+	const redirect = await request.get("/docs/operators", {
+		headers: { Accept: "text/markdown" },
+		maxRedirects: 0,
+	})
+	const alias = await request.get("/docs/operators/", { headers: { Accept: "text/markdown" } })
+
+	expect(redirect.status()).toBe(307)
+	expect(redirect.headers()["location"]).toBe("/docs/operators/")
+	expect(alias.status()).toBe(200)
+	expect(alias.headers()["content-type"]).toBe("text/html; charset=utf-8")
+	expect(await alias.text()).toContain('http-equiv="refresh"')
+})
+
 test("a missing page still shows the 404 page", async ({ request }) => {
 	const response = await request.get("/docs/no-such-page/", {
 		headers: { Accept: "text/markdown" },
