@@ -1,5 +1,6 @@
 import { absoluteDocsLinks } from "./absolute-links"
 import { shownDescription } from "./description"
+import { indexReference } from "./index-reference"
 import { PageRefusalError } from "./refusal"
 
 /** The ways an authored page cannot produce a faithful Markdown twin; one value per rule. */
@@ -51,6 +52,8 @@ export function buildMarkdownTwin(page: PageTwinSource, origin: string): string 
 		"",
 		...described,
 		absoluteDocsLinks(page.body.trim(), origin),
+		"",
+		indexReference(origin),
 		"",
 	].join("\n")
 }

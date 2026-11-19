@@ -1,11 +1,12 @@
 import { SITE_ORIGIN } from "../site"
 import { sitemapLocations } from "../sitemap"
-import { DOCS_BASE_PATH, SITEMAP_PATH } from "../tabs"
+import { SITEMAP_PATH } from "../tabs"
 import type { BuiltFile } from "./built-files"
-import { builtPageSlug, fileAt } from "./built-files"
+import { fileAt } from "./built-files"
+import { duplicates } from "./duplicates"
 import type { BuildFailure } from "./failures"
 import { buildFailure } from "./failures"
-import { isRedirectPage } from "./redirect-page"
+import { readerPages } from "./reader-pages"
 
 /** Path of the Sitemap in the build output, one segment below the assets root. */
 export const SITEMAP_FILE = SITEMAP_PATH.slice(1)
@@ -16,19 +17,10 @@ interface ListedUrl {
 	readonly path: string | undefined
 }
 
-/** The URL path of a built page, or `undefined` for a file that is not an HTML page of the Portal. */
-function pagePath(path: string): string | undefined {
-	const slug = builtPageSlug(path)
-	if (slug === undefined) return undefined
-	return slug.length === 0 ? `${DOCS_BASE_PATH}/` : `${DOCS_BASE_PATH}/${slug}/`
-}
-
-/** The URL paths of the pages a reader can open, sorted: every built page that is not a redirect. */
+/** The URL paths of the pages a reader can open, sorted. */
 function readerPagePaths(files: readonly BuiltFile[]): readonly string[] {
-	return files
-		.filter((file) => !isRedirectPage(file.content))
-		.map((file) => pagePath(file.path))
-		.filter((path): path is string => path !== undefined)
+	return readerPages(files)
+		.map((page) => page.url)
 		.sort()
 }
 
@@ -44,13 +36,6 @@ function parseLocation(location: string): ListedUrl {
 	} catch {
 		return { location, path: undefined }
 	}
-}
-
-/** The `<loc>` values that appear more than once, in the order the document lists them. */
-function duplicatedLocations(locations: readonly string[]): readonly string[] {
-	const counts = new Map<string, number>()
-	for (const location of locations) counts.set(location, (counts.get(location) ?? 0) + 1)
-	return [...counts].filter(([, count]) => count > 1).map(([location]) => location)
 }
 
 /** The `<loc>` values that name no page a reader can open, in the order the document lists them. */
@@ -90,7 +75,7 @@ export function checkSitemapPages(files: readonly BuiltFile[]): readonly BuildFa
 			.map((page) =>
 				buildFailure("SITEMAP_PAGE_MISSING", SITEMAP_FILE, `the Sitemap does not list ${page}`),
 			),
-		...duplicatedLocations(locations).map((location) =>
+		...duplicates(locations).map((location) =>
 			buildFailure(
 				"SITEMAP_PAGE_DUPLICATE",
 				SITEMAP_FILE,
