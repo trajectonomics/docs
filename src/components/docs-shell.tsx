@@ -6,6 +6,7 @@ import {
 } from "fumadocs-ui/layouts/shared/slots/search-trigger"
 import type { FC, ReactNode } from "react"
 import { siteHomeButton } from "../lib/layout.shared"
+import { AgentLine } from "./agent-line"
 
 /** The header's Tab treatment: Fumadocs' own, carried over from the row this change removes. */
 const TAB_CLASS =
@@ -55,6 +56,11 @@ export const noHeaderSearchTrigger: {
 
 export interface DocsSidebarBannerProps {
 	/**
+	 * The page the block first rendered on. The agent line follows the reader from there through the
+	 * Client Router, which keeps this block mounted (see `AgentLine`).
+	 */
+	readonly pageUrl: string
+	/**
 	 * What Fumadocs draws in a sidebar header: the Tab dropdown at every width, and in the drawer the
 	 * close button beside it. The block places them below its hairline rather than re-creating them.
 	 */
@@ -62,15 +68,17 @@ export interface DocsSidebarBannerProps {
 }
 
 /**
- * The sidebar's top block: the way back to the Site Home above the search trigger, a hairline under
- * them, then the header children Fumadocs passes a banner — its Tab dropdown, and in the drawer its
- * close button, drawn by the library rather than by this block. The tree follows the block; from
- * `lg` up it follows the hairline, because the dropdown is hidden there (ADR 0009).
+ * The sidebar's top block: the agent line and the way back to the Site Home above the search
+ * trigger, a hairline under them, then the header children Fumadocs passes a banner — its Tab
+ * dropdown, and in the drawer its close button, drawn by the library rather than by this block. The
+ * tree follows the block; from `lg` up it follows the hairline, because the dropdown is hidden
+ * there (ADR 0009, ADR 0010).
  */
-export function DocsSidebarBanner({ children }: DocsSidebarBannerProps) {
+export function DocsSidebarBanner({ pageUrl, children }: DocsSidebarBannerProps) {
 	return (
 		<div data-sidebar-top-block="" className="flex flex-col">
 			<div className="flex flex-col gap-2 border-b p-3">
+				<AgentLine pageUrl={pageUrl} />
 				{siteHomeButton()}
 				<FullSearchTrigger hideIfDisabled />
 			</div>

@@ -1,5 +1,5 @@
 import { HomeLayout } from "fumadocs-ui/layouts/home"
-import { baseOptions } from "../lib/layout.shared"
+import { landingOptions } from "../lib/layout.shared"
 import { PORTAL_NAME, PORTAL_PURPOSE } from "../lib/portal"
 import { SITE_HOME_LOAD, SITE_HOME_PATH } from "../lib/site-home"
 import { TABS, tabUrl } from "../lib/tabs"
@@ -54,7 +54,7 @@ export interface LandingProps extends ProviderProps {
 export function Landing({ releaseLine, ...props }: LandingProps) {
 	return (
 		<Provider {...props}>
-			<HomeLayout {...baseOptions("home")}>
+			<HomeLayout {...landingOptions(props.pathname)}>
 				<div className="mx-auto flex w-full max-w-(--fd-layout-width) flex-1 flex-col gap-8 px-4 py-16 md:px-6">
 					<div className="flex flex-col gap-3">
 						<h1 className="text-3xl font-semibold tracking-tight">{PORTAL_NAME}</h1>
