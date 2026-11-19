@@ -1,10 +1,14 @@
+import { checkAgentPointers } from "./agent-pointer"
+import { checkAlternateLinks } from "./alternate-link"
 import type { BuiltFile } from "./built-files"
+import { checkDocsIndexPages } from "./docs-index-pages"
 import type { BuildFailure } from "./failures"
 import { checkHeaderMark } from "./header-mark"
 import { checkHeaderTabs } from "./header-tabs"
 import { checkImportTemplate } from "./import-template"
 import { checkInstallationPage } from "./installation-page"
 import { checkLandingPage } from "./landing-page"
+import { checkMarkdownTwins } from "./markdown-twins"
 import { checkNotFoundPage } from "./not-found"
 import { checkPlaceholderCopy } from "./placeholder-copy"
 import { checkRedirects } from "./redirects"
@@ -28,6 +32,10 @@ export function checkBuild(
 		...checkSearchIndex(files),
 		...checkSearchIndexPages(files),
 		...checkSitemapPages(files),
+		...checkDocsIndexPages(files),
+		...checkMarkdownTwins(files),
+		...checkAgentPointers(files),
+		...checkAlternateLinks(files),
 		...checkLandingPage(files, releaseLine),
 		...checkRedirects(files),
 		...checkTabAliases(files),

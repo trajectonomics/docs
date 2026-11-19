@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test"
+import { indexReference } from "./index-reference"
 import { buildLandingTwin } from "./landing-twin"
 
 const ORIGIN = "https://trajectonomics.com"
@@ -20,6 +21,8 @@ describe("the Landing Page's Markdown twin", () => {
 				"## For Builders: build on Trajectonomics packages",
 				"",
 				"- [Build on Trajectonomics](https://trajectonomics.com/docs/developers.md): What each package computes, and how to adopt one without the others.",
+				"",
+				indexReference(ORIGIN),
 				"",
 			].join("\n"),
 		)
