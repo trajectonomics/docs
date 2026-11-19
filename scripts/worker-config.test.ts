@@ -24,6 +24,18 @@ describe("the Worker config", () => {
 		expect(config.assets.directory).toBe("./dist")
 	})
 
+	test("runs this repository's Worker entry before the assets", () => {
+		expect(config.main).toBe("./src/worker.ts")
+	})
+
+	test("gives the Worker an assets binding to forward to", () => {
+		expect(config.assets.binding).toBe("ASSETS")
+	})
+
+	test("invokes the Worker first for /docs and everything under it", () => {
+		expect(config.assets.run_worker_first).toEqual(["/docs", "/docs/*"])
+	})
+
 	test("declares no Wrangler environment, so there is one Worker to deploy", () => {
 		expect(config.env).toBeUndefined()
 	})
