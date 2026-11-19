@@ -2,6 +2,7 @@
 import type { GetStaticPaths, InferGetStaticPropsType } from "astro"
 import { Docs } from "../components/docs"
 import Layout from "../layouts/Layout.astro"
+import { twinPath } from "../lib/agent/twin-path"
 import { source } from "../lib/source"
 
 export const getStaticPaths = (() =>
@@ -18,7 +19,7 @@ const title = page.data.title ?? "Trajectonomics Docs"
 const pageTree = await source.serializePageTree(source.getPageTree())
 ---
 
-<Layout title={title} description={page.data.description}>
+<Layout title={title} description={page.data.description} markdownTwin={twinPath(page.url)}>
 	<Docs
 		client:load
 		transition:persist="docs"

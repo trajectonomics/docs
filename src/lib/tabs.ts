@@ -63,3 +63,6 @@ export const SEARCH_INDEX_PATH = `${DOCS_BASE_PATH}/api/search.json`
 
 /** URL path of the static Sitemap, exported at build time (see `pages/sitemap.xml.ts`). */
 export const SITEMAP_PATH = `${DOCS_BASE_PATH}/sitemap.xml`
+
+/** URL path of the Docs index, exported at build time (see `pages/llms.txt.ts`). */
+export const DOCS_INDEX_PATH = `${DOCS_BASE_PATH}/llms.txt`

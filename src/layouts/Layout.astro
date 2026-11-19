@@ -10,9 +10,11 @@ import "../styles/global.css"
 interface Props {
 	title: string
 	description?: string | undefined
+	/** The page's Markdown twin, for the head's alternate link; a page with no twin passes none. */
+	markdownTwin?: string | undefined
 }
 
-const { title, description } = Astro.props
+const { title, description, markdownTwin } = Astro.props
 ---
 
 <!-- data-theme is the no-JS fallback; the theme provider (provider.tsx) forces the dark Theme and
@@ -23,6 +25,7 @@ const { title, description } = Astro.props
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>{title}</title>
 		{description && <meta name="description" content={description} />}
+		{markdownTwin && <link rel="alternate" type="text/markdown" href={markdownTwin} />}
 		<link rel="icon" type="image/svg+xml" href={faviconSvg} />
 		<link rel="icon" type="image/x-icon" sizes="any" href={faviconIco} />
 		<link rel="icon" type="image/png" sizes="192x192" href={icon192} />
