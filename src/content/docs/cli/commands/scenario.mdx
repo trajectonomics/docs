@@ -18,6 +18,7 @@ Create or update a Scenario from a JSON document.
 - `--file <string>` — the JSON document's path, or `-` for stdin; required unless `--template`
 - `--template` — print a complete document to start from and open no Data directory; takes no name
 - `--dry-run` — report the row and roll the write back
+- `--verify-required-check` — a flag the published release does not accept
 
 ```bash
 traj scenario apply --template > base.json           # Print the document to start from.
