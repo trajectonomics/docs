@@ -1,0 +1,31 @@
+---
+import {
+	AGENT_LINE_LOAD,
+	AGENT_LINE_PREFIX,
+	AGENT_LINE_SEPARATOR,
+	DOCS_INDEX_LINK_NAME,
+	MARKDOWN_LINK_NAME,
+} from "../lib/agent-line"
+import { DOCS_INDEX_PATH } from "../lib/tabs"
+
+interface Props {
+	/** The page's Markdown twin, which the line's first link names. */
+	twin: string
+}
+
+const { twin } = Astro.props
+---
+
+{/*
+	The pointer for an Agent reading this page's HTML: "For AI agents: this page as Markdown · the Docs
+	index". A reader never meets it: it is clipped to a pixel, out of the accessibility tree and out of
+	the tab order, the visually hidden element `afdocs` asks for near the top of every page, outside a
+	`<nav>` it would strip (ADR 0010). It is body content rather than a part of the shell's islands, so
+	the Client Router swaps in each page's own twin.
+*/}
+<p data-agent-line="" class="sr-only" aria-hidden="true">
+	{AGENT_LINE_PREFIX}{" "}
+	<a href={twin} tabindex="-1" {...AGENT_LINE_LOAD}>{MARKDOWN_LINK_NAME}</a>{" "}
+	{AGENT_LINE_SEPARATOR} the{" "}
+	<a href={DOCS_INDEX_PATH} tabindex="-1" {...AGENT_LINE_LOAD}>{DOCS_INDEX_LINK_NAME}</a>
+</p>

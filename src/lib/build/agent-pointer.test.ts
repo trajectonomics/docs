@@ -43,6 +43,26 @@ describe("the agent pointer of a built page", () => {
 		])
 	})
 
+	test("a pointer inside a <nav> is reported as AGENT_POINTER_MISSING: an Agent reads the page without it", () => {
+		const files = [
+			page("docs/cli/index.html", `<nav>${POINTER}</nav><main><h1>Quickstart</h1></main>`),
+		]
+
+		expect(checkAgentPointers(files).map((failure) => failure.code)).toEqual([
+			"AGENT_POINTER_MISSING",
+		])
+	})
+
+	test("a pointer inside a script is not a pointer either", () => {
+		const files = [
+			page("docs/cli/index.html", `<script>${POINTER}</script><main><h1>Quickstart</h1></main>`),
+		]
+
+		expect(checkAgentPointers(files).map((failure) => failure.code)).toEqual([
+			"AGENT_POINTER_MISSING",
+		])
+	})
+
 	test("an absolute link to the index is the same pointer", () => {
 		const absolute = POINTER.replace("/docs/llms.txt", `${SITE_ORIGIN}/docs/llms.txt`)
 		const files = [page("docs/cli/index.html", `${absolute}<main><h1>Quickstart</h1></main>`)]

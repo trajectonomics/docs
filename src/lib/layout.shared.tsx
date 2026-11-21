@@ -1,5 +1,4 @@
 import type { BaseLayoutProps, LinkItemType } from "fumadocs-ui/layouts/shared"
-import { AgentLine } from "../components/agent-line"
 import { HeaderMark } from "../components/header-mark"
 import { SITE_HOME_LABEL, SITE_HOME_LOAD, SITE_HOME_PATH } from "./site-home"
 import { DOCS_BASE_PATH } from "./tabs"
@@ -55,19 +54,6 @@ export function siteHomeButton() {
 }
 
 /**
- * The agent line the Landing Page's header carries beside the Site Home link (ADR 0010): one item
- * for the header's link row from `sm` up and one for the phone menu, because the home layout nests
- * a custom item differently in each.
- */
-function homeAgentLineLinks(pageUrl: string): readonly LinkItemType[] {
-	const line = <AgentLine pageUrl={pageUrl} />
-	return [
-		{ type: "custom", on: "nav", children: <li>{line}</li> },
-		{ type: "custom", on: "menu", children: line },
-	]
-}
-
-/**
  * Layout options shared by every Docs Portal page of `layout`. Every page carries the Portal's one
  * header mark, here and nowhere else, so a page cannot choose another (docs#75, ADR 0009). The docs
  * pages carry no header link items: the Site Home is the sidebar's button, and the Tabs are the
@@ -82,14 +68,4 @@ export function baseOptions(layout: PortalLayout): BaseLayoutProps {
 		// one. Light's return flips this option and deletes the provider's forced value.
 		themeSwitch: { enabled: false },
 	}
-}
-
-/**
- * Layout options for the Landing Page: the home layout's shared ones plus the agent line its header
- * carries beside the Site Home link (ADR 0010). The 404 page keeps `baseOptions("home")`: it has no
- * Markdown twin, so it carries neither that line nor an alternate link.
- */
-export function landingOptions(pageUrl: string): BaseLayoutProps {
-	const options = baseOptions("home")
-	return { ...options, links: [...(options.links ?? []), ...homeAgentLineLinks(pageUrl)] }
 }
