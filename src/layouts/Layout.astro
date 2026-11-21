@@ -5,12 +5,16 @@ import faviconIco from "@trajectonomics/design-system-assets/favicon/favicon.ico
 import faviconSvg from "@trajectonomics/design-system-assets/favicon/favicon.svg?url"
 import icon192 from "@trajectonomics/design-system-assets/favicon/icon-192.png?url"
 import icon512 from "@trajectonomics/design-system-assets/favicon/icon-512.png?url"
+import AgentLine from "../components/AgentLine.astro"
 import "../styles/global.css"
 
 interface Props {
 	title: string
 	description?: string | undefined
-	/** The page's Markdown twin, for the head's alternate link; a page with no twin passes none. */
+	/**
+	 * The page's Markdown twin, for the head's alternate link and the Agent's pointer at the top of the
+	 * body; a page with no twin passes none and carries neither.
+	 */
 	markdownTwin?: string | undefined
 }
 
@@ -45,6 +49,7 @@ const { title, description, markdownTwin } = Astro.props
 		</script>
 	</head>
 	<body class="flex flex-col min-h-screen">
+		{markdownTwin && <AgentLine twin={markdownTwin} />}
 		<slot />
 	</body>
 </html>

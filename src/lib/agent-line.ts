@@ -1,7 +1,7 @@
 /**
- * The line every page with a Markdown twin carries: the words before its two links, the names the
- * links are read by, and the separator between them. Pure, so a test asserts the pointer a reader
- * meets without loading the React shell (ADR 0010).
+ * The line every page with a Markdown twin carries for an Agent, never for a reader: the words
+ * before its two links, the names the links are read by, and the separator between them. Pure, so a
+ * test asserts the pointer an Agent meets without loading the page (ADR 0010).
  */
 
 /** The words the line shows before its two links. */

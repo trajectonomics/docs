@@ -60,3 +60,7 @@ carry it so no page can pick another.
 ## Amendment (2026-11-18, docs#77): the agent line in the top block
 
 The Portal publishes an Agent-readable form of every page, and each page says so ([ADR 0010](./0010-the-portal-serves-markdown-by-request.md)). One muted line, "For AI agents: this page as Markdown · the Docs index", joins the page's top utility area: at the top of the docs pages' sidebar block, above the Site Home button, and in the Landing Page's header link row beside Site Home — never in the Landing Page's body, which this ADR's home layout keeps to the Landing Page's own parts. The line is text with two links named "Markdown" and "Docs index"; it adds no control, no banner and no colour role, and the Site Home button stays above the search inside the block.
+
+## Amendment (2026-11-21): the agent line leaves the shell
+
+The docs#77 amendment above put a visible agent line in the sidebar's top block and in the Landing Page's header link row. A reader has no use for a sentence addressed to an Agent, so it is withdrawn from both. The top block is again the Site Home button above the search, the Landing Page's header link row again carries the Site Home link alone, and the sidebar block no longer takes the page's path. The pointer for an Agent moves to the top of the page's body, where no reader meets it ([ADR 0010](./0010-the-portal-serves-markdown-by-request.md)).
